@@ -4394,9 +4394,9 @@ a[data-tab-destination] {
     color: #999;
 }
 
-#tautulli-news .open .news-title,
-#tautulli-news .open .news-date,
-#tautulli-news .accordion li.open .link i.fa {
+#retroarcher-news .open .news-title,
+#retroarcher-news .open .news-date,
+#retroarcher-news .accordion li.open .link i.fa {
     color: #eee;
 }
 .news-title,

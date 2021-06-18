@@ -4,14 +4,14 @@
 #              by Vlasis K. Barkas aka Red Wine red_wine@freemail.gr Sep 2006               
 ############################################################################################
 
-!define APP_NAME "Tautulli"
-!define COMP_NAME "Tautulli"
-!define WEB_SITE "https://tautulli.com"
-!define COPYRIGHT "Tautulli © 2020"
-!define DESCRIPTION "Monitor your Plex Media Server"
-!define APP_ICON "..\dist\Tautulli\data\interfaces\default\images\logo-circle.ico"
-!define LICENSE_TXT "..\dist\Tautulli\LICENSE"
-!define MAIN_APP_EXE "Tautulli.exe"
+!define APP_NAME "RetroArcher"
+!define COMP_NAME "RetroArcher"
+!define WEB_SITE "https://RetroArcher.github.io"
+!define COPYRIGHT "RetroArcher © 2021"
+!define DESCRIPTION "Retro gaming in Plex!"
+!define APP_ICON "..\dist\RetroArcher.X\data\interfaces\default\images\logo-circle.ico"
+!define LICENSE_TXT "..\dist\RetroArcher.X\LICENSE"
+!define MAIN_APP_EXE "RetroArcher.exe"
 !define INSTALL_TYPE "SetShellVarContext current"
 !define REG_ROOT "HKCU"
 !define REG_APP_PATH "Software\Microsoft\Windows\CurrentVersion\App Paths\${MAIN_APP_EXE}"

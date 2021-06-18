@@ -6,7 +6,7 @@ sys.modules['FixTk'] = None
 block_cipher = None
 
 analysis = Analysis(
-    ['..\\Tautulli.py'],
+    ['..\\RetroArcher.py'],
     pathex=['lib'],
     datas=[
         ('..\\data', 'data'),
@@ -29,7 +29,7 @@ exe = EXE(
     pyz,
     analysis.scripts,
     exclude_binaries=True,
-    name='Tautulli',
+    name='RetroArcher',
     console=False,
     icon='..\\data\\interfaces\\default\\images\\logo-circle.ico'
 )
@@ -38,5 +38,5 @@ coll = COLLECT(
     analysis.binaries,
     analysis.zipfiles,
     analysis.datas,
-    name='Tautulli'
+    name='RetroArcher'
 )

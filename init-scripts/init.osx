@@ -3,12 +3,12 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>tautulli</string>
+  <string>retroarcher</string>
   <key>ProgramArguments</key>
   <array>
-       <!-- Modify these two lines if you need to to reflect your python location and Tautulli install location -->
+       <!-- Modify these two lines if you need to to reflect your python location and RetroArcher install location -->
        <string>/usr/bin/python</string>
-       <string>/Applications/Tautulli/Tautulli.py</string>
+       <string>/Applications/RetroArcher/RetroArcher.py</string>
   </array>
   <key>RunAtLoad</key>
   <true/>

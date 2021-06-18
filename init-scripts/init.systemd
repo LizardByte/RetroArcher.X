@@ -1,60 +1,60 @@
-# Tautulli - Stats for Plex Media Server usage
+# RetroArcher - Retro gaming in Plex!
 #
 # Service Unit file for systemd system manager
 #
 # INSTALLATION NOTES
 #
 #   1. Copy this file into your systemd service unit directory (often '/lib/systemd/system')
-#      and name it 'tautulli.service' with the following command:
-#       cp /opt/Tautulli/init-scripts/init.systemd /lib/systemd/system/tautulli.service
+#      and name it 'retroarcher.service' with the following command:
+#       cp /opt/RetroArcher/init-scripts/init.systemd /lib/systemd/system/retroarcher.service
 #
-#   2. Edit the new tautulli.service file with configuration settings as required.
+#   2. Edit the new retroarcher.service file with configuration settings as required.
 #      More details in the "CONFIGURATION NOTES" section shown below.
 #
 #   3. Enable boot-time autostart with the following commands:
 #       systemctl daemon-reload
-#       systemctl enable tautulli.service
+#       systemctl enable retroarcher.service
 #
 #   4. Start now with the following command:
-#       systemctl start tautulli.service
+#       systemctl start retroarcher.service
 #
 # CONFIGURATION NOTES
 #
-#    - The example settings in this file assume that you will run Tautulli as user: tautulli
-#    - The example settings in this file assume that Tautulli is installed to: /opt/Tautulli
+#    - The example settings in this file assume that you will run RetroArcher as user: retroarcher
+#    - The example settings in this file assume that RetroArcher is installed to: /opt/RetroArcher
 #
-#    - To create this user and give it ownership of the Tautulli directory:
+#    - To create this user and give it ownership of the RetroArcher directory:
 #       1. Create the user:
-#           Ubuntu/Debian: sudo addgroup tautulli && sudo adduser --system --no-create-home tautulli --ingroup tautulli
-#           CentOS/Fedora: sudo adduser --system --no-create-home tautulli
-#       2. Give the user ownership of the Tautulli directory:
-#           sudo chown -R tautulli:tautulli /opt/Tautulli
+#           Ubuntu/Debian: sudo addgroup retroarcher && sudo adduser --system --no-create-home retroarcher --ingroup retroarcher
+#           CentOS/Fedora: sudo adduser --system --no-create-home retroarcher
+#       2. Give the user ownership of the RetroArcher directory:
+#           sudo chown -R retroarcher:retroarcher /opt/RetroArcher
 #
 #    - Adjust ExecStart= to point to:
 #       1. Your Python interpreter (get the path with "command -v python3")
 #          - Default: /usr/bin/python3
-#       2. Your Tautulli executable
-#          - Default: /opt/Tautulli/Tautulli.py
+#       2. Your RetroArcher executable
+#          - Default: /opt/RetroArcher/RetroArcher.py
 #       3. Your config file (recommended is to put it somewhere in /etc)
-#          - Default: --config /opt/Tautulli/config.ini
-#       4. Your datadir (recommended is to NOT put it in your Tautulli exec dir)
-#          - Default: --datadir /opt/Tautulli
+#          - Default: --config /opt/RetroArcher/config.ini
+#       4. Your datadir (recommended is to NOT put it in your RetroArcher exec dir)
+#          - Default: --datadir /opt/RetroArcher
 #
-#    - Adjust User= and Group= to the user/group you want Tautulli to run as.
+#    - Adjust User= and Group= to the user/group you want RetroArcher to run as.
 #
-#    - WantedBy= specifies which target (i.e. runlevel) to start Tautulli for.
+#    - WantedBy= specifies which target (i.e. runlevel) to start RetroArcher for.
 #       multi-user.target equates to runlevel 3 (multi-user text mode)
 #       graphical.target  equates to runlevel 5 (multi-user X11 graphical mode)
 
 [Unit]
-Description=Tautulli - Stats for Plex Media Server usage
+Description=RetroArcher - Stats for Plex Media Server usage
 Wants=network-online.target
 After=network-online.target
 
 [Service]
-ExecStart=/usr/bin/python3 /opt/Tautulli/Tautulli.py --config /opt/Tautulli/config.ini --datadir /opt/Tautulli --quiet --nolaunch
-User=tautulli
-Group=tautulli
+ExecStart=/usr/bin/python3 /opt/RetroArcher/RetroArcher.py --config /opt/RetroArcher/config.ini --datadir /opt/RetroArcher --quiet --nolaunch
+User=retroarcher
+Group=retroarcher
 Restart=on-abnormal
 RestartSec=5
 StartLimitInterval=90

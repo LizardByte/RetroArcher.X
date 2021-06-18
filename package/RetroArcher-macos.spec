@@ -9,7 +9,7 @@ VERSION = os.getenv('VERSION', '0.0.0')
 block_cipher = None
 
 analysis = Analysis(
-    ['../Tautulli.py'],
+    ['../RetroArcher.py'],
     pathex=['lib'],
     datas=[
         ('../data', 'data'),
@@ -32,7 +32,7 @@ exe = EXE(
     pyz,
     analysis.scripts,
     exclude_binaries=True,
-    name='Tautulli',
+    name='RetroArcher',
     console=False,
     icon='../data/interfaces/default/images/logo-circle.icns'
 )
@@ -41,13 +41,13 @@ coll = COLLECT(
     analysis.binaries,
     analysis.zipfiles,
     analysis.datas,
-    name='Tautulli'
+    name='RetroArcher'
 )
 app = BUNDLE(
     coll,
-    name='Tautulli.app',
+    name='RetroArcher.app',
     icon='../data/interfaces/default/images/logo-circle.icns',
-    bundle_identifier='com.Tautulli.Tautulli',
+    bundle_identifier='com.RetroArcher.RetroArcher',
     version=VERSION,
     info_plist={
         'LSUIElement': True,
