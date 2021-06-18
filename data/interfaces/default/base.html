@@ -149,7 +149,7 @@
                             <li><a href="#" id="nav-update"><i class="fa fa-fw fa-arrow-alt-circle-up"></i> Check for Updates</a></li>
                             % endif
                             <li><a href="#" id="nav-restart"><i class="fa fa-fw fa-refresh"></i> Restart</a></li>
-                            <li><a href="#" id="nav-shutdown"><i class="fa fa-fw fa-power-off"></i> Shutdown</a></li>
+                            <li><a href="#" id="nav-shutdown"><i class="fa fa-fw fa-power-off"></i> Quit</a></li>
                             % else:
                             <li><a href="#" data-target="#admin-login-modal" data-toggle="modal"><i class="fa fa-fw fa-lock"></i> Admin Login</a></li>
                             <li role="separator" class="divider"></li>
@@ -358,7 +358,7 @@ ${next.modalIncludes()}
     }
 
     $("#nav-shutdown").click(function() {
-        $("#confirm-message").text("Are you sure you want to shutdown RetroArcher?");
+        $("#confirm-message").text("Are you sure you want to quit RetroArcher?");
         $('#confirm-modal').modal();
         $('#confirm-modal').one('click', '#confirm-button', function () {
             window.location.href = "shutdown";
