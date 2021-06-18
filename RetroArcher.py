@@ -21,7 +21,7 @@ import time
 import threading
 import tzlocal
 
-import plexpy as plexpy
+import plexpy
 from plexpy import common, config, database, helpers, logger, webstart
 if common.PLATFORM == 'Windows':
     from plexpy import windows
