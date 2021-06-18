@@ -73,7 +73,7 @@ DOCUMENTATION :: END
 <%def name="headIncludes()">
 <link rel="stylesheet" href="${http_root}css/dataTables.bootstrap.css">
 <link rel="stylesheet" href="${http_root}css/dataTables.colVis.css">
-<link rel="stylesheet" href="${http_root}css/tautulli-dataTables.css">
+<link rel="stylesheet" href="${http_root}css/retroarcher-dataTables.css">
 </%def>
 
 <%def name="body()">
@@ -1108,7 +1108,7 @@ DOCUMENTATION :: END
 <script>
     $('#delete-lookup-info').on('click', function () {
         var msg = 'Are you sure you want to delete all the metadata lookup info for <strong>' + $(this).data('title') + '</strong>?' +
-                  '<br /><br />Tautulli will lookup the metadata info again the next time a notification is sent.';
+                  '<br /><br />RetroArcher will lookup the metadata info again the next time a notification is sent.';
         var url = 'delete_lookup_info';
         var data = { rating_key: $(this).data('id') };
         var callback = function () {

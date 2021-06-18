@@ -28,7 +28,7 @@
                                     <span class="btn btn-form">Upload</span>
                                     <input type="file" style="display: none;" id="import_database_file" name="import_database_file" required>
                                 </label>
-                                <input id="import_database_file_name" type="text" class="form-control" placeholder="tautulli.db" disabled>
+                                <input id="import_database_file_name" type="text" class="form-control" placeholder="retroarcher.db" disabled>
                             </div>
                         </div>
                     </div>
@@ -42,13 +42,13 @@
                                 <span class="input-group-btn">
                                     <button class="btn btn-form" type="button" id="import_database_path_browse" data-toggle="browse" data-description="Database File" data-filter=".db" data-target="#import_database_path">Browse</button>
                                 </span>
-                                <input type="text" class="form-control" id="import_database_path" name="import_database_path" value="" placeholder="tautulli.db" required disabled>
+                                <input type="text" class="form-control" id="import_database_path" name="import_database_path" value="" placeholder="retroarcher.db" required disabled>
                             </div>
                         </div>
                     </div>
                     <p class="help-block">Browse for the ${app} database file you wish to import.</p>
                 </div>
-                % if app == 'Tautulli':
+                % if app == 'RetroArcher':
                 <div class="form-group">
                     <label for="table_name">Import Method</label>
                     <div class="row">
@@ -59,7 +59,7 @@
                             </select>
                         </div>
                     </div>
-                    <p class="help-block">Select how you would like to import the Tautulli history.</p>
+                    <p class="help-block">Select how you would like to import the RetroArcher history.</p>
                     <ul class="help-block" style="padding-inline-start: 15px;">
                         <li><strong>Merge</strong> will add all history and remove any duplicates from the imported database into the current database.</li>
                         <li><strong>Overwrite</strong> will replace all history in the current database with the imported database.</li>

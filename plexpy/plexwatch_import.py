@@ -1,20 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
 
-# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import unicode_literals
 from future.builtins import str
 
@@ -42,12 +27,12 @@ def extract_plexwatch_xml(xml=None):
     try:
         xml_parse = minidom.parseString(clean_xml)
     except:
-        logger.warn("Tautulli Importer :: Error parsing XML for PlexWatch database.")
+        logger.warn("RetroArcher Importer :: Error parsing XML for PlexWatch database.")
         return None
 
     xml_head = xml_parse.getElementsByTagName('opt')
     if not xml_head:
-        logger.warn("Tautulli Importer :: Error parsing XML for PlexWatch database.")
+        logger.warn("RetroArcher Importer :: Error parsing XML for PlexWatch database.")
         return None
 
     for a in xml_head:
@@ -242,23 +227,23 @@ def validate_database(database_file=None, table_name=None):
     try:
         connection = sqlite3.connect(database_file, timeout=20)
     except sqlite3.OperationalError:
-        logger.error("Tautulli Importer :: Invalid database specified.")
+        logger.error("RetroArcher Importer :: Invalid database specified.")
         return 'Invalid database specified.'
     except ValueError:
-        logger.error("Tautulli Importer :: Invalid database specified.")
+        logger.error("RetroArcher Importer :: Invalid database specified.")
         return 'Invalid database specified.'
     except:
-        logger.error("Tautulli Importer :: Uncaught exception.")
+        logger.error("RetroArcher Importer :: Uncaught exception.")
         return 'Uncaught exception.'
 
     try:
         connection.execute('SELECT ratingKey from %s' % table_name)
         connection.close()
     except sqlite3.OperationalError:
-        logger.error("Tautulli Importer :: Invalid database specified.")
+        logger.error("RetroArcher Importer :: Invalid database specified.")
         return 'Invalid database specified.'
     except:
-        logger.error("Tautulli Importer :: Uncaught exception.")
+        logger.error("RetroArcher Importer :: Uncaught exception.")
         return 'Uncaught exception.'
 
     return 'success'
@@ -270,19 +255,19 @@ def import_from_plexwatch(database_file=None, table_name=None, import_ignore_int
         connection = sqlite3.connect(database_file, timeout=20)
         connection.row_factory = sqlite3.Row
     except sqlite3.OperationalError:
-        logger.error("Tautulli Importer :: Invalid filename.")
+        logger.error("RetroArcher Importer :: Invalid filename.")
         return None
     except ValueError:
-        logger.error("Tautulli Importer :: Invalid filename.")
+        logger.error("RetroArcher Importer :: Invalid filename.")
         return None
 
     try:
         connection.execute('SELECT ratingKey from %s' % table_name)
     except sqlite3.OperationalError:
-        logger.error("Tautulli Importer :: Database specified does not contain the required fields.")
+        logger.error("RetroArcher Importer :: Database specified does not contain the required fields.")
         return None
 
-    logger.debug("Tautulli Importer :: PlexWatch data import in progress...")
+    logger.debug("RetroArcher Importer :: PlexWatch data import in progress...")
     database.set_is_importing(True)
 
     ap = activity_processor.ActivityProcessor()
@@ -292,7 +277,7 @@ def import_from_plexwatch(database_file=None, table_name=None, import_ignore_int
     try:
         users.refresh_users()
     except:
-        logger.debug("Tautulli Importer :: Unable to refresh the users list. Aborting import.")
+        logger.debug("RetroArcher Importer :: Unable to refresh the users list. Aborting import.")
         return None
 
     query = 'SELECT time AS started, ' \
@@ -327,13 +312,13 @@ def import_from_plexwatch(database_file=None, table_name=None, import_ignore_int
 
         # If we get back None from our xml extractor skip over the record and log error.
         if not extracted_xml:
-            logger.error("Tautulli Importer :: Skipping record with ratingKey %s due to malformed xml."
+            logger.error("RetroArcher Importer :: Skipping record with ratingKey %s due to malformed xml."
                          % str(row['rating_key']))
             continue
 
         # Skip line if we don't have a ratingKey to work with
         if not row['rating_key']:
-            logger.error("Tautulli Importer :: Skipping record due to null ratingKey.")
+            logger.error("RetroArcher Importer :: Skipping record due to null ratingKey.")
             continue
 
         # If the user_id no longer exists in the friends list, pull it from the xml.
@@ -438,16 +423,16 @@ def import_from_plexwatch(database_file=None, table_name=None, import_ignore_int
                                      is_import=True,
                                      import_ignore_interval=import_ignore_interval)
         else:
-            logger.debug("Tautulli Importer :: Item has bad rating_key: %s" % session_history_metadata['rating_key'])
+            logger.debug("RetroArcher Importer :: Item has bad rating_key: %s" % session_history_metadata['rating_key'])
 
     import_users()
 
-    logger.debug("Tautulli Importer :: PlexWatch data import complete.")
+    logger.debug("RetroArcher Importer :: PlexWatch data import complete.")
     database.set_is_importing(False)
 
 
 def import_users():
-    logger.debug("Tautulli Importer :: Importing PlexWatch Users...")
+    logger.debug("RetroArcher Importer :: Importing PlexWatch Users...")
     monitor_db = database.MonitorDatabase()
 
     query = 'INSERT OR IGNORE INTO users (user_id, username) ' \
@@ -456,6 +441,6 @@ def import_users():
 
     try:
         monitor_db.action(query)
-        logger.debug("Tautulli Importer :: Users imported.")
+        logger.debug("RetroArcher Importer :: Users imported.")
     except:
-        logger.debug("Tautulli Importer :: Failed to import users.")
+        logger.debug("RetroArcher Importer :: Failed to import users.")

@@ -28,9 +28,9 @@
                 % elif config['pms_is_cloud']:
                 <div id="dashboard-no-activity" class="text-muted">Plex Cloud server is sleeping.</div>
                 % elif not config['first_run_complete']:
-                <div id="dashboard-no-activity" class="text-muted">The Tautulli setup wizard has not been completed. Please click <a href="welcome">here</a> to go to the setup wizard.</div>
+                <div id="dashboard-no-activity" class="text-muted">The RetroArcher setup wizard has not been completed. Please click <a href="welcome">here</a> to go to the setup wizard.</div>
                 % else:
-                <div class="text-muted" id="dashboard-checking-activity"><i class="fa fa-refresh fa-spin"></i>&nbsp; Tautulli is connecting to the Plex server...</div>
+                <div class="text-muted" id="dashboard-checking-activity"><i class="fa fa-refresh fa-spin"></i>&nbsp; RetroArcher is connecting to the Plex server...</div>
                 % endif
             </div>
         </div>
@@ -132,7 +132,7 @@
                 % elif config['pms_is_cloud']:
                 <div class="text-muted">Plex Cloud server is sleeping.</div>
                 % else:
-                <div id="dashboard-no-recently-added" class="text-muted"><i class="fa fa-refresh fa-spin"></i>&nbsp; Tautulli is connecting to your Plex server...</div>
+                <div id="dashboard-no-recently-added" class="text-muted"><i class="fa fa-refresh fa-spin"></i>&nbsp; RetroArcher is connecting to your Plex server...</div>
                 % endif
             </div>
         </div>
@@ -151,7 +151,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-remove"></i></button>
-                <h4 class="modal-title">Tautulli Updated to <strong>${RELEASE}</strong></h4>
+                <h4 class="modal-title">RetroArcher Updated to <strong>${RELEASE}</strong></h4>
             </div>
             <div class="modal-body">
             </div>
@@ -221,12 +221,8 @@
                 <h4 class="modal-title">Unable to Update</h4>
             </div>
             <div class="modal-body" style="text-align: center;">
-                <p>Tautulli is still running using Python 2 and cannot be updated past v2.6.3.</p>
-                <p>Python 3 is required to continue receiving updates.</p>
-                <p>
-                    <strong>Please see the <a href="${anon_url('https://github.com/Tautulli/Tautulli/wiki/Upgrading-to-Python-3-%28Tautulli-v2.5%29')}" target="_blank" rel="noreferrer">wiki</a>
-                    for instructions on how to upgrade to Python 3.</strong>
-                </p>
+                <p>Host is running Python 2.</p>
+                <p>RetroArcher requires Python 3 to function properly.</p>
             </div>
             <div class="modal-footer">
                 <input type="button" class="btn btn-bright" data-dismiss="modal" value="Close">

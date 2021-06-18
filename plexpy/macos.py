@@ -1,20 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 import os
 import subprocess
 import sys
@@ -52,10 +37,10 @@ class MacOSSystemTray(object):
             self.update_title = 'Check for Updates'
 
         self.menu = [
-            rumps.MenuItem('Open Tautulli', callback=self.tray_open),
+            rumps.MenuItem('Open RetroArcher', callback=self.tray_open),
             None,
-            rumps.MenuItem('Start Tautulli at Login', callback=self.tray_startup),
-            rumps.MenuItem('Open Browser when Tautulli Starts', callback=self.tray_browser),
+            rumps.MenuItem('Start RetroArcher at Login', callback=self.tray_startup),
+            rumps.MenuItem('Open Browser when RetroArcher Starts', callback=self.tray_browser),
             None,
             rumps.MenuItem(self.update_title, callback=self.tray_check_update),
             rumps.MenuItem('Restart', callback=self.tray_restart),
@@ -118,8 +103,8 @@ class MacOSSystemTray(object):
         self.menu[5].title = self.update_title
 
     def change_tray_icons(self):
-        self.tray_icon.menu['Start Tautulli at Login'].state = plexpy.CONFIG.LAUNCH_STARTUP
-        self.tray_icon.menu['Open Browser when Tautulli Starts'].state = plexpy.CONFIG.LAUNCH_BROWSER
+        self.tray_icon.menu['Start RetroArcher at Login'].state = plexpy.CONFIG.LAUNCH_STARTUP
+        self.tray_icon.menu['Open Browser when RetroArcher Starts'].state = plexpy.CONFIG.LAUNCH_BROWSER
 
 
 def set_startup():
@@ -132,14 +117,14 @@ def set_startup():
                 subprocess.Popen(['osascript',
                                   '-e', 'tell application "System Events"',
                                   '-e', 'get the name of every login item',
-                                  '-e', 'if not exists login item "Tautulli" then '
+                                  '-e', 'if not exists login item "RetroArcher" then '
                                         'make login item at end with properties '
-                                        '{path:"/Applications/Tautulli.app", hidden:false}',
+                                        '{path:"/Applications/RetroArcher.app", hidden:false}',
                                   '-e', 'end tell'])
-                logger.info("Added Tautulli to MacOS login items.")
+                logger.info("Added RetroArcher to MacOS login items.")
                 return True
             except OSError as e:
-                logger.error("Failed to add Tautulli to MacOS login items: %s", e)
+                logger.error("Failed to add RetroArcher to MacOS login items: %s", e)
                 return False
 
         else:
@@ -147,18 +132,18 @@ def set_startup():
                 subprocess.Popen(['osascript',
                                   '-e', 'tell application "System Events"',
                                   '-e', 'get the name of every login item',
-                                  '-e', 'if exists login item "Tautulli" then '
-                                        'delete login item "Tautulli"',
+                                  '-e', 'if exists login item "RetroArcher" then '
+                                        'delete login item "RetroArcher"',
                                   '-e', 'end tell'])
-                logger.info("Removed Tautulli from MacOS login items.")
+                logger.info("Removed RetroArcher from MacOS login items.")
                 return True
             except OSError as e:
-                logger.error("Failed to remove Tautulli from MacOS login items: %s", e)
+                logger.error("Failed to remove RetroArcher from MacOS login items: %s", e)
                 return False
 
     else:
         launch_agents = os.path.join(os.path.expanduser('~'), 'Library/LaunchAgents')
-        plist_file = 'com.Tautulli.Tautulli.plist'
+        plist_file = 'com.RetroArcher.RetroArcher.plist'
         plist_file_path = os.path.join(launch_agents, plist_file)
 
         exe = sys.executable
@@ -190,14 +175,14 @@ def set_startup():
                     logger.error("Failed to create MacOS system startup plist file: %s", e)
                     return False
 
-            logger.info("Added Tautulli to MacOS system startup launch agents.")
+            logger.info("Added RetroArcher to MacOS system startup launch agents.")
             return True
 
         else:
             try:
                 if os.path.isfile(plist_file_path):
                     os.remove(plist_file_path)
-                    logger.info("Removed Tautulli from MacOS system startup launch agents.")
+                    logger.info("Removed RetroArcher from MacOS system startup launch agents.")
                 return True
             except OSError as e:
                 logger.error("Failed to delete MacOS system startup plist file: %s", e)

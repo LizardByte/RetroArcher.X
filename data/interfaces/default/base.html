@@ -9,7 +9,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Tautulli - ${title} | ${server_name}</title>
+    <title>RetroArcher - ${title} | ${server_name}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -17,7 +17,7 @@
     <link href="${http_root}css/pnotify.custom.min.css" rel="stylesheet" />
     <link href="${http_root}css/selectize.bootstrap3.css" rel="stylesheet" />
     <link href="${http_root}css/selectize.min.css" rel="stylesheet" />
-    <link href="${http_root}css/tautulli.css${cache_param}" rel="stylesheet">
+    <link href="${http_root}css/retroarcher.css${cache_param}" rel="stylesheet">
     <link href="${http_root}css/opensans.min.css" rel="stylesheet">
     <link href="${http_root}css/font-awesome.all.min.css" rel="stylesheet">
     <link href="${http_root}css/font-awesome.v4-shims.min.css" rel="stylesheet">
@@ -35,9 +35,9 @@
     <!-- Apple -->
     <link rel="apple-touch-icon" sizes="180x180" href="${http_root}images/favicon/apple-touch-icon.png?v=2.6.0">
     <link rel="mask-icon" href="${http_root}images/favicon/safari-pinned-tab.svg?v=2.6.0" color="#282a2d">
-    <meta name="apple-mobile-web-app-title" content="Tautulli">
+    <meta name="apple-mobile-web-app-title" content="RetroArcher">
     <!-- Microsoft -->
-    <meta name="application-name" content="Tautulli">
+    <meta name="application-name" content="RetroArcher">
     <meta name="msapplication-config" content="${http_root}images/favicon/browserconfig.xml?v=2.6.0">
 </head>
 
@@ -48,13 +48,13 @@
     % if plexpy.CONFIG.CHECK_GITHUB and plexpy.UPDATE_AVAILABLE is not False:
     <div id="updatebar" style="display: none;">
         % if plexpy.UPDATE_AVAILABLE is None:
-        You are running an unknown version of Tautulli.<br />
+        You are running an unknown version of RetroArcher.<br />
         % elif plexpy.UPDATE_AVAILABLE == 'release':
         A <a href="${anon_url('https://github.com/%s/%s/releases/tag/%s' % (plexpy.CONFIG.GIT_USER, plexpy.CONFIG.GIT_REPO, plexpy.LATEST_RELEASE))}" target="_blank" rel="noreferrer">
-        new release (${plexpy.LATEST_RELEASE})</a> of Tautulli is available!<br />
+        new release (${plexpy.LATEST_RELEASE})</a> of RetroArcher is available!<br />
         % elif plexpy.UPDATE_AVAILABLE == 'commit':
         A <a href="${anon_url('https://github.com/%s/%s/compare/%s...%s' % (plexpy.CONFIG.GIT_USER, plexpy.CONFIG.GIT_REPO, plexpy.CURRENT_VERSION, plexpy.LATEST_VERSION))}" target="_blank" rel="noreferrer">
-        newer version</a> of Tautulli is available!<br />
+        newer version</a> of RetroArcher is available!<br />
         You are ${plexpy.COMMITS_BEHIND} commit${'s' if plexpy.COMMITS_BEHIND > 1 else ''} behind.<br />
         % endif
         % if plexpy.INSTALL_TYPE == 'docker':
@@ -80,8 +80,8 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="home" title="Tautulli">
-                    <img src="${http_root}images/logo-tautulli-45.png" height="45" alt="Tautulli">
+                <a class="navbar-brand" href="home" title="RetroArcher">
+                    <img src="${http_root}images/logo-retroarcher-45.png" height="45" alt="RetroArcher">
                 </a>
             </div>
             <div class="collapse navbar-collapse navbar-right" id="navbar-collapse-1">
@@ -220,13 +220,13 @@ ${next.modalIncludes()}
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-remove"></i></button>
-                <h4 class="modal-title">Tautulli Donation</h4>
+                <h4 class="modal-title">RetroArcher Donation</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12" style="text-align: center;">
                         <h4>
-                            <strong>Thank you for supporting Tautulli!</strong>
+                            <strong>Thank you for supporting RetroArcher!</strong>
                         </h4>
                         <p>
                             Please select a donation method.
@@ -237,14 +237,13 @@ ${next.modalIncludes()}
                     <li class="active"><a href="#github-donation" role="tab" data-toggle="tab">GitHub</a></li>
                     <li><a href="#patreon-donation" role="tab" data-toggle="tab">Patreon</a></li>
                     <li><a href="#paypal-donation" role="tab" data-toggle="tab">PayPal</a></li>
-                    <li><a href="#crypto-donation" role="tab" data-toggle="tab">Crypto</a></li>
                 </ul>
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="github-donation" style="text-align: center">
                         <p>
                             Click the button below to continue to GitHub.
                         </p>
-                        <a href="${anon_url('https://github.com/sponsors/JonnyWong16')}" target="_blank" rel="noreferrer" class="btn btn-sm btn-default" style="font-weight: 600;">
+                        <a href="${anon_url('https://github.com/sponsors/ReenigneArcher')}" target="_blank" rel="noreferrer" class="btn btn-sm btn-default" style="font-weight: 600;">
                             <i class="fa fa-heart fa-sm" style="color: #ea4aaa;"></i>&nbsp; Sponsor
                         </a>
                     </div>
@@ -252,7 +251,7 @@ ${next.modalIncludes()}
                         <p>
                             Click the button below to continue to Patreon.
                         </p>
-                        <a href="${anon_url('https://www.patreon.com/join/tautulli')}" target="_blank" rel="noreferrer">
+                        <a href="${anon_url('https://www.patreon.com/join/retroarcher')}" target="_blank" rel="noreferrer">
                             <img src="images/become_a_patron_button.png" alt="Become a Patron" width="170" height="40">
                         </a>
                     </div>
@@ -260,16 +259,8 @@ ${next.modalIncludes()}
                         <p>
                             Click the button below to continue to PayPal.
                         </p>
-                        <a href="${anon_url('https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6XPPKTDSX9QFL&lc=US&item_name=Tautulli&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted')}" target="_blank" rel="noreferrer">
+                        <a href="${anon_url('https://paypal.me/ReenigneArcher')}" target="_blank" rel="noreferrer">
                             <img src="images/gold-rect-paypal-34px.png" alt="PayPal">
-                        </a>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="crypto-donation" style="text-align: center">
-                        <p>
-                            Click the button below to continue to Coinbase.
-                        </p>
-                        <a href="https://blankrefer.com/?https://commerce.coinbase.com/checkout/8a9fa08c-8a38-409e-9220-868124c4ba0c" target="_blank" rel="noreferrer" class="donate-with-crypto">
-                            <span>Donate with Crypto</span>
                         </a>
                     </div>
                 </div>
@@ -340,11 +331,11 @@ ${next.modalIncludes()}
                     showMsg('<i class="fa fa-check"></i> ' + result.message, false, true, 2000);
                 } else {
                     if (result.update === null) {
-                        msg = 'You are running an unknown version of Tautulli.<br />';
+                        msg = 'You are running an unknown version of RetroArcher.<br />';
                     } else if (result.update === true && result.release === true) {
-                        msg = 'A <a href="' + result.release_url + '" target="_blank" rel="noreferrer">new release (' + result.latest_release + ')</a> of Tautulli is available!<br />';
+                        msg = 'A <a href="' + result.release_url + '" target="_blank" rel="noreferrer">new release (' + result.latest_release + ')</a> of RetroArcher is available!<br />';
                     } else if (result.update === true && result.release === false) {
-                        msg = 'A <a href="' + result.compare_url + '" target="_blank" rel="noreferrer">newer version</a> of Tautulli is available!<br />' +
+                        msg = 'A <a href="' + result.compare_url + '" target="_blank" rel="noreferrer">newer version</a> of RetroArcher is available!<br />' +
                             'You are '+ result.commits_behind + ' commit' + (result.commits_behind > 1 ? 's' : '') + ' behind.<br />';
                     }
                     if (result.install_type === 'docker') {
@@ -367,7 +358,7 @@ ${next.modalIncludes()}
     }
 
     $("#nav-shutdown").click(function() {
-        $("#confirm-message").text("Are you sure you want to shutdown Tautulli?");
+        $("#confirm-message").text("Are you sure you want to shutdown RetroArcher?");
         $('#confirm-modal').modal();
         $('#confirm-modal').one('click', '#confirm-button', function () {
             window.location.href = "shutdown";
@@ -375,7 +366,7 @@ ${next.modalIncludes()}
     });
 
     $("#nav-restart").click(function() {
-        $("#confirm-message").text("Are you sure you want to restart Tautulli?");
+        $("#confirm-message").text("Are you sure you want to restart RetroArcher?");
         $('#confirm-modal').modal();
         $('#confirm-modal').one('click', '#confirm-button', function () {
             window.location.href = "restart";

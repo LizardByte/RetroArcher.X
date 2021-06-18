@@ -1,20 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import unicode_literals
 from future.builtins import next
 from future.builtins import object
@@ -286,7 +271,7 @@ class WebInterface(object):
     @requireAuth()
     @addtoapi()
     def get_date_formats(self, **kwargs):
-        """ Get the date and time formats used by Tautulli.
+        """ Get the date and time formats used by RetroArcher.
 
              ```
             Required parameters:
@@ -469,7 +454,7 @@ class WebInterface(object):
     @sanitize_out()
     @addtoapi("get_libraries_table")
     def get_library_list(self, grouping=None, **kwargs):
-        """ Get the data on the Tautulli libraries table.
+        """ Get the data on the RetroArcher libraries table.
 
             ```
             Required parameters:
@@ -639,7 +624,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def edit_library(self, section_id=None, **kwargs):
-        """ Update a library section on Tautulli.
+        """ Update a library section on RetroArcher.
 
             ```
             Required parameters:
@@ -752,7 +737,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def get_library_media_info(self, section_id=None, section_type=None, rating_key=None, refresh='', **kwargs):
-        """ Get the data on the Tautulli media info tables.
+        """ Get the data on the RetroArcher media info tables.
 
             ```
             Required parameters:
@@ -849,7 +834,7 @@ class WebInterface(object):
     @requireAuth()
     @addtoapi("get_collections_table")
     def get_collections_list(self, section_id=None, **kwargs):
-        """ Get the data on the Tautulli collections tables.
+        """ Get the data on the RetroArcher collections tables.
 
             ```
             Required parameters:
@@ -886,7 +871,7 @@ class WebInterface(object):
     @requireAuth()
     @addtoapi("get_playlists_table")
     def get_playlists_list(self, section_id=None, user_id=None, **kwargs):
-        """ Get the data on the Tautulli playlists tables.
+        """ Get the data on the RetroArcher playlists tables.
 
             ```
             Required parameters:
@@ -1098,7 +1083,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_all_library_history(self, server_id=None, section_id=None, row_ids=None, **kwargs):
-        """ Delete all Tautulli history for a specific library.
+        """ Delete all RetroArcher history for a specific library.
 
             ```
             Required parameters:
@@ -1127,7 +1112,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_library(self, server_id=None, section_id=None, row_ids=None, **kwargs):
-        """ Delete a library section from Tautulli. Also erases all history for the library.
+        """ Delete a library section from RetroArcher. Also erases all history for the library.
 
             ```
             Required parameters:
@@ -1156,7 +1141,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def undelete_library(self, section_id=None, section_name=None, **kwargs):
-        """ Restore a deleted library section to Tautulli.
+        """ Restore a deleted library section to RetroArcher.
 
             ```
             Required parameters:
@@ -1239,7 +1224,7 @@ class WebInterface(object):
     @sanitize_out()
     @addtoapi("get_users_table")
     def get_user_list(self, grouping=None, **kwargs):
-        """ Get the data on Tautulli users table.
+        """ Get the data on RetroArcher users table.
 
             ```
             Required parameters:
@@ -1366,7 +1351,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def edit_user(self, user_id=None, **kwargs):
-        """ Update a user on Tautulli.
+        """ Update a user on RetroArcher.
 
             ```
             Required parameters:
@@ -1464,7 +1449,7 @@ class WebInterface(object):
     @sanitize_out()
     @addtoapi()
     def get_user_ips(self, user_id=None, **kwargs):
-        """ Get the data on Tautulli users IP table.
+        """ Get the data on RetroArcher users IP table.
 
             ```
             Required parameters:
@@ -1536,7 +1521,7 @@ class WebInterface(object):
     @sanitize_out()
     @addtoapi()
     def get_user_logins(self, user_id=None, **kwargs):
-        """ Get the data on Tautulli user login table.
+        """ Get the data on RetroArcher user login table.
 
             ```
             Required parameters:
@@ -1600,7 +1585,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def logout_user_session(self, row_ids=None, **kwargs):
-        """ Logout Tautulli user sessions.
+        """ Logout RetroArcher user sessions.
 
             ```
             Required parameters:
@@ -1768,7 +1753,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_all_user_history(self, user_id=None, row_ids=None, **kwargs):
-        """ Delete all Tautulli history for a specific user.
+        """ Delete all RetroArcher history for a specific user.
 
             ```
             Required parameters:
@@ -1796,7 +1781,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_user(self, user_id=None, row_ids=None, **kwargs):
-        """ Delete a user from Tautulli. Also erases all history for the user.
+        """ Delete a user from RetroArcher. Also erases all history for the user.
 
             ```
             Required parameters:
@@ -1824,7 +1809,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def undelete_user(self, user_id=None, username=None, **kwargs):
-        """ Restore a deleted user to Tautulli.
+        """ Restore a deleted user to RetroArcher.
 
             ```
             Required parameters:
@@ -1866,7 +1851,7 @@ class WebInterface(object):
     @sanitize_out()
     @addtoapi()
     def get_history(self, user=None, user_id=None, grouping=None, include_activity=None, **kwargs):
-        """ Get the Tautulli history.
+        """ Get the RetroArcher history.
 
             ```
             Required parameters:
@@ -2069,7 +2054,7 @@ class WebInterface(object):
                      "optimized_version_profile": "",
                      "optimized_version_title": "",
                      "original_title": "",
-                     "pre_tautulli": "",
+                     "pre_retroarcher": "",
                      "quality_profile": "1.5 Mbps 480p",
                      "stream_audio_bitrate": 203,
                      "stream_audio_channels": 2,
@@ -2130,7 +2115,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi("delete_history")
     def delete_history_rows(self, row_ids=None, **kwargs):
-        """ Delete history rows from Tautulli.
+        """ Delete history rows from RetroArcher.
 
             ```
             Required parameters:
@@ -2762,7 +2747,7 @@ class WebInterface(object):
         filtered = []
         fa = filt.append
 
-        if logfile == "tautulli_api":
+        if logfile == "retroarcher_api":
             filename = logger.FILENAME_API
         elif logfile == "plex_websocket":
             filename = logger.FILENAME_PLEX_WEBSOCKET
@@ -2855,7 +2840,7 @@ class WebInterface(object):
     @sanitize_out()
     @addtoapi()
     def get_notification_log(self, **kwargs):
-        """ Get the data on the Tautulli notification logs table.
+        """ Get the data on the RetroArcher notification logs table.
 
             ```
             Required parameters:
@@ -2882,7 +2867,7 @@ class WebInterface(object):
                           "notify_action": "on_play",
                           "rating_key": 153037,
                           "session_key": 147,
-                          "subject_text": "Tautulli (Winterfell-Server)",
+                          "subject_text": "RetroArcher (Winterfell-Server)",
                           "success": 1,
                           "timestamp": 1462253821,
                           "user": "DanyKhaleesi69",
@@ -2917,7 +2902,7 @@ class WebInterface(object):
     @sanitize_out()
     @addtoapi()
     def get_newsletter_log(self, **kwargs):
-        """ Get the data on the Tautulli newsletter logs table.
+        """ Get the data on the RetroArcher newsletter logs table.
 
             ```
             Required parameters:
@@ -2980,7 +2965,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_notification_log(self, **kwargs):
-        """ Delete the Tautulli notification logs.
+        """ Delete the RetroArcher notification logs.
 
             ```
             Required paramters:
@@ -3005,7 +2990,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_newsletter_log(self, **kwargs):
-        """ Delete the Tautulli newsletter logs.
+        """ Delete the RetroArcher newsletter logs.
 
             ```
             Required paramters:
@@ -3030,7 +3015,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_login_log(self, **kwargs):
-        """ Delete the Tautulli login logs.
+        """ Delete the RetroArcher login logs.
 
             ```
             Required paramters:
@@ -3054,7 +3039,7 @@ class WebInterface(object):
     @cherrypy.tools.json_out()
     @requireAuth(member_of("admin"))
     def delete_logs(self, logfile='', **kwargs):
-        if logfile == "tautulli_api":
+        if logfile == "retroarcher_api":
             filename = logger.FILENAME_API
         elif logfile == "plex_websocket":
             filename = logger.FILENAME_PLEX_WEBSOCKET
@@ -3099,7 +3084,7 @@ class WebInterface(object):
     @cherrypy.expose
     @requireAuth(member_of("admin"))
     def logFile(self, logfile='', **kwargs):
-        if logfile == "tautulli_api":
+        if logfile == "retroarcher_api":
             filename = logger.FILENAME_API
         elif logfile == "plex_websocket":
             filename = logger.FILENAME_PLEX_WEBSOCKET
@@ -3717,8 +3702,8 @@ class WebInterface(object):
     @cherrypy.expose
     @cherrypy.tools.json_out()
     @requireAuth(member_of("admin"))
-    def send_notification(self, notifier_id=None, subject='Tautulli', body='Test notification', notify_action='', **kwargs):
-        """ Send a notification using Tautulli.
+    def send_notification(self, notifier_id=None, subject='RetroArcher', body='Test notification', notify_action='', **kwargs):
+        """ Send a notification using RetroArcher.
 
             ```
             Required parameters:
@@ -3797,11 +3782,11 @@ class WebInterface(object):
         access_token = facebook._get_credentials(code)
 
         if access_token:
-            return "Facebook authorization successful. Tautulli can send notification to Facebook. " \
+            return "Facebook authorization successful. RetroArcher can send notification to Facebook. " \
                 "Your Facebook access token is:" \
                 "<pre>{0}</pre>You may close this page.".format(access_token)
         else:
-            return "Failed to request authorization from Facebook. Check the Tautulli logs for details.<br />You may close this page."
+            return "Failed to request authorization from Facebook. Check the RetroArcher logs for details.<br />You may close this page."
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -3944,20 +3929,20 @@ class WebInterface(object):
     @addtoapi()
     def import_database(self, app=None, database_file=None, database_path=None, method=None, backup=False,
                         table_name=None, import_ignore_interval=0, **kwargs):
-        """ Import a Tautulli, PlexWatch, or Plexivity database into Tautulli.
+        """ Import a RetroArcher, PlexWatch, or Plexivity database into RetroArcher.
 
             ```
             Required parameters:
-                app (str):                      "tautulli" or "plexwatch" or "plexivity"
+                app (str):                      "retroarcher"
                 database_file (file):           The database file to import (multipart/form-data)
                 or
                 database_path (str):            The full path to the database file to import
-                method (str):                   For Tautulli only, "merge" or "overwrite"
+                method (str):                   For RetroArcher only, "merge" or "overwrite"
                 table_name (str):               For PlexWatch or Plexivity only, "processed" or "grouped"
 
 
             Optional parameters:
-                backup (bool):                  For Tautulli only, true or false whether to backup
+                backup (bool):                  For RetroArcher only, true or false whether to backup
                                                 the current database before importing
                 import_ignore_interval (int):   For PlexWatch or Plexivity only, the minimum number
                                                 of seconds for a stream to import
@@ -3993,43 +3978,13 @@ class WebInterface(object):
         if not database_path:
             return {'result': 'error', 'message': 'No database specified for import'}
 
-        if app.lower() == 'tautulli':
+        if app.lower() == 'retroarcher':
             db_check_msg = database.validate_database(database=database_path)
             if db_check_msg == 'success':
-                threading.Thread(target=database.import_tautulli_db,
+                threading.Thread(target=database.import_retroarcher_db,
                                  kwargs={'database': database_path,
                                          'method': method,
                                          'backup': helpers.bool_true(backup)}).start()
-                return {'result': 'success',
-                        'message': 'Database import has started. Check the logs to monitor any problems.'}
-            else:
-                if database_file:
-                    helpers.delete_file(database_path)
-                return {'result': 'error', 'message': db_check_msg}
-
-        elif app.lower() == 'plexwatch':
-            db_check_msg = plexwatch_import.validate_database(database_file=database_path,
-                                                              table_name=table_name)
-            if db_check_msg == 'success':
-                threading.Thread(target=plexwatch_import.import_from_plexwatch,
-                                 kwargs={'database_file': database_path,
-                                         'table_name': table_name,
-                                         'import_ignore_interval': import_ignore_interval}).start()
-                return {'result': 'success',
-                        'message': 'Database import has started. Check the logs to monitor any problems.'}
-            else:
-                if database_file:
-                    helpers.delete_file(database_path)
-                return {'result': 'error', 'message': db_check_msg}
-
-        elif app.lower() == 'plexivity':
-            db_check_msg = plexivity_import.validate_database(database_file=database_path,
-                                                              table_name=table_name)
-            if db_check_msg == 'success':
-                threading.Thread(target=plexivity_import.import_from_plexivity,
-                                 kwargs={'database_file': database_path,
-                                         'table_name': table_name,
-                                         'import_ignore_interval': import_ignore_interval}).start()
                 return {'result': 'success',
                         'message': 'Database import has started. Check the logs to monitor any problems.'}
             else:
@@ -4045,7 +4000,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def import_config(self, config_file=None, config_path=None, backup=False, **kwargs):
-        """ Import a Tautulli config file.
+        """ Import a RetroArcher config file.
 
             ```
             Required parameters:
@@ -4062,7 +4017,7 @@ class WebInterface(object):
                 json:
                     {"result": "success",
                      "message": "Config import has started. Check the logs to monitor any problems. "
-                                "Tautulli will restart automatically."
+                                "RetroArcher will restart automatically."
                      }
             ```
         """
@@ -4088,17 +4043,13 @@ class WebInterface(object):
 
         return {'result': 'success',
                 'message': 'Config import has started. Check the logs to monitor any problems. '
-                           'Tautulli will restart automatically.'}
+                           'RetroArcher will restart automatically.'}
 
     @cherrypy.expose
     @requireAuth(member_of("admin"))
     def import_database_tool(self, app=None, **kwargs):
-        if app == 'tautulli':
-            return serve_template(templatename="app_import.html", title="Import Tautulli Database", app="Tautulli")
-        elif app == 'plexwatch':
-            return serve_template(templatename="app_import.html", title="Import PlexWatch Database", app="PlexWatch")
-        elif app == 'plexivity':
-            return serve_template(templatename="app_import.html", title="Import Plexivity Database", app="Plexivity")
+        if app == 'retroarcher':
+            return serve_template(templatename="app_import.html", title="Import RetroArcher Database", app="RetroArcher")
 
         logger.warn("No app specified for import.")
         return
@@ -4106,7 +4057,7 @@ class WebInterface(object):
     @cherrypy.expose
     @requireAuth(member_of("admin"))
     def import_config_tool(self, **kwargs):
-        return serve_template(templatename="config_import.html", title="Import Tautulli Configuration")
+        return serve_template(templatename="config_import.html", title="Import RetroArcher Configuration")
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -4285,7 +4236,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def update_check(self, **kwargs):
-        """ Check for Tautulli updates.
+        """ Check for RetroArcher updates.
 
             ```
             Required parameters:
@@ -4298,7 +4249,7 @@ class WebInterface(object):
                 json
                     {"result": "success",
                      "update": true,
-                     "message": "An update for Tautulli is available."
+                     "message": "An update for RetroArcher is available."
                     }
             ```
         """
@@ -4307,14 +4258,14 @@ class WebInterface(object):
         if plexpy.UPDATE_AVAILABLE is None:
             update = {'result': 'error',
                       'update': None,
-                      'message': 'You are running an unknown version of Tautulli.'
+                      'message': 'You are running an unknown version of RetroArcher.'
                       }
 
         elif plexpy.UPDATE_AVAILABLE == 'release':
             update = {'result': 'success',
                       'update': True,
                       'release': True,
-                      'message': 'A new release (%s) of Tautulli is available.' % plexpy.LATEST_RELEASE,
+                      'message': 'A new release (%s) of RetroArcher is available.' % plexpy.LATEST_RELEASE,
                       'current_release': plexpy.common.RELEASE,
                       'latest_release': plexpy.LATEST_RELEASE,
                       'release_url': helpers.anon_url(
@@ -4328,7 +4279,7 @@ class WebInterface(object):
             update = {'result': 'success',
                       'update': True,
                       'release': False,
-                      'message': 'A newer version of Tautulli is available.',
+                      'message': 'A newer version of RetroArcher is available.',
                       'current_version': plexpy.CURRENT_VERSION,
                       'latest_version': plexpy.LATEST_VERSION,
                       'commits_behind': plexpy.COMMITS_BEHIND,
@@ -4343,7 +4294,7 @@ class WebInterface(object):
         else:
             update = {'result': 'success',
                       'update': False,
-                      'message': 'Tautulli is up to date.'
+                      'message': 'RetroArcher is up to date.'
                       }
 
         if plexpy.DOCKER or plexpy.SNAP or plexpy.FROZEN:
@@ -4592,7 +4543,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi('notify_recently_added')
     def send_manual_on_created(self, notifier_id='', rating_key='', **kwargs):
-        """ Send a recently added notification using Tautulli.
+        """ Send a recently added notification using RetroArcher.
 
             ```
             Required parameters:
@@ -4788,7 +4739,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def download_config(self, **kwargs):
-        """ Download the Tautulli configuration file. """
+        """ Download the RetroArcher configuration file. """
         config_file = config.FILENAME
 
         try:
@@ -4802,7 +4753,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def download_database(self, **kwargs):
-        """ Download the Tautulli database file. """
+        """ Download the RetroArcher database file. """
         database_file = database.FILENAME
 
         try:
@@ -4819,8 +4770,8 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def download_log(self, logfile='', **kwargs):
-        """ Download the Tautulli log file. """
-        if logfile == "tautulli_api":
+        """ Download the RetroArcher log file. """
+        if logfile == "retroarcher_api":
             filename = logger.FILENAME_API
             log = logger.logger_api
         elif logfile == "plex_websocket":
@@ -5056,7 +5007,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def update_metadata_details(self, old_rating_key, new_rating_key, media_type, **kwargs):
-        """ Update the metadata in the Tautulli database by matching rating keys.
+        """ Update the metadata in the RetroArcher database by matching rating keys.
             Also updates all parents or children of the media item if it is a show/season/episode
             or artist/album/track.
 
@@ -5125,7 +5076,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def get_old_rating_keys(self, rating_key='', media_type='', **kwargs):
-        """ Get a list of old rating keys from the Tautulli database for all of the item's parent/children.
+        """ Get a list of old rating keys from the RetroArcher database for all of the item's parent/children.
 
             ```
             Required parameters:
@@ -6506,7 +6457,7 @@ class WebInterface(object):
     @cherrypy.tools.json_out()
     @requireAuth(member_of("admin"))
     def send_newsletter(self, newsletter_id=None, subject='', body='', message='', notify_action='', **kwargs):
-        """ Send a newsletter using Tautulli.
+        """ Send a newsletter using RetroArcher.
 
             ```
             Required parameters:
@@ -6637,7 +6588,7 @@ class WebInterface(object):
     @cherrypy.tools.json_out()
     @addtoapi()
     def status(self, *args, **kwargs):
-        """ Get the current status of Tautulli.
+        """ Get the current status of RetroArcher.
 
             ```
             Required parameters:
@@ -6676,7 +6627,7 @@ class WebInterface(object):
     @cherrypy.tools.json_out()
     @addtoapi()
     def server_status(self, *args, **kwargs):
-        """ Get the current status of Tautulli's connection to the Plex server.
+        """ Get the current status of RetroArcher's connection to the Plex server.
 
             ```
             Required parameters:
@@ -6702,7 +6653,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi("get_exports_table")
     def get_export_list(self, section_id=None, user_id=None, rating_key=None, **kwargs):
-        """ Get the data on the Tautulli export tables.
+        """ Get the data on the RetroArcher export tables.
 
             ```
             Required parameters:
@@ -6992,7 +6943,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_export(self, export_id=None, delete_all=False, **kwargs):
-        """ Delete exports from Tautulli.
+        """ Delete exports from RetroArcher.
 
             ```
             Required parameters:

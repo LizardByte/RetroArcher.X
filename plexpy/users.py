@@ -1,20 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
 
-# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import unicode_literals
 from future.builtins import next
 from future.builtins import str
@@ -47,12 +32,12 @@ else:
 
 
 def refresh_users():
-    logger.info("Tautulli Users :: Requesting users list refresh...")
+    logger.info("RetroArcher Users :: Requesting users list refresh...")
     result = plextv.PlexTV().get_full_users_list()
 
     server_id = plexpy.CONFIG.PMS_IDENTIFIER
     if not server_id:
-        logger.error("Tautulli Users :: No PMS identifier, cannot refresh users. Verify server in settings.")
+        logger.error("RetroArcher Users :: No PMS identifier, cannot refresh users. Verify server in settings.")
         return
 
     if result:
@@ -89,10 +74,10 @@ def refresh_users():
         query = 'UPDATE users SET is_active = 0 WHERE user_id NOT IN ({})'.format(', '.join(['?'] * len(user_ids)))
         monitor_db.action(query=query, args=user_ids)
 
-        logger.info("Tautulli Users :: Users list refreshed.")
+        logger.info("RetroArcher Users :: Users list refreshed.")
         return True
     else:
-        logger.warn("Tautulli Users :: Unable to refresh users list.")
+        logger.warn("RetroArcher Users :: Unable to refresh users list.")
         return False
 
 
@@ -174,7 +159,7 @@ class Users(object):
                                                       ['session_history.id', 'session_history_media_info.id']],
                                           kwargs=kwargs)
         except Exception as e:
-            logger.warn("Tautulli Users :: Unable to execute database query for get_list: %s." % e)
+            logger.warn("RetroArcher Users :: Unable to execute database query for get_list: %s." % e)
             return default_return
 
         users = query['result']
@@ -295,7 +280,7 @@ class Users(object):
                                                       ['session_history.id', 'session_history_media_info.id']],
                                           kwargs=kwargs)
         except Exception as e:
-            logger.warn("Tautulli Users :: Unable to execute database query for get_unique_ips: %s." % e)
+            logger.warn("RetroArcher Users :: Unable to execute database query for get_unique_ips: %s." % e)
             return default_return
 
         results = query['result']
@@ -359,7 +344,7 @@ class Users(object):
             try:
                 monitor_db.upsert('users', value_dict, key_dict)
             except Exception as e:
-                logger.warn("Tautulli Users :: Unable to execute database query for set_config: %s." % e)
+                logger.warn("RetroArcher Users :: Unable to execute database query for set_config: %s." % e)
 
     def get_details(self, user_id=None, user=None, email=None, include_last_seen=False):
         default_return = {'row_id': 0,
@@ -391,7 +376,7 @@ class Users(object):
             return user_details
 
         else:
-            logger.warn("Tautulli Users :: Unable to retrieve user %s from database. Requesting user list refresh."
+            logger.warn("RetroArcher Users :: Unable to retrieve user %s from database. Requesting user list refresh."
                         % user_id if user_id else user)
             # Let's first refresh the user list to make sure the user isn't newly added and not in the db yet
             refresh_users()
@@ -403,7 +388,7 @@ class Users(object):
                 return user_details
 
             else:
-                logger.warn("Tautulli Users :: Unable to retrieve user %s from database. Returning 'Local' user."
+                logger.warn("RetroArcher Users :: Unable to retrieve user %s from database. Returning 'Local' user."
                             % user_id if user_id else user)
                 # If there is no user data we must return something
                 # Use "Local" user to retain compatibility with PlexWatch database value
@@ -440,7 +425,7 @@ class Users(object):
                     'WHERE %s COLLATE NOCASE' % (last_seen, join, where)
             result = monitor_db.select(query, args=args)
         except Exception as e:
-            logger.warn("Tautulli Users :: Unable to execute database query for get_user_details: %s." % e)
+            logger.warn("RetroArcher Users :: Unable to execute database query for get_user_details: %s." % e)
             result = []
 
         user_details = {}
@@ -526,7 +511,7 @@ class Users(object):
                     else:
                         result = []
             except Exception as e:
-                logger.warn("Tautulli Users :: Unable to execute database query for get_watch_time_stats: %s." % e)
+                logger.warn("RetroArcher Users :: Unable to execute database query for get_watch_time_stats: %s." % e)
                 result = []
 
             for item in result:
@@ -571,7 +556,7 @@ class Users(object):
             else:
                 result = []
         except Exception as e:
-            logger.warn("Tautulli Users :: Unable to execute database query for get_player_stats: %s." % e)
+            logger.warn("RetroArcher Users :: Unable to execute database query for get_player_stats: %s." % e)
             result = []
 
         for item in result:
@@ -617,7 +602,7 @@ class Users(object):
             else:
                 result = []
         except Exception as e:
-            logger.warn("Tautulli Users :: Unable to execute database query for get_recently_watched: %s." % e)
+            logger.warn("RetroArcher Users :: Unable to execute database query for get_recently_watched: %s." % e)
             result = []
 
         for row in result:
@@ -662,7 +647,7 @@ class Users(object):
                     'FROM users WHERE deleted_user = 0'
             result = monitor_db.select(query=query)
         except Exception as e:
-            logger.warn("Tautulli Users :: Unable to execute database query for get_users: %s." % e)
+            logger.warn("RetroArcher Users :: Unable to execute database query for get_users: %s." % e)
             return None
 
         users = []
@@ -715,7 +700,7 @@ class Users(object):
             if purge_only:
                 return delete_success
             else:
-                logger.info("Tautulli Users :: Deleting user with user_id %s from database."
+                logger.info("RetroArcher Users :: Deleting user with user_id %s from database."
                             % user_id)
                 try:
                     monitor_db.action('UPDATE users '
@@ -723,7 +708,7 @@ class Users(object):
                                       'WHERE user_id = ?', [user_id])
                     return delete_success
                 except Exception as e:
-                    logger.warn("Tautulli Users :: Unable to execute database query for delete: %s." % e)
+                    logger.warn("RetroArcher Users :: Unable to execute database query for delete: %s." % e)
 
         else:
             return False
@@ -736,7 +721,7 @@ class Users(object):
                 query = 'SELECT * FROM users WHERE user_id = ?'
                 result = monitor_db.select(query=query, args=[user_id])
                 if result:
-                    logger.info("Tautulli Users :: Re-adding user with id %s to database." % user_id)
+                    logger.info("RetroArcher Users :: Re-adding user with id %s to database." % user_id)
                     monitor_db.action('UPDATE users '
                                       'SET deleted_user = 0, keep_history = 1, do_notify = 1 '
                                       'WHERE user_id = ?', [user_id])
@@ -748,7 +733,7 @@ class Users(object):
                 query = 'SELECT * FROM users WHERE username = ?'
                 result = monitor_db.select(query=query, args=[username])
                 if result:
-                    logger.info("Tautulli Users :: Re-adding user with username %s to database." % username)
+                    logger.info("RetroArcher Users :: Re-adding user with username %s to database." % username)
                     monitor_db.action('UPDATE users '
                                       'SET deleted_user = 0, keep_history = 1, do_notify = 1 '
                                       'WHERE username = ?', [username])
@@ -757,7 +742,7 @@ class Users(object):
                     return False
 
         except Exception as e:
-            logger.warn("Tautulli Users :: Unable to execute database query for undelete: %s." % e)
+            logger.warn("RetroArcher Users :: Unable to execute database query for undelete: %s." % e)
 
     # Keep method for PlexWatch/Plexivity import
     def get_user_id(self, user=None):
@@ -791,7 +776,7 @@ class Users(object):
 
             result = monitor_db.select(query)
         except Exception as e:
-            logger.warn("Tautulli Users :: Unable to execute database query for get_user_names: %s." % e)
+            logger.warn("RetroArcher Users :: Unable to execute database query for get_user_names: %s." % e)
             return None
 
         return session.friendly_name_to_username(result)
@@ -832,7 +817,7 @@ class Users(object):
                     'WHERE user_id = ?'
             result = monitor_db.select_single(query, args=[user_id])
         except Exception as e:
-            logger.warn("Tautulli Users :: Unable to execute database query for get_filters: %s." % e)
+            logger.warn("RetroArcher Users :: Unable to execute database query for get_filters: %s." % e)
             result = {}
 
         filters_list = {}
@@ -874,7 +859,7 @@ class Users(object):
             try:
                 monitor_db.upsert(table_name='user_login', key_dict=keys, value_dict=values)
             except Exception as e:
-                logger.warn("Tautulli Users :: Unable to execute database query for set_login_log: %s." % e)
+                logger.warn("RetroArcher Users :: Unable to execute database query for set_login_log: %s." % e)
 
     def get_user_login(self, jwt_token):
         monitor_db = database.MonitorDatabase()
@@ -887,24 +872,24 @@ class Users(object):
         monitor_db = database.MonitorDatabase()
 
         if jwt_token:
-            logger.debug("Tautulli Users :: Clearing user JWT token.")
+            logger.debug("RetroArcher Users :: Clearing user JWT token.")
             try:
                 monitor_db.action('UPDATE user_login SET jwt_token = NULL '
                                   'WHERE jwt_token = ?',
                                   [jwt_token])
             except Exception as e:
-                logger.error("Tautulli Users :: Unable to clear user JWT token: %s.", e)
+                logger.error("RetroArcher Users :: Unable to clear user JWT token: %s.", e)
                 return False
 
         elif row_ids and row_ids is not None:
             row_ids = list(map(helpers.cast_to_int, row_ids.split(',')))
-            logger.debug("Tautulli Users :: Clearing JWT tokens for row_ids %s.", row_ids)
+            logger.debug("RetroArcher Users :: Clearing JWT tokens for row_ids %s.", row_ids)
             try:
                 monitor_db.action('UPDATE user_login SET jwt_token = NULL '
                                   'WHERE id in ({})'.format(','.join(['?'] * len(row_ids))),
                                   row_ids)
             except Exception as e:
-                logger.error("Tautulli Users :: Unable to clear JWT tokens: %s.", e)
+                logger.error("RetroArcher Users :: Unable to clear JWT tokens: %s.", e)
                 return False
 
         return True
@@ -950,7 +935,7 @@ class Users(object):
                                           join_evals=[['user_login.user_id', 'users.user_id']],
                                           kwargs=kwargs)
         except Exception as e:
-            logger.warn("Tautulli Users :: Unable to execute database query for get_datatables_user_login: %s." % e)
+            logger.warn("RetroArcher Users :: Unable to execute database query for get_datatables_user_login: %s." % e)
             return default_return
 
         results = query['result']
@@ -996,10 +981,10 @@ class Users(object):
         monitor_db = database.MonitorDatabase()
 
         try:
-            logger.info("Tautulli Users :: Clearing login logs from database.")
+            logger.info("RetroArcher Users :: Clearing login logs from database.")
             monitor_db.action('DELETE FROM user_login')
             monitor_db.action('VACUUM')
             return True
         except Exception as e:
-            logger.warn("Tautulli Users :: Unable to execute database query for delete_login_log: %s." % e)
+            logger.warn("RetroArcher Users :: Unable to execute database query for delete_login_log: %s." % e)
             return False

@@ -1,20 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#  This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 import os
 import sys
 
@@ -34,7 +19,7 @@ else:
 
 
 def start():
-    logger.info("Tautulli WebStart :: Initializing Tautulli web server...")
+    logger.info("RetroArcher WebStart :: Initializing RetroArcher web server...")
     web_config = {
         'http_port': plexpy.HTTP_PORT,
         'http_host': plexpy.CONFIG.HTTP_HOST,
@@ -53,12 +38,12 @@ def start():
 
 
 def stop():
-    logger.info("Tautulli WebStart :: Stopping Tautulli web server...")
+    logger.info("RetroArcher WebStart :: Stopping RetroArcher web server...")
     cherrypy.engine.exit()
 
 
 def restart():
-    logger.info("Tautulli WebStart :: Restarting Tautulli web server...")
+    logger.info("RetroArcher WebStart :: Restarting RetroArcher web server...")
     stop()
     start()
 
@@ -77,11 +62,11 @@ def initialize(options):
                 (not (https_cert and os.path.exists(https_cert)) or
                  not (https_key and os.path.exists(https_key))):
             if not create_https_certificates(https_cert, https_key):
-                logger.warn("Tautulli WebStart :: Unable to create certificate and key. Disabling HTTPS")
+                logger.warn("RetroArcher WebStart :: Unable to create certificate and key. Disabling HTTPS")
                 enable_https = False
 
         if not (os.path.exists(https_cert) and os.path.exists(https_key)):
-            logger.warn("Tautulli WebStart :: Disabled HTTPS because of missing certificate and key.")
+            logger.warn("RetroArcher WebStart :: Disabled HTTPS because of missing certificate and key.")
             enable_https = False
 
     options_dict = {
@@ -113,11 +98,11 @@ def initialize(options):
         cherrypy.tools.proxy = cherrypy.Tool('before_handler', proxy, priority=1)
 
     if options['http_password']:
-        login_allowed = ["Tautulli admin (username is '%s')" % options['http_username']]
+        login_allowed = ["RetroArcher admin (username is '%s')" % options['http_username']]
         if plexpy.CONFIG.HTTP_PLEX_ADMIN:
             login_allowed.append("Plex admin")
 
-        logger.info("Tautulli WebStart :: Web server authentication is enabled: %s.", ' and '.join(login_allowed))
+        logger.info("RetroArcher WebStart :: Web server authentication is enabled: %s.", ' and '.join(login_allowed))
 
         if options['http_basic_auth']:
             plexpy.AUTH_ENABLED = False
@@ -135,7 +120,7 @@ def initialize(options):
     else:
         plexpy.HTTP_ROOT = options['http_root'] = '/'
 
-    logger.info("Tautulli WebStart :: Thread Pool Size: %d.", plexpy.CONFIG.HTTP_THREAD_POOL)
+    logger.info("RetroArcher WebStart :: Thread Pool Size: %d.", plexpy.CONFIG.HTTP_THREAD_POOL)
     cherrypy.config.update(options_dict)
 
     conf = {
@@ -149,7 +134,7 @@ def initialize(options):
                                       'application/javascript'],
             'tools.auth.on': plexpy.AUTH_ENABLED,
             'tools.auth_basic.on': basic_auth_enabled,
-            'tools.auth_basic.realm': 'Tautulli web server',
+            'tools.auth_basic.realm': 'RetroArcher web server',
             'tools.auth_basic.checkpassword': cherrypy.lib.auth_basic.checkpassword_dict({
                 options['http_username']: options['http_password']})
         },
@@ -254,7 +239,7 @@ def initialize(options):
         cherrypy.tree.mount(BaseRedirect(), '/')
 
     try:
-        logger.info("Tautulli WebStart :: Starting Tautulli web server on %s://%s:%d%s", protocol,
+        logger.info("RetroArcher WebStart :: Starting RetroArcher web server on %s://%s:%d%s", protocol,
                     options['http_host'], options['http_port'], options['http_root'])
         #cherrypy.process.servers.check_port(str(options['http_host']), options['http_port'])
         if not plexpy.DEV:
@@ -264,7 +249,7 @@ def initialize(options):
             cherrypy.engine.start()
             cherrypy.engine.block()
     except IOError as e:
-        logger.error("Tautulli WebStart :: Failed to start Tautulli: %s", e)
+        logger.error("RetroArcher WebStart :: Failed to start RetroArcher: %s", e)
         sys.exit(1)
 
     cherrypy.server.wait()

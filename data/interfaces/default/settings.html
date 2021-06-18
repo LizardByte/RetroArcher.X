@@ -70,21 +70,21 @@
                         </div>
                         % endif
                         <div class="padded-header">
-                            <h3>Tautulli News</h3>
+                            <h3>RetroArcher News</h3>
                         </div>
-                        <div id="tautulli-news">
+                        <div id="retroarcher-news">
                             <div class='text-muted'><i class="fa fa-refresh fa-spin"></i> Loading news...</div>
                             <br>
                         </div>
                         <div class="padded-header">
-                            <h3>Tautulli Configuration</h3>
+                            <h3>RetroArcher Configuration</h3>
                         </div>
                         <div id="plexpy-configuration-table">
                             <div class='text-muted'><i class="fa fa-refresh fa-spin"></i> Loading configuration table...</div>
                             <br>
                         </div>
                         <div class="padded-header">
-                            <h3>Tautulli Scheduled Tasks</h3>
+                            <h3>RetroArcher Scheduled Tasks</h3>
                         </div>
                         <div id="plexpy-scheduler-table">
                             <div class='text-muted'><i class="fa fa-refresh fa-spin"></i> Loading scheduler table...</div>
@@ -138,7 +138,7 @@
                             <label>
                                 <input type="checkbox" id="get_file_sizes" name="get_file_sizes" value="1" ${config['get_file_sizes']}> Calculate Total File Sizes
                             </label>
-                            <p class="help-block">Enable if you want Tautulli to calculate the total file size for TV Shows/Seasons and Artists/Albums on the media info tables.</p>
+                            <p class="help-block">Enable if you want RetroArcher to calculate the total file size for TV Shows/Seasons and Artists/Albums on the media info tables.</p>
                         </div>
                         <div class="checkbox advanced-setting">
                             <label>
@@ -215,9 +215,9 @@
 
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="check_github" name="check_github" value="1" ${config['check_github']}> Check for Tautulli Updates
+                                <input type="checkbox" id="check_github" name="check_github" value="1" ${config['check_github']}> Check for RetroArcher Updates
                             </label>
-                            <p class="help-block">Enable to check for Tautulli updates.</p>
+                            <p class="help-block">Enable to check for RetroArcher updates.</p>
                         </div>
                         <div id="git_update_options">
                             <div class="form-group">
@@ -229,7 +229,7 @@
                                     <div id="check_github_interval_error" class="alert alert-danger settings-alert" role="alert"></div>
                                 </div>
                                 <p class="help-block">
-                                    The interval (in hours) Tautulli will check for a new update. Minimum 1, default 6.
+                                    The interval (in hours) RetroArcher will check for a new update. Minimum 1, default 6.
                                 </p>
                             </div>
                             % if not plexpy.SNAP and not plexpy.FROZEN:
@@ -237,16 +237,16 @@
                                 <label>
                                     <input type="checkbox" id="plexpy_auto_update" name="plexpy_auto_update" value="1" ${config['plexpy_auto_update']} ${docker_setting}> Update Automatically ${docker_msg | n}
                                 </label>
-                                <p class="help-block">Update Tautulli automatically if an update is available.</p>
+                                <p class="help-block">Update RetroArcher automatically if an update is available.</p>
                             </div>
                             % endif
                             <div class="checkbox advanced-setting">
                                 <label>
-                                    <input type="checkbox" name="notify_plexpy_update_repeat" id="notify_plexpy_update_repeat" value="1" ${config['notify_plexpy_update_repeat']}> Repeat Tautulli Update Notifications
+                                    <input type="checkbox" name="notify_plexpy_update_repeat" id="notify_plexpy_update_repeat" value="1" ${config['notify_plexpy_update_repeat']}> Repeat RetroArcher Update Notifications
                                 </label>
                                 <p class="help-block">
-                                    Enable to allow Tautulli to send repeat update notifications everytime it checks for updates.
-                                    Disable to only send one notifications for each Tautulli version.
+                                    Enable to allow RetroArcher to send repeat update notifications everytime it checks for updates.
+                                    Disable to only send one notifications for each RetroArcher version.
                                 </p>
                             </div>
                             <div class="form-group advanced-setting">
@@ -301,7 +301,7 @@
                         <div class="form-group advanced-setting">
                             <label>Repair Git Install</label>
                             <p class="help-block">
-                                Attempt to fix updating by resetting your Tautulli installation back to <strong>${common.RELEASE}</strong>.<br />
+                                Attempt to fix updating by resetting your RetroArcher installation back to <strong>${common.RELEASE}</strong>.<br />
                                 Note: This will not affect any saved history or settings.
                             </p>
                             <div class="row">
@@ -501,20 +501,20 @@
                             <label>
                                 <input type="checkbox" class="http-settings" name="sys_tray_icon" id="sys_tray_icon" value="1" ${config['sys_tray_icon']} ${tray_disabled}> Enable ${tray[common.PLATFORM]} Icon ${tray_disabled_msg | n}
                             </label>
-                            <p class="help-block">Show Tautulli shortcut in the ${tray[common.PLATFORM].lower()}.</p>
+                            <p class="help-block">Show RetroArcher shortcut in the ${tray[common.PLATFORM].lower()}.</p>
                         </div>
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" name="launch_startup" id="launch_startup" value="1" ${config['launch_startup']}> Launch at System Startup
                             </label>
-                            <p class="help-block">Start Tautulli automatically after Login.</p>
+                            <p class="help-block">Start RetroArcher automatically after Login.</p>
                         </div>
                         % endif
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" name="launch_browser" id="launch_browser" value="1" ${config['launch_browser']}> Launch Browser on Startup
                             </label>
-                            <p class="help-block">Launch browser pointed to Tautulli on startup.</p>
+                            <p class="help-block">Launch browser pointed to RetroArcher on startup.</p>
                         </div>
                         <div class="form-group">
                             <label for="http_port">HTTP Port</label> ${docker_msg | n}
@@ -527,7 +527,7 @@
                             <p class="help-block">Port to bind web server to. Note that ports below 1024 may require root.</p>
                         </div>
                         <div class="form-group advanced-setting">
-                            <label for="http_base_url">Public Tautulli Domain</label>
+                            <label for="http_base_url">Public RetroArcher Domain</label>
                             <div class="row">
                                 <div class="col-md-8">
                                     <input type="text" class="form-control" id="http_base_url" name="http_base_url" value="${config['http_base_url']}" placeholder="http://mydomain.com" data-parsley-trigger="change" data-parsley-pattern="^https?:\/\/\S+$" data-parsley-errors-container="#http_base_url_error"  data-parsley-error-message="Invalid URL">
@@ -535,7 +535,7 @@
                                 <div id="http_base_url_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
                             <p class="help-block">
-                                Set your public Tautulli domain for self-hosted notification images and newsletters. (e.g. http://mydomain.com)
+                                Set your public RetroArcher domain for self-hosted notification images and newsletters. (e.g. http://mydomain.com)
                             </p>
                         </div>
                         <div class="form-group advanced-setting">
@@ -564,7 +564,7 @@
                                 <label>
                                     <input type="checkbox" class="http-settings" name="https_create_cert" id="https_create_cert" value="1" ${config['https_create_cert']} /> Create Self-signed Certificate
                                 </label>
-                                <p class="help-block">Check to have Tautulli create a self-signed SSL certificate. Uncheck if you want to use your own certificate.</p>
+                                <p class="help-block">Check to have RetroArcher create a self-signed SSL certificate. Uncheck if you want to use your own certificate.</p>
                             </div>
                             <div id="https_options_self-signed">
                                 <div class="form-group advanced-setting">
@@ -574,7 +574,7 @@
                                             <input type="text" class="form-control http-settings" id="https_domain" name="https_domain" value="${config['https_domain']}">
                                         </div>
                                     </div>
-                                    <p class="help-block">The domain names used to access Tautulli, separated by commas (,).</p>
+                                    <p class="help-block">The domain names used to access RetroArcher, separated by commas (,).</p>
                                 </div>
                                 <div class="form-group advanced-setting">
                                     <label for="https_ip">HTTPS IPs</label>
@@ -583,7 +583,7 @@
                                             <input type="text" class="form-control http-settings" id="https_ip" name="https_ip" value="${config['https_ip']}">
                                         </div>
                                     </div>
-                                    <p class="help-block">The IP addresses used to access Tautulli, separated by commas (,).</p>
+                                    <p class="help-block">The IP addresses used to access RetroArcher, separated by commas (,).</p>
                                 </div>
                             </div>
                             <div class="form-group advanced-setting">
@@ -688,14 +688,14 @@
                                 <input type="checkbox" class="auth-settings" name="http_plex_admin" id="http_plex_admin" value="1" ${config['http_plex_admin']} data-parsley-trigger="change"> Allow Plex Admin
                             </label>
                             <span id="allowPlexCheck" class="settings-warning"></span>
-                            <p class="help-block">Allow the Plex server admin to login as a Tautulli admin using their Plex.tv account.</p>
+                            <p class="help-block">Allow the Plex server admin to login as a RetroArcher admin using their Plex.tv account.</p>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="allow_guest_access" name="allow_guest_access" value="1" ${config['allow_guest_access']}> Allow Guest Access to Tautulli
+                                <input type="checkbox" id="allow_guest_access" name="allow_guest_access" value="1" ${config['allow_guest_access']}> Allow Guest Access to RetroArcher
                             </label>
                             <span id="allowGuestCheck" class="settings-warning"></span>
-                            <p class="help-block">Allow shared users to login to Tautulli using their Plex.tv account. Individual user access needs to be enabled from Users > Edit Mode.</p>
+                            <p class="help-block">Allow shared users to login to RetroArcher using their Plex.tv account. Individual user access needs to be enabled from Users > Edit Mode.</p>
                         </div>
 
                         <div class="padded-header">
@@ -706,7 +706,7 @@
                             <label>
                                 <input type="checkbox" id="api_enabled" name="api_enabled" value="1" ${config['api_enabled']}> Enable API
                             </label>
-                            <p class="help-block">Allow remote applications to interface with Tautulli.</p>
+                            <p class="help-block">Allow remote applications to interface with RetroArcher.</p>
                         </div>
                         <div id="apioptions">
                             <div class="form-group">
@@ -724,7 +724,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <p class="help-block">API key used to access the Tautulli API.</p>
+                                <p class="help-block">API key used to access the RetroArcher API.</p>
                             </div>
                         </div>
 
@@ -786,7 +786,7 @@
                                 <input type="checkbox" id="pms_is_remote_checkbox" class="checkbox-toggle pms-settings" data-id="pms_is_remote" value="1" ${checked(config['pms_is_remote'])}> Remote Server
                                 <input type="hidden" id="pms_is_remote" name="pms_is_remote" value="${config['pms_is_remote']}">
                             </label>
-                            <p class="help-block">Check this if your Plex Server is not on the same local network as Tautulli.</p>
+                            <p class="help-block">Check this if your Plex Server is not on the same local network as RetroArcher.</p>
                         </div>
                         <div class="form-group">
                             <label for="pms_url">Plex Server URL</label>
@@ -796,7 +796,7 @@
                                 </div>
                             </div>
                             <p class="help-block">
-                                The server URL that Tautulli will use to connect to your Plex server. Retrieved automatically.
+                                The server URL that RetroArcher will use to connect to your Plex server. Retrieved automatically.
                             </p>
                         </div>
                         <div class="form-group advanced-setting">
@@ -857,8 +857,8 @@
                                 <div id="pms_logs_folder_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
                             <p class="help-block">
-                                Optional: Set your Plex logs folder to use Tautulli as a log viewer. Plex logs are not needed for Tautulli to function.
-                                A complete folder path is required, shortcuts are not recognized, and the logs must be accessible from the machine where Tautulli is installed.
+                                Optional: Set your Plex logs folder to use RetroArcher as a log viewer. Plex logs are not needed for RetroArcher to function.
+                                A complete folder path is required, shortcuts are not recognized, and the logs must be accessible from the machine where RetroArcher is installed.
                                 <a href="${anon_url('https://support.plex.tv/hc/en-us/articles/200250417-Plex-Media-Server-Log-Files')}" target="_blank" rel="noreferrer">Click here</a> for help.
                             </p>
                         </div>
@@ -880,7 +880,7 @@
                             <label>
                                 <input type="checkbox" id="monitor_pms_updates" name="monitor_pms_updates" value="1" ${config['monitor_pms_updates']}> Monitor Plex Updates
                             </label>
-                            <p class="help-block">Enable to have Tautulli check if updates are available for the Plex Media Server.</p>
+                            <p class="help-block">Enable to have RetroArcher check if updates are available for the Plex Media Server.</p>
                         </div>
                         <div id="pms_update_options">
                             <div class="form-group">
@@ -909,7 +909,7 @@
                                     <div id="pms_update_check_interval_error" class="alert alert-danger settings-alert" role="alert"></div>
                                 </div>
                                 <p class="help-block">
-                                    The interval (in hours) Tautulli will check for a new Plex Media Server update. Minimum 1, default 24.
+                                    The interval (in hours) RetroArcher will check for a new Plex Media Server update. Minimum 1, default 24.
                                 </p>
                             </div>
                             <div class="checkbox advanced-setting">
@@ -917,7 +917,7 @@
                                     <input type="checkbox" name="notify_server_update_repeat" id="notify_server_update_repeat" value="1" ${config['notify_server_update_repeat']}> Repeat Plex Server Update Notifications
                                 </label>
                                 <p class="help-block">
-                                    Enable to allow Tautulli to send repeat Plex server update notifications everytime it checks for updates.
+                                    Enable to allow RetroArcher to send repeat Plex server update notifications everytime it checks for updates.
                                     Disable to only send one notifications for each Plex server version.
                                 </p>
                             </div>
@@ -931,13 +931,13 @@
                                 </div>
                                 <div id="refresh_users_interval_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
-                            <p class="help-block">The interval (in hours) Tautulli will request an updated friends list from Plex.tv. Minimum 1, maximum 24, default 12.</p>
+                            <p class="help-block">The interval (in hours) RetroArcher will request an updated friends list from Plex.tv. Minimum 1, maximum 24, default 12.</p>
                         </div>
                         <div class="checkbox advanced-setting">
                             <label>
                                 <input type="checkbox" id="refresh_users_on_startup" name="refresh_users_on_startup" value="1" ${config['refresh_users_on_startup']}> Refresh Users List on Startup
                             </label>
-                            <p class="help-block">Refresh the users list when Tautulli starts.</p>
+                            <p class="help-block">Refresh the users list when RetroArcher starts.</p>
                         </div>
 
                         <div class="form-group advanced-setting">
@@ -948,13 +948,13 @@
                                 </div>
                                 <div id="refresh_libraries_interval_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
-                            <p class="help-block">The interval (in hours) Tautulli will request an updated libraries list from your Plex Media Server. Minimum 1, maximum 24, default 12.</p>
+                            <p class="help-block">The interval (in hours) RetroArcher will request an updated libraries list from your Plex Media Server. Minimum 1, maximum 24, default 12.</p>
                         </div>
                         <div class="checkbox advanced-setting">
                             <label>
                                 <input type="checkbox" id="refresh_libraries_on_startup" name="refresh_libraries_on_startup" value="1" ${config['refresh_libraries_on_startup']}> Refresh Libraries List on Startup
                             </label>
-                            <p class="help-block">Refresh the libraries list when Tautulli starts.</p>
+                            <p class="help-block">Refresh the libraries list when RetroArcher starts.</p>
                         </div>
 
                         <div class="padded-header">
@@ -1016,7 +1016,7 @@
                                 </div>
                                 <div id="buffer_wait_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
-                            <p class="help-block">The value (in seconds) Tautulli should wait before triggering the next buffer warning. Set to 0 to always trigger.</p>
+                            <p class="help-block">The value (in seconds) RetroArcher should wait before triggering the next buffer warning. Set to 0 to always trigger.</p>
                         </div>
                         <div class="checkbox advanced-setting">
                             <label>
@@ -1044,7 +1044,7 @@
                                 </div>
                                 <div id="notify_concurrent_threshold_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
-                            <p class="help-block">The number of concurrent streams by a single user for Tautulli to trigger a notification. Minimum 2.</p>
+                            <p class="help-block">The number of concurrent streams by a single user for RetroArcher to trigger a notification. Minimum 2.</p>
                         </div>
                         <div class="checkbox advanced-setting">
                             <label>
@@ -1122,7 +1122,7 @@
                             </label>
                             <p class="help-block">
                                 Enable to send another recently added notification when adding a new version of existing media.<br />
-                                Note: If multiple versions are available, Tautulli will assume the higher quality one is newer.
+                                Note: If multiple versions are available, RetroArcher will assume the higher quality one is newer.
                             </p>
                         </div>-->
 
@@ -1166,7 +1166,7 @@
                                 <p class="help-block" id="self_host_newsletter_message">
                                     Note: The <span class="inline-pre">${http_root}newsletter</span> endpoint on your domain must be publicly accessible from the internet.
                                 </p>
-                                <p class="help-block settings-warning base-url-warning">Warning: Public Tautulli domain not set under <a data-tab-destination="web_interface" data-target="http_base_url">Web Interface</a>.</p>
+                                <p class="help-block settings-warning base-url-warning">Warning: Public RetroArcher domain not set under <a data-tab-destination="web_interface" data-target="http_base_url">Web Interface</a>.</p>
                             </div>
                             <div class="form-group">
                                 <label for="newsletter_auth">Newsletter Authentication</label>
@@ -1175,7 +1175,7 @@
                                         <select class="form-control" id="newsletter_auth" name="newsletter_auth">
                                             <option value="0" ${'selected' if config['newsletter_auth'] == 0 else ''}>Disabled</option>
                                             <option value="1" ${'selected' if config['newsletter_auth'] == 1 else ''}>Password</option>
-                                            <option value="2" ${'selected' if config['newsletter_auth'] == 2 else ''}>Tautulli Guest Access</option>
+                                            <option value="2" ${'selected' if config['newsletter_auth'] == 2 else ''}>RetroArcher Guest Access</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1334,7 +1334,7 @@
                         <div id="self_host_image_options" style="overflow: hidden; display: ${'none' if config['notify_upload_posters'] != 2 else 'block'}">
                             <div class="form-group">
                                 <p class="help-block" id="self_host_image_message">Note: The <span class="inline-pre">${http_root}image</span> endpoint on your domain must be publicly accessible from the internet.</p>
-                                <p class="help-block settings-warning base-url-warning">Warning: Public Tautulli domain not set under <a data-tab-destination="web_interface" data-target="http_base_url">Web Interface</a>.</p>
+                                <p class="help-block settings-warning base-url-warning">Warning: Public RetroArcher domain not set under <a data-tab-destination="web_interface" data-target="http_base_url">Web Interface</a>.</p>
                             </div>
                         </div>
                         <div id="cloudinary_upload_options" style="overflow: hidden; display: ${'none' if config['notify_upload_posters'] != 3 else 'block'}">
@@ -1419,7 +1419,7 @@
                         </div>
                         <div class="form-group">
                             <label for="delete_lookup_info">Delete Lookup Info</label>
-                            <p class="help-block">Delete all cached metadata lookup info in Tautulli.</p>
+                            <p class="help-block">Delete all cached metadata lookup info in RetroArcher.</p>
                             <div class="row">
                                 <div class="col-md-9">
                                     <div class="btn-group">
@@ -1443,24 +1443,22 @@
 
                         <div class="form-group">
                             <label for="database_import">Database Import</label>
-                            <p class="help-block">Click a button below to import an existing database from the selected app.</p>
+                            <p class="help-block">Click the button below to import a previous RetroArcher database.</p>
                             <div class="row">
                                 <div class="col-md-9">
                                     <div class="btn-group">
-                                        <button class="btn btn-form toggle-app-import-modal" type="button" data-target="#app-import-modal" data-toggle="modal" data-app="tautulli">Tautulli</button>
-                                        <button class="btn btn-form toggle-app-import-modal" type="button" data-target="#app-import-modal" data-toggle="modal" data-app="plexwatch">PlexWatch</button>
-                                        <button class="btn btn-form toggle-app-import-modal" type="button" data-target="#app-import-modal" data-toggle="modal" data-app="plexivity">Plexivity</button>
+                                        <button class="btn btn-form toggle-app-import-modal" type="button" data-target="#app-import-modal" data-toggle="modal" data-app="retroarcher">Import Database</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="config_import">Configuration Import</label>
-                            <p class="help-block">Click the button below to import a previous Tautulli configuration.</p>
+                            <p class="help-block">Click the button below to import a previous RetroArcher configuration.</p>
                             <div class="row">
                                 <div class="col-md-9">
                                     <div class="btn-group">
-                                        <button class="btn btn-form toggle-config-import-modal" type="button" data-target="#config-import-modal" data-toggle="modal">Tautulli</button>
+                                        <button class="btn btn-form toggle-config-import-modal" type="button" data-target="#config-import-modal" data-toggle="modal">Import Config</button>
                                     </div>
                                 </div>
                             </div>
@@ -1478,7 +1476,7 @@
                                 </div>
                                 <div id="backup_interval_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
-                            <p class="help-block">The interval (in hours) Tautulli will backup the database and configuration file. Minimum 1, maximum 24, default 6.</p>
+                            <p class="help-block">The interval (in hours) RetroArcher will backup the database and configuration file. Minimum 1, maximum 24, default 6.</p>
                         </div>
                         <div class="form-group">
                             <label for="backup_interval">Backup Days</label>
@@ -1578,9 +1576,9 @@
                         <div class="form-group">
                             <label>Get the App</label>
                             <p class="help-block">
-                                Get the <a href="${anon_url('https://play.google.com/store/apps/details?id=com.tautulli.tautulli_remote')}" target="_blank" rel="noreferrer">Tautulli Remote</a> app on Google Play<sup><small>TM</small></sup> to access Tautulli from your Android device!<br />
+                                Get the <a href="${anon_url('https://play.google.com/store/apps/details?id=com.retroarcher.retroarcher_remote')}" target="_blank" rel="noreferrer">Tautulli Remote</a> app on Google Play<sup><small>TM</small></sup> to access RetroArcher from your Android device!<br />
                                 <span class="google-play-badge">
-                                    <a href="${anon_url('https://play.google.com/store/apps/details?id=com.tautulli.tautulli_remote')}" target="_blank" rel="noreferrer"><img alt="Get it on Google Play" src="images/en-play-badge.png" /></a>
+                                    <a href="${anon_url('https://play.google.com/store/apps/details?id=com.retroarcher.retroarcher_remote')}" target="_blank" rel="noreferrer"><img alt="Get it on Google Play" src="images/en-play-badge.png" /></a>
                                 </span>
                             </p>
                         </div>
@@ -2009,7 +2007,7 @@ Rating: {rating}/10   --> Rating: /10
             </div>
             <div class="modal-body">
                 <div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
-                    You have changed settings that require Tautulli to restart.<br />Click the restart button below to restart now.
+                    You have changed settings that require RetroArcher to restart.<br />Click the restart button below to restart now.
                 </div>
             </div>
             <div class="modal-footer">
@@ -2028,7 +2026,7 @@ Rating: {rating}/10   --> Rating: /10
             <div class="modal-body">
                 <label>Instructions</label>
                 <p class="help-block">
-                    Scan the QR code below with the Tautulli Android app to automatically register it with the server (make sure the Tautulli Address below is correct)
+                    Scan the QR code below with the Tautulli Android app to automatically register it with the server (make sure the RetroArcher Address below is correct)
                     or manually enter the connection info and device token into the app settings. This window will automatically close once device registration is successful.
                 </p>
                 <p class="help-block">
@@ -2036,15 +2034,15 @@ Rating: {rating}/10   --> Rating: /10
                 </p>
                 <label>QR Code</label>
                 <pre id="api_qr_code" style="text-align: center"></pre>
-                <label>Tautulli Address</label>
+                <label>RetroArcher Address</label>
                 <input type="text" class="form-control" id="api_qr_address">
                 <p class="help-block" id="api_qr_localhost" style="display: none;">
                     Note: <span class="inline-pre">127.0.0.1</span> and <span class="inline-pre">localhost</span> will not work.
                     Please enter an internal or external IP address, or hostname or domain instead.
                 </p>
                 <p class="help-block" id="api_qr_private" style="display: none;">
-                    Note: This is a private IP address. Tautulli will not be reachable outside of your home network.
-                    Access Tautulli via an external address or manually enter the address above to generate the QR code for remote access.
+                    Note: This is a private IP address. RetroArcher will not be reachable outside of your home network.
+                    Access RetroArcher via an external address or manually enter the address above to generate the QR code for remote access.
                 </p>
                 <p class="help-block" id="api_qr_https" style="display: none;">
                     Note: This URL is not secure. Requests between the app and the server will not be encrypted.
@@ -2337,7 +2335,7 @@ $(document).ready(function() {
     initConfigCheckbox('#newsletter_self_hosted');
 
     $('#menu_link_shutdown').click(function() {
-        $('#confirm-message').text("Are you sure you want to shutdown Tautulli?");
+        $('#confirm-message').text("Are you sure you want to shutdown RetroArcher?");
         $('#confirm-modal').modal();
         $('#confirm-modal').one('click', '#confirm-button', function () {
             window.location.href = 'shutdown';
@@ -2345,7 +2343,7 @@ $(document).ready(function() {
     });
 
     $('#menu_link_restart').click(function() {
-        $("#confirm-message").text("Are you sure you want to restart Tautulli?");
+        $("#confirm-message").text("Are you sure you want to restart RetroArcher?");
         $('#confirm-modal').modal();
         $('#confirm-modal').one('click', '#confirm-button', function () {
             window.location.href = 'restart';
@@ -2397,37 +2395,37 @@ $(document).ready(function() {
     });
 
     $("#backup_config").click(function () {
-        var msg = 'Are you sure you want to create a backup of the Tautulli config?';
+        var msg = 'Are you sure you want to create a backup of the RetroArcher config?';
         var url = 'backup_config';
         confirmAjaxCall(url, msg);
     });
 
     $("#backup_database").click(function () {
-        var msg = 'Are you sure you want to create a backup of the Tautulli database?';
+        var msg = 'Are you sure you want to create a backup of the RetroArcher database?';
         var url = 'backup_db';
         confirmAjaxCall(url, msg);
     });
 
     $("#clear_cache").click(function () {
-        var msg = 'Are you sure you want to clear the Tautulli cache?';
+        var msg = 'Are you sure you want to clear the RetroArcher cache?';
         var url = 'delete_cache';
         confirmAjaxCall(url, msg);
     });
 
     $("#clear_image_cache").click(function () {
-        var msg = 'Are you sure you want to clear the Tautulli image cache?';
+        var msg = 'Are you sure you want to clear the RetroArcher image cache?';
         var url = 'delete_image_cache';
         confirmAjaxCall(url, msg);
     });
 
     $("#clear_exports").click(function () {
-        var msg = 'Are you sure you want to clear the Tautulli metadata exports?';
+        var msg = 'Are you sure you want to clear the RetroArcher metadata exports?';
         var url = 'delete_export?delete_all=true';
         confirmAjaxCall(url, msg);
     });
 
     $("#clear_logs").click(function () {
-        var msg = 'Are you sure you want to clear the Tautulli logs?';
+        var msg = 'Are you sure you want to clear the RetroArcher logs?';
         var url = 'delete_logs';
         confirmAjaxCall(url, msg);
     });
@@ -2454,7 +2452,7 @@ $(document).ready(function() {
             showMsg('<i class="fa fa-exclamation-circle"></i> Already on the ' + current_remote + ' ' + current_branch + ' branch.', false, true, 5000, true)
         } else {
             var msg = 'Are you sure you want to switch to the <strong>' + new_remote + '/' + new_branch + '</strong> branch?' +
-                '<br />Switching branches may cause Tautulli to become unstable.<br /><br />Tautulli will restart.';
+                '<br />Switching branches may cause RetroArcher to become unstable.<br /><br />RetroArcher will restart.';
             $('#confirm-message').html(msg);
             $('#confirm-modal').modal();
             $('#confirm-modal').one('click', '#confirm-button', function () {
@@ -2465,8 +2463,8 @@ $(document).ready(function() {
     });
 
     $("#reset_git_install").click(function () {
-        var msg = 'Are you sure you want to reset your Tautulli installtion back to <strong>${common.RELEASE}</strong>?' +
-                '<br /><br />Tautulli will restart.';
+        var msg = 'Are you sure you want to reset your RetroArcher installtion back to <strong>${common.RELEASE}</strong>?' +
+                '<br /><br />RetroArcher will restart.';
         $('#confirm-message').html(msg);
         $('#confirm-modal').modal();
         $('#confirm-modal').one('click', '#confirm-button', function () {
@@ -3104,7 +3102,7 @@ $(document).ready(function() {
         var name = $(this).text();
 
         var msg = 'Are you sure you want to delete all the metadata lookup info from <strong>' + name + '</strong>?' +
-            '<br /><br />Tautulli will lookup the metadata info again the next time a notification is sent.';
+            '<br /><br />RetroArcher will lookup the metadata info again the next time a notification is sent.';
         var url = 'delete_lookup_info';
         var data = { service: service, delete_all: true };
         confirmAjaxCall(url, msg, data, false);
@@ -3185,9 +3183,9 @@ $(document).ready(function() {
         openPlexXML('/api/resources', true, {includeHttps: 1});
     });
 
-    var tautulli_news = $('#tautulli-news')
+    var retroarcher_news = $('#retroarcher-news')
     $.ajax({
-        url: 'https://tautulli.com/news/tautulli-news.json',
+        url: 'https://retroarcher.com/news/retroarcher-news.json',
         type: 'GET',
         dataType: 'json',
         cache: false,
@@ -3216,14 +3214,14 @@ $(document).ready(function() {
                     }
                     news.append(li)
                 });
-                tautulli_news.html(news);
+                retroarcher_news.html(news);
                 var accordion_news = new Accordion(news, false);
             } else {
-                tautulli_news.html('<p class="help-block"><i class="fa fa-check"></i>&nbsp; No news available.</p>')
+                retroarcher_news.html('<p class="help-block"><i class="fa fa-check"></i>&nbsp; No news available.</p>')
             }
         },
         error: function () {
-            tautulli_news.html('<p class="help-block"><i class="fa fa-exclamation-triangle"></i>&nbsp; Failed to retrieve news.</p>')
+            retroarcher_news.html('<p class="help-block"><i class="fa fa-exclamation-triangle"></i>&nbsp; Failed to retrieve news.</p>')
         }
     });
 

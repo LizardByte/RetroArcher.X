@@ -30,7 +30,7 @@ DOCUMENTATION :: END
 <%def name="headIncludes()">
 <link rel="stylesheet" href="${http_root}css/dataTables.bootstrap.css">
 <link rel="stylesheet" href="${http_root}css/dataTables.colVis.css">
-<link rel="stylesheet" href="${http_root}css/tautulli-dataTables.css">
+<link rel="stylesheet" href="${http_root}css/retroarcher-dataTables.css">
 </%def>
 
 <%def name="body()">
@@ -266,7 +266,7 @@ DOCUMENTATION :: END
                                 <div class="col-md-12">
                                     % if config['get_file_sizes'] and data['section_id'] in config['get_file_sizes_hold']['section_ids']:
                                     <div id="get_file_sizes_message" style="text-align: center; margin-top: 20px;">
-                                        <i class="fa fa-refresh fa-spin"></i>&nbsp; Tautulli is calculating the file sizes for the library's media info. This could take a few minutes depending on the size of your library.
+                                        <i class="fa fa-refresh fa-spin"></i>&nbsp; RetroArcher is calculating the file sizes for the library's media info. This could take a few minutes depending on the size of your library.
                                         <br />
                                         You may leave this page and check back later.
                                     </div>

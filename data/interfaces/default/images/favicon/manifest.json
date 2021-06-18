@@ -1,7 +1,7 @@
 {
-    "name": "Tautulli: Monitor your Plex Media Server",
-    "short_name": "Tautulli",
-    "Description": "A Python based monitoring and tracking tool for Plex Media Server.",
+    "name": "RetroArcher: Retro gaming in Plex!",
+    "short_name": "RetroArcher",
+    "Description": "A Python based gaming plug-in for Plex Media Server.",
     "start_url": "../../",
     "scope": "../../",
     "icons": [

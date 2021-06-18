@@ -1,19 +1,4 @@
-﻿# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
-from __future__ import unicode_literals
+﻿from __future__ import unicode_literals
 from future.builtins import object
 from future.builtins import str
 
@@ -103,12 +88,12 @@ _CONFIG_DEFINITIONS = {
     'FREEZE_DB': (int, 'General', 0),
     'GET_FILE_SIZES': (int, 'General', 0),
     'GET_FILE_SIZES_HOLD': (dict, 'General', {'section_ids': [], 'rating_keys': []}),
-    'GIT_BRANCH': (str, 'General', 'master'),
+    'GIT_BRANCH': (str, 'General', 'main'),
     'GIT_PATH': (str, 'General', ''),
     'GIT_REMOTE': (str, 'General', 'origin'),
     'GIT_TOKEN': (str, 'General', ''),
-    'GIT_USER': (str, 'General', 'Tautulli'),
-    'GIT_REPO': (str, 'General', 'Tautulli'),
+    'GIT_USER': (str, 'General', 'RetroArcher'),
+    'GIT_REPO': (str, 'General', 'RetroArcher.x'),
     'GROUP_HISTORY_TABLES': (int, 'General', 1),
     'HISTORY_TABLE_ACTIVITY': (int, 'General', 1),
     'HOME_SECTIONS': (list, 'General', ['current_activity', 'watch_stats', 'library_stats', 'recently_added']),
@@ -128,7 +113,7 @@ _CONFIG_DEFINITIONS = {
     'HTTP_HASHED_PASSWORD': (int, 'General', 0),
     'HTTP_HOST': (str, 'General', '0.0.0.0'),
     'HTTP_PASSWORD': (str, 'General', ''),
-    'HTTP_PORT': (int, 'General', 8181),
+    'HTTP_PORT': (int, 'General', 9696),
     'HTTP_PROXY': (int, 'General', 0),
     'HTTP_ROOT': (str, 'General', ''),
     'HTTP_USERNAME': (str, 'General', ''),
@@ -145,7 +130,7 @@ _CONFIG_DEFINITIONS = {
     'LAUNCH_STARTUP': (int, 'General', 1),
     'LOG_BLACKLIST': (int, 'General', 1),
     'LOG_DIR': (str, 'General', ''),
-    'LOGGING_IGNORE_INTERVAL': (int, 'Monitoring', 120),
+    'LOGGING_IGNORE_INTERVAL': (int, 'Monitoring', 0),
     'METADATA_CACHE_SECONDS': (int, 'Advanced', 1800),
     'MOVIE_WATCHED_PERCENT': (int, 'Monitoring', 85),
     'MUSIC_WATCHED_PERCENT': (int, 'Monitoring', 85),
@@ -230,33 +215,33 @@ def set_import_thread(config=None, backup=False):
     if config:
         if IMPORT_THREAD:
             return
-        IMPORT_THREAD = threading.Thread(target=import_tautulli_config,
+        IMPORT_THREAD = threading.Thread(target=import_retroarcher_config,
                                          kwargs={'config': config, 'backup': backup})
     else:
         IMPORT_THREAD = None
 
 
-def import_tautulli_config(config=None, backup=False):
+def import_retroarcher_config(config=None, backup=False):
     if IS_IMPORTING:
-        logger.warn("Tautulli Config :: Another Tautulli config is currently being imported. "
+        logger.warn("RetroArcher Config :: Another RetroArcher config is currently being imported. "
                     "Please wait until it is complete before importing another config.")
         return False
 
     if backup:
         # Make a backup of the current config first
-        logger.info("Tautulli Config :: Creating a config backup before importing.")
+        logger.info("RetroArcher Config :: Creating a config backup before importing.")
         if not make_backup():
-            logger.error("Tautulli Config :: Failed to import Tautulli config: failed to create config backup")
+            logger.error("RetroArcher Config :: Failed to import RetroArcher config: failed to create config backup")
             return False
 
     # Create a new Config object with the imported config file
     try:
         imported_config = Config(config, is_import=True)
     except:
-        logger.error("Tautulli Config :: Failed to import Tautulli config: error reading imported config file")
+        logger.error("RetroArcher Config :: Failed to import RetroArcher config: error reading imported config file")
         return False
 
-    logger.info("Tautulli Config :: Importing Tautulli config '%s'...", config)
+    logger.info("RetroArcher Config :: Importing RetroArcher config '%s'...", config)
     set_is_importing(True)
 
     # Remove keys that should not be imported
@@ -270,7 +255,7 @@ def import_tautulli_config(config=None, backup=False):
     plexpy.CONFIG._config.merge(imported_config._config)
     plexpy.CONFIG.write()
 
-    logger.info("Tautulli Config :: Tautulli config import complete.")
+    logger.info("RetroArcher Config :: RetroArcher config import complete.")
     set_import_thread(None)
     set_is_importing(False)
 
@@ -305,13 +290,13 @@ def make_backup(cleanup=False, scheduler=False):
                     try:
                         os.remove(file_)
                     except OSError as e:
-                        logger.error("Tautulli Config :: Failed to delete %s from the backup folder: %s" % (file_, e))
+                        logger.error("RetroArcher Config :: Failed to delete %s from the backup folder: %s" % (file_, e))
 
     if backup_file in os.listdir(backup_folder):
-        logger.debug("Tautulli Config :: Successfully backed up %s to %s" % (plexpy.CONFIG_FILE, backup_file))
+        logger.debug("RetroArcher Config :: Successfully backed up %s to %s" % (plexpy.CONFIG_FILE, backup_file))
         return True
     else:
-        logger.error("Tautulli Config :: Failed to backup %s to %s" % (plexpy.CONFIG_FILE, backup_file))
+        logger.error("RetroArcher Config :: Failed to backup %s to %s" % (plexpy.CONFIG_FILE, backup_file))
         return False
 
 
@@ -326,7 +311,7 @@ class Config(object):
         try:
             self._config = ConfigObj(self._config_file, encoding='utf-8')
         except ParseError as e:
-            logger.error("Tautulli Config :: Error reading configuration file: %s", e)
+            logger.error("RetroArcher Config :: Error reading configuration file: %s", e)
             raise
 
         for key in _CONFIG_DEFINITIONS:
@@ -398,12 +383,12 @@ class Config(object):
             new_config[section][ini_key] = self._config[section][ini_key]
 
         # Write it to file
-        logger.info("Tautulli Config :: Writing configuration to file")
+        logger.info("RetroArcher Config :: Writing configuration to file")
 
         try:
             new_config.write()
         except IOError as e:
-            logger.error("Tautulli Config :: Error writing configuration file: %s", e)
+            logger.error("RetroArcher Config :: Error writing configuration file: %s", e)
 
         self._blacklist()
 
@@ -516,8 +501,8 @@ class Config(object):
             self.CONFIG_VERSION = 10
 
         if self.CONFIG_VERSION == 10:
-            self.GIT_USER = 'Tautulli'
-            self.GIT_REPO = 'Tautulli'
+            self.GIT_USER = 'RetroArcher'
+            self.GIT_REPO = 'RetroArcher.x'
 
             self.CONFIG_VERSION = 11
 

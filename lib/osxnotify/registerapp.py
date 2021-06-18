@@ -120,7 +120,7 @@ def swizzled_bundleIdentifier(self, original):
     return 'ade.plexpy.osxnotify'
 
 if __name__ == '__main__':
-    notify('Tautulli', 'Test Subtitle', 'Test Body')
+    notify('RetroArcher', 'Test Subtitle', 'Test Body')
 """)
         f.close()
 

@@ -1,20 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#  This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import division
 from __future__ import unicode_literals
 from future.builtins import next
@@ -213,11 +198,11 @@ def check_github(scheduler=False, notify=False, use_cache=False):
 
     # See how many commits behind we are
     if not plexpy.CURRENT_VERSION:
-        logger.info('You are running an unknown version of Tautulli. Run the updater to identify your version')
+        logger.info('You are running an unknown version of RetroArcher. Run the updater to identify your version')
         return plexpy.LATEST_VERSION
 
     if plexpy.LATEST_VERSION == plexpy.CURRENT_VERSION:
-        logger.info('Tautulli is up to date')
+        logger.info('RetroArcher is up to date')
         return plexpy.LATEST_VERSION
 
     commits = github_cache('commits', use_cache=use_cache)
@@ -282,7 +267,7 @@ def check_github(scheduler=False, notify=False, use_cache=False):
         plexpy.LATEST_RELEASE = release['tag_name']
 
         if plexpy.CONFIG.GIT_BRANCH in ('master', 'beta') and release['target_commitish'] == plexpy.CURRENT_VERSION:
-            logger.info('Tautulli is up to date')
+            logger.info('RetroArcher is up to date')
             return plexpy.CURRENT_VERSION
 
         if notify:
@@ -292,7 +277,7 @@ def check_github(scheduler=False, notify=False, use_cache=False):
                                      'plexpy_update_behind': plexpy.COMMITS_BEHIND})
 
         if plexpy.PYTHON2:
-            logger.warn('Tautulli is running using Python 2. Unable to run automatic update.')
+            logger.warn('RetroArcher is running using Python 2. Unable to run automatic update.')
 
         elif scheduler and plexpy.CONFIG.PLEXPY_AUTO_UPDATE and \
                 not plexpy.DOCKER and not plexpy.SNAP and not plexpy.FROZEN:
@@ -300,14 +285,14 @@ def check_github(scheduler=False, notify=False, use_cache=False):
             plexpy.shutdown(restart=True, update=True)
 
     elif plexpy.COMMITS_BEHIND == 0:
-        logger.info('Tautulli is up to date')
+        logger.info('RetroArcher is up to date')
 
     return plexpy.LATEST_VERSION
 
 
 def update():
     if plexpy.PYTHON2:
-        logger.warn('Tautulli is running using Python 2. Unable to update.')
+        logger.warn('RetroArcher is running using Python 2. Unable to update.')
         return
 
     if not plexpy.UPDATE_AVAILABLE:
@@ -407,15 +392,15 @@ def reset_git_install():
         output, err = runGit('reset --hard {}'.format(common.RELEASE))
 
         if not output:
-            logger.error('Unable to reset Tautulli installation.')
+            logger.error('Unable to reset RetroArcher installation.')
             return False
 
         for line in output.split('\n'):
             if 'Already up-to-date.' in line or 'Already up to date.' in line:
-                logger.info('Tautulli installation reset successfully.')
+                logger.info('RetroArcher installation reset successfully.')
                 return True
             elif line.endswith(('Aborting', 'Aborting.')):
-                logger.error('Unable to reset Tautulli installation: ' + line)
+                logger.error('Unable to reset RetroArcher installation: ' + line)
                 return False
 
 
@@ -541,5 +526,5 @@ def read_changelog(latest_only=False, since_prev_release=False):
         return ''.join(output)
 
     except IOError as e:
-        logger.error('Tautulli Version Checker :: Unable to open changelog file. %s' % e)
+        logger.error('RetroArcher Version Checker :: Unable to open changelog file. %s' % e)
         return '<h4>Unable to open changelog file</h4>'

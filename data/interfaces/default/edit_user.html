@@ -55,7 +55,7 @@ DOCUMENTATION :: END
                             <input type="text" class="form-control" id="custom_avatar_url" name="custom_avatar_url" value="${data['user_thumb']}">
                         </div>
                     </div>
-                    <p class="help-block">Change the users profile picture in Tautulli. To reset to default, leave this field empty and save.</p>
+                    <p class="help-block">Change the users profile picture in RetroArcher. To reset to default, leave this field empty and save.</p>
                 </div>
                 <div class="checkbox">
                     <label>
@@ -67,7 +67,7 @@ DOCUMENTATION :: END
                     <label>
                         <input type="checkbox" id="allow_guest" name="allow_guest" value="1" ${helpers.checked(data['allow_guest'])}> Allow Guest Access
                     </label>
-                    <p class="help-block">Uncheck this if you do not want to allow this user to login to Tautulli.</p>
+                    <p class="help-block">Uncheck this if you do not want to allow this user to login to RetroArcher.</p>
                 </div>
                 % if data['user_id']:
                 <div class="form-group">
@@ -78,7 +78,7 @@ DOCUMENTATION :: END
                 % if data['deleted_user']:
                 <div class="form-group">
                     <button class="btn btn-bright" id="undelete-user">Undelete</button>
-                    <p class="help-block">Click to re-add the user to the Tautulli users list.</p>
+                    <p class="help-block">Click to re-add the user to the RetroArcher users list.</p>
                 </div>
                 % endif
             </fieldset>

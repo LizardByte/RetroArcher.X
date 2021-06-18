@@ -1,20 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
 
-# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 # Mostly borrowed from https://github.com/trakt/Plex-Trakt-Scrobbler
 
 from __future__ import unicode_literals
@@ -55,8 +40,8 @@ def start_thread():
         # Check for any existing sessions on start up
         activity_pinger.check_active_sessions(ws_request=True)
     except Exception as e:
-        logger.error("Tautulli WebSocket :: Failed to check for active sessions: %s." % e)
-        logger.warn("Tautulli WebSocket :: Attempt to fix by flushing temporary sessions...")
+        logger.error("RetroArcher WebSocket :: Failed to check for active sessions: %s." % e)
+        logger.warn("RetroArcher WebSocket :: Attempt to fix by flushing temporary sessions...")
         database.delete_sessions()
 
     # Start the websocket listener on it's own thread
@@ -70,11 +55,11 @@ def on_connect():
         plexpy.PLEX_SERVER_UP = True
 
     if not plexpy.PLEX_SERVER_UP:
-        logger.info("Tautulli WebSocket :: The Plex Media Server is back up.")
+        logger.info("RetroArcher WebSocket :: The Plex Media Server is back up.")
         plexpy.PLEX_SERVER_UP = True
 
         if activity_handler.ACTIVITY_SCHED.get_job('on_intdown'):
-            logger.debug("Tautulli WebSocket :: Cancelling scheduled Plex server down callback.")
+            logger.debug("RetroArcher WebSocket :: Cancelling scheduled Plex server down callback.")
             activity_handler.schedule_callback('on_intdown', remove_job=True)
         else:
             on_intup()
@@ -89,10 +74,10 @@ def on_disconnect():
         plexpy.PLEX_SERVER_UP = False
 
     if plexpy.PLEX_SERVER_UP:
-        logger.info("Tautulli WebSocket :: Unable to get a response from the server, Plex server is down.")
+        logger.info("RetroArcher WebSocket :: Unable to get a response from the server, Plex server is down.")
         plexpy.PLEX_SERVER_UP = False
 
-        logger.debug("Tautulli WebSocket :: Scheduling Plex server down callback in %d seconds.",
+        logger.debug("RetroArcher WebSocket :: Scheduling Plex server down callback in %d seconds.",
                      plexpy.CONFIG.NOTIFY_SERVER_CONNECTION_THRESHOLD)
         activity_handler.schedule_callback('on_intdown', func=on_intdown,
                                            seconds=plexpy.CONFIG.NOTIFY_SERVER_CONNECTION_THRESHOLD)
@@ -111,7 +96,7 @@ def on_intup():
 
 def reconnect():
     close()
-    logger.info("Tautulli WebSocket :: Reconnecting websocket...")
+    logger.info("RetroArcher WebSocket :: Reconnecting websocket...")
     start_thread()
 
 
@@ -122,14 +107,14 @@ def shutdown():
 
 
 def close():
-    logger.info("Tautulli WebSocket :: Disconnecting websocket...")
+    logger.info("RetroArcher WebSocket :: Disconnecting websocket...")
     plexpy.WEBSOCKET.close()
     plexpy.WS_CONNECTED = False
 
 
 def send_ping():
     if plexpy.WS_CONNECTED:
-        # logger.debug("Tautulli WebSocket :: Sending ping.")
+        # logger.debug("RetroArcher WebSocket :: Sending ping.")
         plexpy.WEBSOCKET.ping("Hi?")
 
         global pong_timer
@@ -142,7 +127,7 @@ def wait_pong():
     global pong_count
     pong_count += 1
 
-    logger.warn("Tautulli WebSocket :: Failed to receive pong from websocket, ping attempt %s." % str(pong_count))
+    logger.warn("RetroArcher WebSocket :: Failed to receive pong from websocket, ping attempt %s." % str(pong_count))
 
     if pong_count >= plexpy.CONFIG.WEBSOCKET_CONNECTION_ATTEMPTS:
         pong_count = 0
@@ -150,7 +135,7 @@ def wait_pong():
 
 
 def receive_pong():
-    # logger.debug("Tautulli WebSocket :: Received pong.")
+    # logger.debug("RetroArcher WebSocket :: Received pong.")
     global pong_timer
     global pong_count
     if pong_timer:
@@ -187,13 +172,13 @@ def run():
     reconnects = 0
 
     # Try an open the websocket connection
-    logger.info("Tautulli WebSocket :: Opening %swebsocket." % secure)
+    logger.info("RetroArcher WebSocket :: Opening %swebsocket." % secure)
     try:
         plexpy.WEBSOCKET = create_connection(uri, header=header, sslopt=sslopt)
-        logger.info("Tautulli WebSocket :: Ready")
+        logger.info("RetroArcher WebSocket :: Ready")
         plexpy.WS_CONNECTED = True
     except (websocket.WebSocketException, IOError, Exception) as e:
-        logger.error("Tautulli WebSocket :: %s.", e)
+        logger.error("RetroArcher WebSocket :: %s.", e)
 
     if plexpy.WS_CONNECTED:
         on_connect()
@@ -210,7 +195,7 @@ def run():
                 break
 
             if reconnects == 0:
-                logger.warn("Tautulli WebSocket :: Connection has closed.")
+                logger.warn("RetroArcher WebSocket :: Connection has closed.")
 
             if not plexpy.CONFIG.PMS_IS_CLOUD and reconnects < plexpy.CONFIG.WEBSOCKET_CONNECTION_ATTEMPTS:
                 reconnects += 1
@@ -219,14 +204,14 @@ def run():
                 if reconnects > 1:
                     time.sleep(plexpy.CONFIG.WEBSOCKET_CONNECTION_TIMEOUT)
 
-                logger.warn("Tautulli WebSocket :: Reconnection attempt %s." % str(reconnects))
+                logger.warn("RetroArcher WebSocket :: Reconnection attempt %s." % str(reconnects))
 
                 try:
                     plexpy.WEBSOCKET = create_connection(uri, header=header)
-                    logger.info("Tautulli WebSocket :: Ready")
+                    logger.info("RetroArcher WebSocket :: Ready")
                     plexpy.WS_CONNECTED = True
                 except (websocket.WebSocketException, IOError, Exception) as e:
-                    logger.error("Tautulli WebSocket :: %s.", e)
+                    logger.error("RetroArcher WebSocket :: %s.", e)
 
             else:
                 close()
@@ -236,14 +221,14 @@ def run():
             if ws_shutdown:
                 break
 
-            logger.error("Tautulli WebSocket :: %s.", e)
+            logger.error("RetroArcher WebSocket :: %s.", e)
             close()
             break
 
     if not plexpy.WS_CONNECTED and not ws_shutdown:
         on_disconnect()
 
-    logger.debug("Tautulli WebSocket :: Leaving thread.")
+    logger.debug("RetroArcher WebSocket :: Leaving thread.")
 
 
 def receive(ws):
@@ -257,7 +242,7 @@ def receive(ws):
         ws.send_close()
         return frame.opcode, None
     elif frame.opcode == websocket.ABNF.OPCODE_PING:
-        # logger.debug("Tautulli WebSocket :: Received ping, sending pong.")
+        # logger.debug("RetroArcher WebSocket :: Received ping, sending pong.")
         ws.pong("Hi!")
     elif frame.opcode == websocket.ABNF.OPCODE_PONG:
         receive_pong()
@@ -274,7 +259,7 @@ def process(opcode, data):
         logger.websocket_debug(data)
         event = json.loads(data)
     except Exception as e:
-        logger.warn("Tautulli WebSocket :: Error decoding message from websocket: %s" % e)
+        logger.warn("RetroArcher WebSocket :: Error decoding message from websocket: %s" % e)
         logger.websocket_error(data)
         return False
 
@@ -288,39 +273,39 @@ def process(opcode, data):
         event_data = event.get('PlaySessionStateNotification', event.get('_children', {}))
 
         if not event_data:
-            logger.debug("Tautulli WebSocket :: Session event found but unable to get websocket data.")
+            logger.debug("RetroArcher WebSocket :: Session event found but unable to get websocket data.")
             return False
 
         try:
             activity = activity_handler.ActivityHandler(timeline=event_data[0])
             activity.process()
         except Exception as e:
-            logger.exception("Tautulli WebSocket :: Failed to process session data: %s." % e)
+            logger.exception("RetroArcher WebSocket :: Failed to process session data: %s." % e)
 
     if event_type == 'timeline':
         event_data = event.get('TimelineEntry', event.get('_children', {}))
 
         if not event_data:
-            logger.debug("Tautulli WebSocket :: Timeline event found but unable to get websocket data.")
+            logger.debug("RetroArcher WebSocket :: Timeline event found but unable to get websocket data.")
             return False
 
         try:
             activity = activity_handler.TimelineHandler(timeline=event_data[0])
             activity.process()
         except Exception as e:
-            logger.exception("Tautulli WebSocket :: Failed to process timeline data: %s." % e)
+            logger.exception("RetroArcher WebSocket :: Failed to process timeline data: %s." % e)
 
     if event_type == 'reachability':
         event_data = event.get('ReachabilityNotification', event.get('_children', {}))
 
         if not event_data:
-            logger.debug("Tautulli WebSocket :: Reachability event found but unable to get websocket data.")
+            logger.debug("RetroArcher WebSocket :: Reachability event found but unable to get websocket data.")
             return False
 
         try:
             activity = activity_handler.ReachabilityHandler(data=event_data[0])
             activity.process()
         except Exception as e:
-            logger.exception("Tautulli WebSocket :: Failed to process reachability data: %s." % e)
+            logger.exception("RetroArcher WebSocket :: Failed to process reachability data: %s." % e)
 
     return True

@@ -1,19 +1,4 @@
-﻿# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
-from __future__ import unicode_literals
+﻿from __future__ import unicode_literals
 from future.builtins import object
 
 import re
@@ -52,14 +37,14 @@ class DataTables(object):
                   kwargs=None):
 
         if not table_name:
-            logger.error('Tautulli DataTables :: No table name received.')
+            logger.error('RetroArcher DataTables :: No table name received.')
             return None
 
         # Fetch all our parameters
         if kwargs.get('json_data'):
             parameters = helpers.process_json_kwargs(json_kwargs=kwargs.get('json_data'))
         else:
-            logger.error('Tautulli DataTables :: Parameters for Datatables must be sent as a serialised json object '
+            logger.error('RetroArcher DataTables :: Parameters for Datatables must be sent as a serialised json object '
                          'named json_data.')
             return None
 

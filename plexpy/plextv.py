@@ -1,20 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import unicode_literals
 from future.builtins import next
 from future.builtins import str
@@ -46,7 +31,7 @@ else:
 
 def get_server_resources(return_presence=False, return_server=False, return_info=False, **kwargs):
     if not return_presence and not return_info:
-        logger.info("Tautulli PlexTV :: Requesting resources for server...")
+        logger.info("RetroArcher PlexTV :: Requesting resources for server...")
 
     server = {'pms_name': plexpy.CONFIG.PMS_NAME,
               'pms_version': plexpy.CONFIG.PMS_VERSION,
@@ -116,22 +101,22 @@ def get_server_resources(return_presence=False, return_server=False, return_info
                 conn = next((c for c in conns if c['address'] == server['pms_ip']
                              and c['port'] == str(server['pms_port'])), conns[0])
                 server['pms_url'] = conn['uri']
-                logger.info("Tautulli PlexTV :: Server URL retrieved.")
+                logger.info("RetroArcher PlexTV :: Server URL retrieved.")
 
         # get_server_urls() failed or PMS_URL not found, fallback url doesn't use SSL
         if not server['pms_url']:
             server['pms_url'] = fallback_url
-            logger.warn("Tautulli PlexTV :: Unable to retrieve server URLs. Using user-defined value without SSL.")
+            logger.warn("RetroArcher PlexTV :: Unable to retrieve server URLs. Using user-defined value without SSL.")
 
         # Not using SSL, remote has no effect
     else:
         server['pms_url'] = fallback_url
-        logger.info("Tautulli PlexTV :: Using user-defined URL.")
+        logger.info("RetroArcher PlexTV :: Using user-defined URL.")
 
     if return_server:
         return server
 
-    logger.info("Tautulli PlexTV :: Selected server: %s (%s) (%s - Version %s)",
+    logger.info("RetroArcher PlexTV :: Selected server: %s (%s) (%s - Version %s)",
                 server['pms_name'], server['pms_url'], server['pms_platform'], server['pms_version'])
 
     plexpy.CONFIG.process_kwargs(server)
@@ -163,7 +148,7 @@ class PlexTV(object):
                     self.token = plexpy.CONFIG.PMS_TOKEN
 
             if not self.token:
-                logger.error("Tautulli PlexTV :: PlexTV called, but no token provided.")
+                logger.error("RetroArcher PlexTV :: PlexTV called, but no token provided.")
                 return
 
         self.request_handler = http_handler.HTTPHandler(urls=self.urls,
@@ -179,7 +164,7 @@ class PlexTV(object):
         try:
             xml_head = servers.getElementsByTagName('Device')
         except Exception as e:
-            logger.warn("Tautulli PlexTV :: Unable to parse XML for get_server_token: %s." % e)
+            logger.warn("RetroArcher PlexTV :: Unable to parse XML for get_server_token: %s." % e)
             return None
 
         for a in xml_head:
@@ -219,11 +204,11 @@ class PlexTV(object):
                            }
                     return pin
                 else:
-                    logger.warn("Tautulli PlexTV :: Could not get Plex authentication pin.")
+                    logger.warn("RetroArcher PlexTV :: Could not get Plex authentication pin.")
                     return None
 
             except Exception as e:
-                logger.warn("Tautulli PlexTV :: Unable to parse XML for get_pin: %s." % e)
+                logger.warn("RetroArcher PlexTV :: Unable to parse XML for get_pin: %s." % e)
                 return None
 
         else:
@@ -350,7 +335,7 @@ class PlexTV(object):
         try:
             xml_head = own_account.getElementsByTagName('user')
         except Exception as e:
-            logger.warn("Tautulli PlexTV :: Unable to parse own account XML for get_full_users_list: %s." % e)
+            logger.warn("RetroArcher PlexTV :: Unable to parse own account XML for get_full_users_list: %s." % e)
             return []
 
         for a in xml_head:
@@ -378,7 +363,7 @@ class PlexTV(object):
         try:
             xml_head = friends_list.getElementsByTagName('User')
         except Exception as e:
-            logger.warn("Tautulli PlexTV :: Unable to parse friends list XML for get_full_users_list: %s." % e)
+            logger.warn("RetroArcher PlexTV :: Unable to parse friends list XML for get_full_users_list: %s." % e)
             return []
 
         for a in xml_head:
@@ -403,7 +388,7 @@ class PlexTV(object):
         try:
             xml_head = shared_servers.getElementsByTagName('SharedServer')
         except Exception as e:
-            logger.warn("Tautulli PlexTV :: Unable to parse shared server list XML for get_full_users_list: %s." % e)
+            logger.warn("RetroArcher PlexTV :: Unable to parse shared server list XML for get_full_users_list: %s." % e)
             return []
 
         user_map = {}
@@ -448,7 +433,7 @@ class PlexTV(object):
         try:
             xml_head = sync_list.getElementsByTagName('SyncList')
         except Exception as e:
-            logger.warn("Tautulli PlexTV :: Unable to parse XML for get_synced_items: %s." % e)
+            logger.warn("RetroArcher PlexTV :: Unable to parse XML for get_synced_items: %s." % e)
             return {}
 
         for a in xml_head:
@@ -576,14 +561,14 @@ class PlexTV(object):
         return session.filter_session_info(synced_items, filter_key='user_id')
 
     def delete_sync(self, client_id, sync_id):
-        logger.info("Tautulli PlexTV :: Deleting sync item '%s'." % sync_id)
+        logger.info("RetroArcher PlexTV :: Deleting sync item '%s'." % sync_id)
         response = self.delete_plextv_sync(client_id=client_id, sync_id=sync_id)
         return response.ok
 
     def get_server_connections(self, pms_identifier='', pms_ip='', pms_port=32400, include_https=True):
 
         if not pms_identifier:
-            logger.error("Tautulli PlexTV :: Unable to retrieve server connections: no pms_identifier provided.")
+            logger.error("RetroArcher PlexTV :: Unable to retrieve server connections: no pms_identifier provided.")
             return {}
 
         plextv_resources = self.get_plextv_resources(include_https=include_https,
@@ -591,7 +576,7 @@ class PlexTV(object):
         try:
             xml_head = plextv_resources.getElementsByTagName('Device')
         except Exception as e:
-            logger.warn("Tautulli PlexTV :: Unable to parse XML for get_server_urls: %s." % e)
+            logger.warn("RetroArcher PlexTV :: Unable to parse XML for get_server_urls: %s." % e)
             return {}
 
         # Function to get all connections for a device
@@ -652,7 +637,7 @@ class PlexTV(object):
         try:
             xml_head = servers.getElementsByTagName('Server')
         except Exception as e:
-            logger.warn("Tautulli PlexTV :: Unable to parse XML for get_server_times: %s." % e)
+            logger.warn("RetroArcher PlexTV :: Unable to parse XML for get_server_times: %s." % e)
             return {}
 
         for a in xml_head:
@@ -694,7 +679,7 @@ class PlexTV(object):
         try:
             xml_head = servers.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli PlexTV :: Failed to get servers from plex: %s." % e)
+            logger.warn("RetroArcher PlexTV :: Failed to get servers from plex: %s." % e)
             return []
 
         for a in xml_head:
@@ -754,20 +739,20 @@ class PlexTV(object):
         return clean_servers
 
     def get_plex_downloads(self):
-        logger.debug("Tautulli PlexTV :: Retrieving current server version.")
+        logger.debug("RetroArcher PlexTV :: Retrieving current server version.")
 
         pms_connect = pmsconnect.PmsConnect()
         pms_connect.set_server_version()
 
         update_channel = pms_connect.get_server_update_channel()
 
-        logger.debug("Tautulli PlexTV :: Plex update channel is %s." % update_channel)
+        logger.debug("RetroArcher PlexTV :: Plex update channel is %s." % update_channel)
         plex_downloads = self.get_plextv_downloads(plexpass=(update_channel == 'beta'))
 
         try:
             available_downloads = json.loads(plex_downloads)
         except Exception as e:
-            logger.warn("Tautulli PlexTV :: Unable to load JSON for get_plex_updates.")
+            logger.warn("RetroArcher PlexTV :: Unable to load JSON for get_plex_updates.")
             return {}
 
         # Get the updates for the platform
@@ -776,7 +761,7 @@ class PlexTV(object):
             available_downloads.get('nas').get(pms_platform)
 
         if not platform_downloads:
-            logger.error("Tautulli PlexTV :: Unable to retrieve Plex updates: Could not match server platform: %s."
+            logger.error("RetroArcher PlexTV :: Unable to retrieve Plex updates: Could not match server platform: %s."
                          % pms_platform)
             return {}
 
@@ -784,11 +769,11 @@ class PlexTV(object):
         v_new = helpers.cast_to_int("".join(v.zfill(4) for v in platform_downloads.get('version', '').split('-')[0].split('.')[:4]))
 
         if not v_old:
-            logger.error("Tautulli PlexTV :: Unable to retrieve Plex updates: Invalid current server version: %s."
+            logger.error("RetroArcher PlexTV :: Unable to retrieve Plex updates: Invalid current server version: %s."
                          % plexpy.CONFIG.PMS_VERSION)
             return {}
         if not v_new:
-            logger.error("Tautulli PlexTV :: Unable to retrieve Plex updates: Invalid new server version: %s."
+            logger.error("RetroArcher PlexTV :: Unable to retrieve Plex updates: Invalid new server version: %s."
                          % platform_downloads.get('version'))
             return {}
 
@@ -819,7 +804,7 @@ class PlexTV(object):
         try:
             subscription = account_data.getElementsByTagName('subscription')
         except Exception as e:
-            logger.warn("Tautulli PlexTV :: Unable to parse XML for get_plexpass_status: %s." % e)
+            logger.warn("RetroArcher PlexTV :: Unable to parse XML for get_plexpass_status: %s." % e)
             return False
 
         if subscription and helpers.get_xml_attr(subscription[0], 'active') == '1':
@@ -827,7 +812,7 @@ class PlexTV(object):
             plexpy.CONFIG.write()
             return True
         else:
-            logger.debug("Tautulli PlexTV :: Plex Pass subscription not found.")
+            logger.debug("RetroArcher PlexTV :: Plex Pass subscription not found.")
             plexpy.CONFIG.__setattr__('PMS_PLEXPASS', 0)
             plexpy.CONFIG.write()
             return False
@@ -838,7 +823,7 @@ class PlexTV(object):
         try:
             xml_head = devices.getElementsByTagName('Device')
         except Exception as e:
-            logger.warn("Tautulli PlexTV :: Unable to parse XML for get_devices_list: %s." % e)
+            logger.warn("RetroArcher PlexTV :: Unable to parse XML for get_devices_list: %s." % e)
             return []
 
         devices_list = []
@@ -866,7 +851,7 @@ class PlexTV(object):
         try:
             status_info = cloud_status.getElementsByTagName('info')
         except Exception as e:
-            logger.warn("Tautulli PlexTV :: Unable to parse XML for get_cloud_server_status: %s." % e)
+            logger.warn("RetroArcher PlexTV :: Unable to parse XML for get_cloud_server_status: %s." % e)
             return False
 
         for info in status_info:
@@ -884,7 +869,7 @@ class PlexTV(object):
         try:
             xml_head = account_data.getElementsByTagName('user')
         except Exception as e:
-            logger.warn("Tautulli PlexTV :: Unable to parse XML for get_plex_account_details: %s." % e)
+            logger.warn("RetroArcher PlexTV :: Unable to parse XML for get_plex_account_details: %s." % e)
             return None
 
         for a in xml_head:
@@ -912,7 +897,7 @@ class PlexTV(object):
         try:
             xml_head = geoip_data.getElementsByTagName('location')
         except Exception as e:
-            logger.warn(u"Tautulli PlexTV :: Unable to parse XML for get_geoip_lookup: %s." % e)
+            logger.warn(u"RetroArcher PlexTV :: Unable to parse XML for get_geoip_lookup: %s." % e)
             return None
 
         for a in xml_head:

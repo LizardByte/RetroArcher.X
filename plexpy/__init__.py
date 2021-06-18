@@ -1,19 +1,4 @@
-﻿# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
-from __future__ import unicode_literals
+﻿from __future__ import unicode_literals
 from future.builtins import range
 
 import datetime
@@ -169,7 +154,7 @@ def initialize(config_file):
         try:
             CONFIG = config.Config(config_file)
         except:
-            raise SystemExit("Unable to initialize Tautulli due to a corrupted config file. Exiting...")
+            raise SystemExit("Unable to initialize RetroArcher due to a corrupted config file. Exiting...")
 
         CONFIG_FILE = config_file
 
@@ -180,7 +165,7 @@ def initialize(config_file):
 
         if SNAP_MIGRATE:
             snap_common = os.environ['SNAP_COMMON']
-            old_data_dir = os.path.join(snap_common, 'Tautulli')
+            old_data_dir = os.path.join(snap_common, 'RetroArcher')
             CONFIG.HTTPS_CERT = CONFIG.HTTPS_CERT.replace(old_data_dir, DATA_DIR)
             CONFIG.HTTPS_CERT_CHAIN = CONFIG.HTTPS_CERT_CHAIN.replace(old_data_dir, DATA_DIR)
             CONFIG.HTTPS_KEY = CONFIG.HTTPS_KEY.replace(old_data_dir, DATA_DIR)
@@ -224,7 +209,7 @@ def initialize(config_file):
         else:
             build = ''
 
-        logger.info("Starting Tautulli {}".format(
+        logger.info("Starting RetroArcher {}".format(
             common.RELEASE
         ))
         logger.info("{}{} {} ({}{})".format(
@@ -275,19 +260,19 @@ def initialize(config_file):
         notifiers.blacklist_logger()
         mobile_app.blacklist_logger()
 
-        # Check if Tautulli has a uuid
+        # Check if RetroArcher has a uuid
         if CONFIG.PMS_UUID == '' or not CONFIG.PMS_UUID:
             logger.debug("Generating UUID...")
             CONFIG.PMS_UUID = generate_uuid()
             CONFIG.write()
 
-        # Check if Tautulli has an API key
+        # Check if RetroArcher has an API key
         if CONFIG.API_KEY == '':
             logger.debug("Generating API key...")
             CONFIG.API_KEY = generate_uuid()
             CONFIG.write()
 
-        # Check if Tautulli has a jwt_secret
+        # Check if RetroArcher has a jwt_secret
         if CONFIG.JWT_SECRET == '' or not CONFIG.JWT_SECRET or CONFIG.JWT_UPDATE_SECRET:
             logger.debug("Generating JWT secret...")
             CONFIG.JWT_SECRET = generate_uuid()
@@ -311,7 +296,7 @@ def initialize(config_file):
 
         # Write current version to a file, so we know which version did work.
         # This allows one to restore to that version. The idea is that if we
-        # arrive here, most parts of Tautulli seem to work.
+        # arrive here, most parts of RetroArcher seem to work.
         if CURRENT_VERSION:
             try:
                 with open(version_lock_file, "w") as fp:
@@ -450,11 +435,11 @@ def initialize_scheduler():
 
         backup_hours = CONFIG.BACKUP_INTERVAL if 1 <= CONFIG.BACKUP_INTERVAL <= 24 else 6
 
-        schedule_job(database.optimize_db, 'Optimize Tautulli database',
+        schedule_job(database.optimize_db, 'Optimize RetroArcher database',
                      hours=24, minutes=0, seconds=0)
-        schedule_job(database.make_backup, 'Backup Tautulli database',
+        schedule_job(database.make_backup, 'Backup RetroArcher database',
                      hours=backup_hours, minutes=0, seconds=0, args=(True, True))
-        schedule_job(config.make_backup, 'Backup Tautulli config',
+        schedule_job(config.make_backup, 'Backup RetroArcher config',
                      hours=backup_hours, minutes=0, seconds=0, args=(True, True))
 
         if WS_CONNECTED and CONFIG.PMS_IP and CONFIG.PMS_TOKEN:
@@ -719,7 +704,7 @@ def dbcheck():
         'deleted_section INTEGER DEFAULT 0, UNIQUE(server_id, section_id))'
     )
 
-    # user_login table :: This table keeps record of the Tautulli guest logins
+    # user_login table :: This table keeps record of the RetroArcher guest logins
     c_db.execute(
         'CREATE TABLE IF NOT EXISTS user_login (id INTEGER PRIMARY KEY AUTOINCREMENT, '
         'timestamp INTEGER, user_id INTEGER, user TEXT, user_group TEXT, '
@@ -2551,32 +2536,32 @@ def shutdown(restart=False, update=False, checkout=False, reset=False):
     CONFIG.write()
 
     if update:
-        logger.info("Tautulli is updating...")
+        logger.info("RetroArcher is updating...")
         try:
             versioncheck.update()
         except Exception as e:
-            logger.warn("Tautulli failed to update: %s. Restarting." % e)
+            logger.warn("RetroArcher failed to update: %s. Restarting." % e)
 
     if checkout:
-        logger.info("Tautulli is switching the git branch...")
+        logger.info("RetroArcher is switching the git branch...")
         try:
             versioncheck.checkout_git_branch()
         except Exception as e:
-            logger.warn("Tautulli failed to switch git branch: %s. Restarting." % e)
+            logger.warn("RetroArcher failed to switch git branch: %s. Restarting." % e)
 
     if reset:
-        logger.info("Tautulli is resetting the git install...")
+        logger.info("RetroArcher is resetting the git install...")
         try:
             versioncheck.reset_git_install()
         except Exception as e:
-            logger.warn("Tautulli failed to reset git install: %s. Restarting." % e)
+            logger.warn("RetroArcher failed to reset git install: %s. Restarting." % e)
 
     if CREATEPID:
         logger.info("Removing pidfile %s", PIDFILE)
         os.remove(PIDFILE)
 
     if restart:
-        logger.info("Tautulli is restarting...")
+        logger.info("RetroArcher is restarting...")
 
         exe = sys.executable
         if FROZEN:
@@ -2591,7 +2576,7 @@ def shutdown(restart=False, update=False, checkout=False, reset=False):
         if NOFORK:
             logger.info("Running as service, not forking. Exiting...")
         else:
-            logger.info("Restarting Tautulli with %s", args)
+            logger.info("Restarting RetroArcher with %s", args)
 
         # os.execv fails with spaced names on Windows
         # https://bugs.python.org/issue19066
@@ -2603,7 +2588,7 @@ def shutdown(restart=False, update=False, checkout=False, reset=False):
             os.execv(exe, args)
 
     else:
-        logger.info("Tautulli is shutting down...")
+        logger.info("RetroArcher is shutting down...")
 
     logger.shutdown()
 
@@ -2686,17 +2671,17 @@ def check_folder_writable(folder, fallback, name):
     return folder, True
 
 
-def get_tautulli_info():
-    tautulli = {
-        'tautulli_install_type': INSTALL_TYPE,
-        'tautulli_version': common.RELEASE,
-        'tautulli_branch': CONFIG.GIT_BRANCH,
-        'tautulli_commit': CURRENT_VERSION,
-        'tautulli_platform':common.PLATFORM,
-        'tautulli_platform_release': common.PLATFORM_RELEASE,
-        'tautulli_platform_version': common.PLATFORM_VERSION,
-        'tautulli_platform_linux_distro': common.PLATFORM_LINUX_DISTRO,
-        'tautulli_platform_device_name': common.PLATFORM_DEVICE_NAME,
-        'tautulli_python_version': common.PYTHON_VERSION,
+def get_retroarcher_info():
+    retroarcher = {
+        'retroarcher_install_type': INSTALL_TYPE,
+        'retroarcher_version': common.RELEASE,
+        'retroarcher_branch': CONFIG.GIT_BRANCH,
+        'retroarcher_commit': CURRENT_VERSION,
+        'retroarcher_platform':common.PLATFORM,
+        'retroarcher_platform_release': common.PLATFORM_RELEASE,
+        'retroarcher_platform_version': common.PLATFORM_VERSION,
+        'retroarcher_platform_linux_distro': common.PLATFORM_LINUX_DISTRO,
+        'retroarcher_platform_device_name': common.PLATFORM_DEVICE_NAME,
+        'retroarcher_python_version': common.PYTHON_VERSION,
     }
-    return tautulli
+    return retroarcher

@@ -32,7 +32,7 @@ DOCUMENTATION :: END
 <%def name="headIncludes()">
 <link rel="stylesheet" href="${http_root}css/dataTables.bootstrap.css">
 <link rel="stylesheet" href="${http_root}css/dataTables.colVis.css">
-<link rel="stylesheet" href="${http_root}css/tautulli-dataTables.css">
+<link rel="stylesheet" href="${http_root}css/retroarcher-dataTables.css">
 </%def>
 
 <%def name="body()">
@@ -78,7 +78,7 @@ DOCUMENTATION :: END
                                     % endif
                                     <li><a id="nav-tabs-synceditems" href="#tabs-synceditems" role="tab" data-toggle="tab">Synced Items</a></li>
                                     <li><a id="nav-tabs-ipaddresses" href="#tabs-ipaddresses" role="tab" data-toggle="tab">IP Addresses</a></li>
-                                    <li><a id="nav-tabs-tautullilogins" href="#tabs-tautullilogins" role="tab" data-toggle="tab">Tautulli Logins</a></li>
+                                    <li><a id="nav-tabs-retroarcherlogins" href="#tabs-retroarcherlogins" role="tab" data-toggle="tab">RetroArcher Logins</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -405,14 +405,14 @@ DOCUMENTATION :: END
                             </div>
                         </div>
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="tabs-tautullilogins">
+                    <div role="tabpanel" class="tab-pane" id="tabs-retroarcherlogins">
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class='table-card-header'>
                                         <div class="header-bar">
                                             <span>
-                                                <i class="fa fa-sign-in"></i> Tautulli Login for <strong>
+                                                <i class="fa fa-sign-in"></i> RetroArcher Login for <strong>
                                                     <span class="set-username">${data['friendly_name']}</span>
                                                 </strong>
                                             </span>
@@ -703,7 +703,7 @@ DOCUMENTATION :: END
         clearSearchButton('login_log_table-UID-${data["user_id"]}', login_log_table);
     }
 
-    $('#nav-tabs-tautullilogins').on('shown.bs.tab', function() {
+    $('#nav-tabs-retroarcherlogins').on('shown.bs.tab', function() {
         if (typeof(login_log_table) === 'undefined') {
             loadLoginTable(user_id);
         }

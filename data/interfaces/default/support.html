@@ -16,10 +16,10 @@
         </div>
         <div class="button-bar">
             <div class="btn-group">
-                <a class="btn btn-dark" href="${anon_url('https://tautulli.com/discord')}" target="_blank" rel="noreferrer"><i class="fab fa-discord"></i>&nbsp; Join Discord</a>
+                <a class="btn btn-dark" href="${anon_url('https://retroarcher.com/discord')}" target="_blank" rel="noreferrer"><i class="fab fa-discord"></i>&nbsp; Join Discord</a>
             </div>
             <div class="btn-group">
-                <a class="btn btn-dark" href="${anon_url('https://www.reddit.com/r/Tautulli')}" target="_blank" rel="noreferrer"><i class="fab fa-reddit"></i>&nbsp; Join Reddit</a>
+                <a class="btn btn-dark" href="${anon_url('https://www.reddit.com/r/RetroArcher')}" target="_blank" rel="noreferrer"><i class="fab fa-reddit"></i>&nbsp; Join Reddit</a>
             </div>
             <div class="btn-group">
                 <button class="btn btn-dark" id="popout-iframe-button"><i class="fa fa-external-link"></i> Pop Out Chat</button>
@@ -28,7 +28,7 @@
     </div>
     <div class='table-card-back'>
         <div class="iframe-container">
-            <iframe class="iframe" allowfullscreen="true" id="support-iframe" data-name="Tautulli-Support" data-src="https://support.tautulli.com"
+            <iframe class="iframe" allowfullscreen="true" id="support-iframe" data-name="RetroArcher-Support" data-src="https://support.retroarcher.com"
                     sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation"
                     style="display: none;">
             </iframe>
@@ -60,7 +60,7 @@
 
     $('#popout-iframe-button').click(function () {
         var iframe = $('#support-iframe');
-        popout_chat = PopupCenter(iframe.data('src'), 'Tautulli-Discord-Support', 1280, 720);
+        popout_chat = PopupCenter(iframe.data('src'), 'RetroArcher-Discord-Support', 1280, 720);
         iframe.attr('src', '').fadeOut();
         $('.iframe-overlay').fadeIn();
     });

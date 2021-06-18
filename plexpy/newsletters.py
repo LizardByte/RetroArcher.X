@@ -1,20 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
 
-#  This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import unicode_literals
 from future.builtins import next
 from future.builtins import str
@@ -71,8 +56,8 @@ def available_notification_actions():
     actions = [{'label': 'Schedule',
                 'name': 'on_cron',
                 'description': 'Trigger a notification on a certain schedule.',
-                'subject': 'Tautulli Newsletter',
-                'body': 'Tautulli Newsletter',
+                'subject': 'RetroArcher Newsletter',
+                'body': 'RetroArcher Newsletter',
                 'message': '',
                 'icon': 'fa-calendar',
                 'media_types': ('newsletter',)
@@ -134,7 +119,7 @@ def delete_newsletter(newsletter_id=None):
     db = database.MonitorDatabase()
 
     if str(newsletter_id).isdigit():
-        logger.debug("Tautulli Newsletters :: Deleting newsletter_id %s from the database."
+        logger.debug("RetroArcher Newsletters :: Deleting newsletter_id %s from the database."
                      % newsletter_id)
         result = db.action('DELETE FROM newsletters WHERE id = ?', args=[newsletter_id])
         return True
@@ -146,7 +131,7 @@ def get_newsletter_config(newsletter_id=None, mask_passwords=False):
     if str(newsletter_id).isdigit():
         newsletter_id = int(newsletter_id)
     else:
-        logger.error("Tautulli Newsletters :: Unable to retrieve newsletter config: invalid newsletter_id %s."
+        logger.error("RetroArcher Newsletters :: Unable to retrieve newsletter config: invalid newsletter_id %s."
                      % newsletter_id)
         return None
 
@@ -167,7 +152,7 @@ def get_newsletter_config(newsletter_id=None, mask_passwords=False):
                                            config=config, email_config=email_config,
                                            subject=subject, body=body, message=message)
     except Exception as e:
-        logger.error("Tautulli Newsletters :: Failed to get newsletter config options: %s." % e)
+        logger.error("RetroArcher Newsletters :: Failed to get newsletter config options: %s." % e)
         return
 
     if mask_passwords:
@@ -188,14 +173,14 @@ def add_newsletter_config(agent_id=None, **kwargs):
     if str(agent_id).isdigit():
         agent_id = int(agent_id)
     else:
-        logger.error("Tautulli Newsletters :: Unable to add new newsletter: invalid agent_id %s."
+        logger.error("RetroArcher Newsletters :: Unable to add new newsletter: invalid agent_id %s."
                      % agent_id)
         return False
 
     agent = next((a for a in available_newsletter_agents() if a['id'] == agent_id), None)
 
     if not agent:
-        logger.error("Tautulli Newsletters :: Unable to retrieve new newsletter agent: invalid agent_id %s."
+        logger.error("RetroArcher Newsletters :: Unable to retrieve new newsletter agent: invalid agent_id %s."
                      % agent_id)
         return False
 
@@ -218,12 +203,12 @@ def add_newsletter_config(agent_id=None, **kwargs):
     try:
         db.upsert(table_name='newsletters', key_dict=keys, value_dict=values)
         newsletter_id = db.last_insert_id()
-        logger.info("Tautulli Newsletters :: Added new newsletter agent: %s (newsletter_id %s)."
+        logger.info("RetroArcher Newsletters :: Added new newsletter agent: %s (newsletter_id %s)."
                     % (agent['label'], newsletter_id))
         blacklist_logger()
         return newsletter_id
     except Exception as e:
-        logger.warn("Tautulli Newsletters :: Unable to add newsletter agent: %s." % e)
+        logger.warn("RetroArcher Newsletters :: Unable to add newsletter agent: %s." % e)
         return False
 
 
@@ -231,14 +216,14 @@ def set_newsletter_config(newsletter_id=None, agent_id=None, **kwargs):
     if str(agent_id).isdigit():
         agent_id = int(agent_id)
     else:
-        logger.error("Tautulli Newsletters :: Unable to set existing newsletter: invalid agent_id %s."
+        logger.error("RetroArcher Newsletters :: Unable to set existing newsletter: invalid agent_id %s."
                      % agent_id)
         return False
 
     agent = next((a for a in available_newsletter_agents() if a['id'] == agent_id), None)
 
     if not agent:
-        logger.error("Tautulli Newsletters :: Unable to retrieve existing newsletter agent: invalid agent_id %s."
+        logger.error("RetroArcher Newsletters :: Unable to retrieve existing newsletter agent: invalid agent_id %s."
                      % agent_id)
         return False
 
@@ -283,13 +268,13 @@ def set_newsletter_config(newsletter_id=None, agent_id=None, **kwargs):
     db = database.MonitorDatabase()
     try:
         db.upsert(table_name='newsletters', key_dict=keys, value_dict=values)
-        logger.info("Tautulli Newsletters :: Updated newsletter agent: %s (newsletter_id %s)."
+        logger.info("RetroArcher Newsletters :: Updated newsletter agent: %s (newsletter_id %s)."
                     % (agent['label'], newsletter_id))
         newsletter_handler.schedule_newsletters(newsletter_id=newsletter_id)
         blacklist_logger()
         return True
     except Exception as e:
-        logger.warn("Tautulli Newsletters :: Unable to update newsletter agent: %s." % e)
+        logger.warn("RetroArcher Newsletters :: Unable to update newsletter agent: %s." % e)
         return False
 
 
@@ -304,7 +289,7 @@ def send_newsletter(newsletter_id=None, subject=None, body=None, message=None, n
                                 message=message)
         return agent.send()
     else:
-        logger.debug("Tautulli Newsletters :: Notification requested but no newsletter_id received.")
+        logger.debug("RetroArcher Newsletters :: Notification requested but no newsletter_id received.")
 
 
 def blacklist_logger():
@@ -320,7 +305,7 @@ def blacklist_logger():
 
 def serve_template(templatename, **kwargs):
     if plexpy.CONFIG.NEWSLETTER_CUSTOM_DIR:
-        logger.info("Tautulli Newsletters :: Using custom newsletter template directory.")
+        logger.info("RetroArcher Newsletters :: Using custom newsletter template directory.")
         template_dir = plexpy.CONFIG.NEWSLETTER_CUSTOM_DIR
     else:
         interface_dir = os.path.join(str(plexpy.PROG_DIR), 'data/interfaces/')
@@ -363,9 +348,9 @@ class Newsletter(object):
                        'filename': '',
                        'save_only': 0}
     _DEFAULT_EMAIL_CONFIG = EMAIL().return_default_config()
-    _DEFAULT_EMAIL_CONFIG['from_name'] = 'Tautulli Newsletter'
+    _DEFAULT_EMAIL_CONFIG['from_name'] = 'RetroArcher Newsletter'
     _DEFAULT_EMAIL_CONFIG['notifier_id'] = 0
-    _DEFAULT_SUBJECT = 'Tautulli Newsletter'
+    _DEFAULT_SUBJECT = 'RetroArcher Newsletter'
     _DEFAULT_BODY = 'View the newsletter here: {newsletter_url}'
     _DEFAULT_MESSAGE = ''
     _DEFAULT_FILENAME = 'newsletter_{newsletter_uuid}.html'
@@ -472,7 +457,7 @@ class Newsletter(object):
 
         self.retrieve_data()
 
-        logger.info("Tautulli Newsletters :: Generating newsletter%s." % (' preview' if self.is_preview else ''))
+        logger.info("RetroArcher Newsletters :: Generating newsletter%s." % (' preview' if self.is_preview else ''))
 
         newsletter_rendered, self.template_error = serve_template(
             templatename=self._TEMPLATE,
@@ -488,21 +473,21 @@ class Newsletter(object):
         if self.template_error:
             return newsletter_rendered
 
-        # Force Tautulli footer
+        # Force RetroArcher footer
         if '<!-- FOOTER MESSAGE - DO NOT REMOVE -->' in newsletter_rendered:
             newsletter_rendered = newsletter_rendered.replace(
                 '<!-- FOOTER MESSAGE - DO NOT REMOVE -->',
-                'Newsletter generated by <a href="https://tautulli.com" target="_blank" '
-                'style="text-decoration: underline;color: inherit;font-size: inherit;">Tautulli</a>.'
+                'Newsletter generated by <a href="https://retroarcher.github.io" target="_blank" '
+                'style="text-decoration: underline;color: inherit;font-size: inherit;">RetroArcher</a>.'
             )
 
         else:
             msg = ('<div style="text-align: center;padding-top: 100px;padding-bottom: 100px;">'
                    '<p style="font-family: \'Open Sans\', Helvetica, Arial, sans-serif;color: #282A2D;'
                    'font-size: 18px;line-height: 30px;">'
-                   'The Tautulli newsletter footer was removed from the newsletter template.<br>'
+                   'The RetroArcher newsletter footer was removed from the newsletter template.<br>'
                    'Please leave the footer in place as it is unobtrusive and supports '
-                   '<a href="https://tautulli.com" target="_blank">Tautulli</a>.<br>Thank you.'
+                   '<a href="https://retroarcher.github.io" target="_blank">RetroArcher</a>.<br>Thank you.'
                    '</p></div>')
             newsletter_rendered = re.sub(r'(<body.*?>)', r'\1' + msg, newsletter_rendered)
 
@@ -512,11 +497,11 @@ class Newsletter(object):
         self.newsletter = self.generate_newsletter()
 
         if self.template_error:
-            logger.error("Tautulli Newsletters :: %s newsletter failed to render template. Newsletter not sent." % self.NAME)
+            logger.error("RetroArcher Newsletters :: %s newsletter failed to render template. Newsletter not sent." % self.NAME)
             return False
 
         if not self._has_data():
-            logger.warn("Tautulli Newsletters :: %s newsletter has no data. Newsletter not sent." % self.NAME)
+            logger.warn("RetroArcher Newsletters :: %s newsletter has no data. Newsletter not sent." % self.NAME)
             return False
 
         self._save()
@@ -542,9 +527,9 @@ class Newsletter(object):
                         n_file.write((line + '\r\n').encode('utf-8'))
                         #n_file.write(line.strip())
 
-            logger.info("Tautulli Newsletters :: %s newsletter saved to '%s'" % (self.NAME, newsletter_file))
+            logger.info("RetroArcher Newsletters :: %s newsletter saved to '%s'" % (self.NAME, newsletter_file))
         except OSError as e:
-            logger.error("Tautulli Newsletters :: Failed to save %s newsletter to '%s': %s"
+            logger.error("RetroArcher Newsletters :: Failed to save %s newsletter to '%s': %s"
                          % (self.NAME, newsletter_file, e))
 
     def _send(self):
@@ -628,28 +613,28 @@ class Newsletter(object):
         try:
             subject = custom_formatter.format(str(self.subject), **self.parameters)
         except LookupError as e:
-            logger.error("Tautulli Newsletter :: Unable to parse parameter %s in newsletter subject. Using fallback." % e)
+            logger.error("RetroArcher Newsletter :: Unable to parse parameter %s in newsletter subject. Using fallback." % e)
             subject = str(self._DEFAULT_SUBJECT).format(**self.parameters)
         except Exception as e:
-            logger.error("Tautulli Newsletter :: Unable to parse custom newsletter subject: %s. Using fallback." % e)
+            logger.error("RetroArcher Newsletter :: Unable to parse custom newsletter subject: %s. Using fallback." % e)
             subject = str(self._DEFAULT_SUBJECT).format(**self.parameters)
 
         try:
             body = custom_formatter.format(str(self.body), **self.parameters)
         except LookupError as e:
-            logger.error("Tautulli Newsletter :: Unable to parse parameter %s in newsletter body. Using fallback." % e)
+            logger.error("RetroArcher Newsletter :: Unable to parse parameter %s in newsletter body. Using fallback." % e)
             body = str(self._DEFAULT_BODY).format(**self.parameters)
         except Exception as e:
-            logger.error("Tautulli Newsletter :: Unable to parse custom newsletter body: %s. Using fallback." % e)
+            logger.error("RetroArcher Newsletter :: Unable to parse custom newsletter body: %s. Using fallback." % e)
             body = str(self._DEFAULT_BODY).format(**self.parameters)
 
         try:
             message = custom_formatter.format(str(self.message), **self.parameters)
         except LookupError as e:
-            logger.error("Tautulli Newsletter :: Unable to parse parameter %s in newsletter message. Using fallback." % e)
+            logger.error("RetroArcher Newsletter :: Unable to parse parameter %s in newsletter message. Using fallback." % e)
             message = str(self._DEFAULT_MESSAGE).format(**self.parameters)
         except Exception as e:
-            logger.error("Tautulli Newsletter :: Unable to parse custom newsletter message: %s. Using fallback." % e)
+            logger.error("RetroArcher Newsletter :: Unable to parse custom newsletter message: %s. Using fallback." % e)
             message = str(self._DEFAULT_MESSAGE).format(**self.parameters)
 
         return subject, body, message
@@ -661,10 +646,10 @@ class Newsletter(object):
         try:
             filename = custom_formatter.format(str(self.filename), **self.parameters)
         except LookupError as e:
-            logger.error("Tautulli Newsletter :: Unable to parse parameter %s in newsletter filename. Using fallback." % e)
+            logger.error("RetroArcher Newsletter :: Unable to parse parameter %s in newsletter filename. Using fallback." % e)
             filename = str(self._DEFAULT_FILENAME).format(**self.parameters)
         except Exception as e:
-            logger.error("Tautulli Newsletter :: Unable to parse custom newsletter subject: %s. Using fallback." % e)
+            logger.error("RetroArcher Newsletter :: Unable to parse custom newsletter subject: %s. Using fallback." % e)
             filename = str(self._DEFAULT_FILENAME).format(**self.parameters)
 
         return filename
@@ -830,7 +815,7 @@ class RecentlyAdded(Newsletter):
         from plexpy.notification_handler import get_img_info, set_hash_image_info
 
         if not self.config['incl_libraries']:
-            logger.warn("Tautulli Newsletters :: Failed to retrieve %s newsletter data: no libraries selected." % self.NAME)
+            logger.warn("RetroArcher Newsletters :: Failed to retrieve %s newsletter data: no libraries selected." % self.NAME)
 
         media_types = set()
         for s in self._get_sections():

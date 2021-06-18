@@ -1,20 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#  This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import unicode_literals
 
 import distro
@@ -29,7 +14,7 @@ else:
 
 
 # Identify Our Application
-PRODUCT = 'Tautulli'
+PRODUCT = 'RetroArcher'
 PLATFORM = platform.system()
 PLATFORM_RELEASE = platform.release()
 PLATFORM_VERSION = platform.version()
@@ -50,9 +35,9 @@ DEFAULT_LIVE_TV_ART = "interfaces/default/images/art-live.png"
 DEFAULT_LIVE_TV_ART_FULL = "interfaces/default/images/art-live-full.png"
 DEFAULT_LIVE_TV_THUMB = "interfaces/default/images/libraries/live.png"
 
-ONLINE_POSTER_THUMB = "https://tautulli.com/images/poster.png"
-ONLINE_COVER_THUMB = "https://tautulli.com/images/cover.png"
-ONLINE_ART = "https://tautulli.com/images/art.png"
+ONLINE_POSTER_THUMB = "https://retroarcher.github.io/images/poster.png"
+ONLINE_COVER_THUMB = "https://retroarcher.github.io/images/cover.png"
+ONLINE_ART = "https://retroarcher.github.io/images/art.png"
 
 LIVE_TV_SECTION_ID = 999999  # Fake section_id for Live TV library
 LIVE_TV_SECTION_NAME = "Live TV"  # Fake section_name for Live TV library
@@ -252,9 +237,9 @@ SCHEDULER_LIST = [
     ('Refresh users list', 'scheduled'),
     ('Refresh libraries list', 'scheduled'),
     ('Refresh Plex server URLs', 'scheduled'),
-    ('Optimize Tautulli database', 'scheduled'),
-    ('Backup Tautulli database', 'scheduled'),
-    ('Backup Tautulli config', 'scheduled')
+    ('Optimize RetroArcher database', 'scheduled'),
+    ('Backup RetroArcher database', 'scheduled'),
+    ('Backup RetroArcher config', 'scheduled')
 ]
 SCHEDULER_LIST = OrderedDict(SCHEDULER_LIST)
 
@@ -351,10 +336,10 @@ NOTIFICATION_PARAMETERS = [
     {
         'category': 'Global',
         'parameters': [
-             {'name': 'Tautulli Version', 'type': 'str', 'value': 'tautulli_version', 'description': 'The current version of Tautulli.'},
-             {'name': 'Tautulli Remote', 'type': 'str', 'value': 'tautulli_remote', 'description': 'The current git remote of Tautulli.'},
-             {'name': 'Tautulli Branch', 'type': 'str', 'value': 'tautulli_branch', 'description': 'The current git branch of Tautulli.'},
-             {'name': 'Tautulli Commit', 'type': 'str', 'value': 'tautulli_commit', 'description': 'The current git commit hash of Tautulli.'},
+             {'name': 'RetroArcher Version', 'type': 'str', 'value': 'retroarcher_version', 'description': 'The current version of RetroArcher.'},
+             {'name': 'RetroArcher Remote', 'type': 'str', 'value': 'retroarcher_remote', 'description': 'The current git remote of RetroArcher.'},
+             {'name': 'RetroArcher Branch', 'type': 'str', 'value': 'retroarcher_branch', 'description': 'The current git branch of RetroArcher.'},
+             {'name': 'RetroArcher Commit', 'type': 'str', 'value': 'retroarcher_commit', 'description': 'The current git commit hash of RetroArcher.'},
              {'name': 'Server Name', 'type': 'str', 'value': 'server_name', 'description': 'The name of your Plex Server.'},
              {'name': 'Server IP', 'type': 'str', 'value': 'server_ip', 'description': 'The connection IP address for your Plex Server.'},
              {'name': 'Server Port', 'type': 'int', 'value': 'server_port', 'description': 'The connection port for your Plex Server.'},
@@ -629,17 +614,17 @@ NOTIFICATION_PARAMETERS = [
          ]
      },
     {
-        'category': 'Tautulli Update Available',
+        'category': 'RetroArcher Update Available',
         'parameters': [
-             {'name': 'Tautulli Update Version', 'type': 'str', 'value': 'tautulli_update_version', 'description': 'The available update version for Tautulli.'},
-             {'name': 'Tautulli Update Release URL', 'type': 'str', 'value': 'tautulli_update_release_url', 'description': 'The release page URL on GitHub.'},
-             {'name': 'Tautulli Update Exe', 'type': 'str', 'value': 'tautulli_update_exe', 'description': 'The Windows exe download URL for the available update.'},
-             {'name': 'Tautulli Update Pkg', 'type': 'str', 'value': 'tautulli_update_pkg', 'description': 'The MacOS pkg download URL for the available update.'},
-             {'name': 'Tautulli Update Tar', 'type': 'str', 'value': 'tautulli_update_tar', 'description': 'The tar download URL for the available update.'},
-             {'name': 'Tautulli Update Zip', 'type': 'str', 'value': 'tautulli_update_zip', 'description': 'The zip download URL for the available update.'},
-             {'name': 'Tautulli Update Commit', 'type': 'str', 'value': 'tautulli_update_commit', 'description': 'The commit hash for the available update.'},
-             {'name': 'Tautulli Update Behind', 'type': 'int', 'value': 'tautulli_update_behind', 'description': 'The number of commits behind for the available update.'},
-             {'name': 'Tautulli Update Changelog', 'type': 'str', 'value': 'tautulli_update_changelog', 'description': 'The changelog for the available update.'},
+             {'name': 'RetroArcher Update Version', 'type': 'str', 'value': 'retroarcher_update_version', 'description': 'The available update version for RetroArcher.'},
+             {'name': 'RetroArcher Update Release URL', 'type': 'str', 'value': 'retroarcher_update_release_url', 'description': 'The release page URL on GitHub.'},
+             {'name': 'RetroArcher Update Exe', 'type': 'str', 'value': 'retroarcher_update_exe', 'description': 'The Windows exe download URL for the available update.'},
+             {'name': 'RetroArcher Update Pkg', 'type': 'str', 'value': 'retroarcher_update_pkg', 'description': 'The MacOS pkg download URL for the available update.'},
+             {'name': 'RetroArcher Update Tar', 'type': 'str', 'value': 'retroarcher_update_tar', 'description': 'The tar download URL for the available update.'},
+             {'name': 'RetroArcher Update Zip', 'type': 'str', 'value': 'retroarcher_update_zip', 'description': 'The zip download URL for the available update.'},
+             {'name': 'RetroArcher Update Commit', 'type': 'str', 'value': 'retroarcher_update_commit', 'description': 'The commit hash for the available update.'},
+             {'name': 'RetroArcher Update Behind', 'type': 'int', 'value': 'retroarcher_update_behind', 'description': 'The number of commits behind for the available update.'},
+             {'name': 'RetroArcher Update Changelog', 'type': 'str', 'value': 'retroarcher_update_changelog', 'description': 'The changelog for the available update.'},
         ]
      },
 ]
