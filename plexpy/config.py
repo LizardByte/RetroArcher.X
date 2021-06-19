@@ -184,6 +184,10 @@ _CONFIG_DEFINITIONS = {
     'JWT_UPDATE_SECRET': (bool_int, 'Advanced', 0),
     'SYSTEM_ANALYTICS': (int, 'Advanced', 1),
     'SYS_TRAY_ICON': (int, 'General', 1),
+    'ROM_DIRECTORY':  (str, 'Games', ''),
+    'RETROARCH_DIRECTORY':  (str, 'Emulators', ''),
+    'CEMU_DIRECTORY':  (str, 'Emulators', ''),
+    'RPCS3_DIRECTORY':  (str, 'Emulators', ''),
 }
 
 _BLACKLIST_KEYS = ['_APITOKEN', '_TOKEN', '_KEY', '_SECRET', '_PASSWORD', '_APIKEY', '_ID', '_HOOK']
@@ -396,7 +400,7 @@ class Config(object):
         Returns something from the ini unless it is a real property
         of the configuration object or is not all caps.
         """
-        if not re.match(r'[A-Z_]+$', name):
+        if not re.match(r'[A-Z_0-9]+$', name):
             return super(Config, self).__getattr__(name)
         else:
             return self.check_setting(name)
@@ -406,7 +410,7 @@ class Config(object):
         Maps all-caps properties to ini values unless they exist on the
         configuration object.
         """
-        if not re.match(r'[A-Z_]+$', name):
+        if not re.match(r'[A-Z_0-9]+$', name):
             super(Config, self).__setattr__(name, value)
             return value
         else:
@@ -418,7 +422,7 @@ class Config(object):
         """
         Deletes a key from the configuration object.
         """
-        if not re.match(r'[A-Z_]+$', name):
+        if not re.match(r'[A-Z_0-9]+$', name):
             return super(Config, self).__delattr__(name)
         else:
             key, definition_type, section, ini_key, default = self._define(name)
