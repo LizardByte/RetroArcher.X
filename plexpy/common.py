@@ -30,25 +30,15 @@ DEFAULT_USER_THUMB = "interfaces/default/images/gravatar-default-80x80.png"
 DEFAULT_POSTER_THUMB = "interfaces/default/images/poster.png"
 DEFAULT_COVER_THUMB = "interfaces/default/images/cover.png"
 DEFAULT_ART = "interfaces/default/images/art.png"
-DEFAULT_LIVE_TV_POSTER_THUMB = "interfaces/default/images/poster-live.png"
-DEFAULT_LIVE_TV_ART = "interfaces/default/images/art-live.png"
-DEFAULT_LIVE_TV_ART_FULL = "interfaces/default/images/art-live-full.png"
-DEFAULT_LIVE_TV_THUMB = "interfaces/default/images/libraries/live.png"
 
 ONLINE_POSTER_THUMB = "https://retroarcher.github.io/images/poster.png"
 ONLINE_COVER_THUMB = "https://retroarcher.github.io/images/cover.png"
 ONLINE_ART = "https://retroarcher.github.io/images/art.png"
 
-LIVE_TV_SECTION_ID = 999999  # Fake section_id for Live TV library
-LIVE_TV_SECTION_NAME = "Live TV"  # Fake section_name for Live TV library
-
 DEFAULT_IMAGES = {
     'poster': DEFAULT_POSTER_THUMB,
     'cover': DEFAULT_COVER_THUMB,
     'art': DEFAULT_ART,
-    'poster-live': DEFAULT_LIVE_TV_POSTER_THUMB,
-    'art-live': DEFAULT_LIVE_TV_ART,
-    'art-live-full': DEFAULT_LIVE_TV_ART_FULL,
     'user': DEFAULT_USER_THUMB
 }
 
