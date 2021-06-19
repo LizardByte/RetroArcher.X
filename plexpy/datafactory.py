@@ -365,7 +365,7 @@ class DataFactory(object):
 
                 home_stats.append({'stat_id': stat,
                                    'stat_type': sort_type,
-                                   'stat_title': 'Most Watched Movies',
+                                   'stat_title': 'Most Played Games',
                                    'rows': session.mask_session_info(top_movies)})
 
             elif stat == 'popular_movies':
@@ -416,220 +416,8 @@ class DataFactory(object):
                     popular_movies.append(row)
 
                 home_stats.append({'stat_id': stat,
-                                   'stat_title': 'Most Popular Movies',
+                                   'stat_title': 'Most Popular Games',
                                    'rows': session.mask_session_info(popular_movies)})
-
-            elif stat == 'top_tv':
-                top_tv = []
-                try:
-                    query = 'SELECT sh.id, shm.grandparent_title, sh.grandparent_rating_key, ' \
-                            'shm.grandparent_thumb, sh.section_id, ' \
-                            'shm.year, sh.rating_key, shm.art, sh.media_type, ' \
-                            'shm.content_rating, shm.labels, sh.started, shm.live, shm.guid, ' \
-                            'MAX(sh.started) AS last_watch, COUNT(sh.id) AS total_plays, SUM(sh.d) AS total_duration ' \
-                            'FROM (SELECT *, SUM(CASE WHEN stopped > 0 THEN (stopped - started) - ' \
-                            '       (CASE WHEN paused_counter IS NULL THEN 0 ELSE paused_counter END) ELSE 0 END) ' \
-                            '       AS d ' \
-                            '   FROM session_history ' \
-                            '   WHERE session_history.stopped >= %s ' \
-                            '       AND session_history.media_type = "episode" ' \
-                            '   GROUP BY %s) AS sh ' \
-                            'JOIN session_history_metadata AS shm ON shm.id = sh.id ' \
-                            'GROUP BY shm.grandparent_title ' \
-                            'ORDER BY %s DESC, sh.started DESC ' \
-                            'LIMIT %s OFFSET %s ' % (timestamp, group_by, sort_type, stats_count, stats_start)
-                    result = monitor_db.select(query)
-                except Exception as e:
-                    logger.warn("RetroArcher DataFactory :: Unable to execute database query for get_home_stats: top_tv: %s." % e)
-                    return None
-
-                for item in result:
-                    row = {'title': item['grandparent_title'],
-                           'year': item['year'],
-                           'total_plays': item['total_plays'],
-                           'total_duration': item['total_duration'],
-                           'users_watched': '',
-                           'rating_key': item['rating_key'] if item['live'] else item['grandparent_rating_key'],
-                           'grandparent_rating_key': item['grandparent_rating_key'],
-                           'last_play': item['last_watch'],
-                           'grandparent_thumb': item['grandparent_thumb'],
-                           'thumb': item['grandparent_thumb'],
-                           'art': item['art'],
-                           'section_id': item['section_id'],
-                           'media_type': item['media_type'],
-                           'content_rating': item['content_rating'],
-                           'labels': item['labels'].split(';') if item['labels'] else (),
-                           'user': '',
-                           'friendly_name': '',
-                           'platform': '',
-                           'live': item['live'],
-                           'guid': item['guid'],
-                           'row_id': item['id']
-                           }
-                    top_tv.append(row)
-
-                home_stats.append({'stat_id': stat,
-                                   'stat_type': sort_type,
-                                   'stat_title': 'Most Watched TV Shows',
-                                   'rows': session.mask_session_info(top_tv)})
-
-            elif stat == 'popular_tv':
-                popular_tv = []
-                try:
-                    query = 'SELECT sh.id, shm.grandparent_title, sh.grandparent_rating_key, ' \
-                            'shm.grandparent_thumb, sh.section_id, ' \
-                            'shm.year, sh.rating_key, shm.art, sh.media_type, ' \
-                            'shm.content_rating, shm.labels, sh.started, shm.live, shm.guid, ' \
-                            'COUNT(DISTINCT sh.user_id) AS users_watched, ' \
-                            'MAX(sh.started) AS last_watch, COUNT(sh.id) as total_plays, SUM(sh.d) AS total_duration ' \
-                            'FROM (SELECT *, SUM(CASE WHEN stopped > 0 THEN (stopped - started) - ' \
-                            '       (CASE WHEN paused_counter IS NULL THEN 0 ELSE paused_counter END) ELSE 0 END) ' \
-                            '       AS d ' \
-                            '   FROM session_history ' \
-                            '   WHERE session_history.stopped >= %s ' \
-                            '       AND session_history.media_type = "episode" ' \
-                            '   GROUP BY %s) AS sh ' \
-                            'JOIN session_history_metadata AS shm ON shm.id = sh.id ' \
-                            'GROUP BY shm.grandparent_title ' \
-                            'ORDER BY users_watched DESC, %s DESC, sh.started DESC ' \
-                            'LIMIT %s OFFSET %s ' % (timestamp, group_by, sort_type, stats_count, stats_start)
-                    result = monitor_db.select(query)
-                except Exception as e:
-                    logger.warn("RetroArcher DataFactory :: Unable to execute database query for get_home_stats: popular_tv: %s." % e)
-                    return None
-
-                for item in result:
-                    row = {'title': item['grandparent_title'],
-                           'year': item['year'],
-                           'users_watched': item['users_watched'],
-                           'rating_key': item['rating_key'] if item['live'] else item['grandparent_rating_key'],
-                           'grandparent_rating_key': item['grandparent_rating_key'],
-                           'last_play': item['last_watch'],
-                           'total_plays': item['total_plays'],
-                           'grandparent_thumb': item['grandparent_thumb'],
-                           'thumb': item['grandparent_thumb'],
-                           'art': item['art'],
-                           'section_id': item['section_id'],
-                           'media_type': item['media_type'],
-                           'content_rating': item['content_rating'],
-                           'labels': item['labels'].split(';') if item['labels'] else (),
-                           'user': '',
-                           'friendly_name': '',
-                           'platform': '',
-                           'live': item['live'],
-                           'guid': item['guid'],
-                           'row_id': item['id']
-                           }
-                    popular_tv.append(row)
-
-                home_stats.append({'stat_id': stat,
-                                   'stat_title': 'Most Popular TV Shows',
-                                   'rows': session.mask_session_info(popular_tv)})
-
-            elif stat == 'top_music':
-                top_music = []
-                try:
-                    query = 'SELECT sh.id, shm.grandparent_title, shm.original_title, shm.year, ' \
-                            'sh.grandparent_rating_key, shm.grandparent_thumb, sh.section_id, ' \
-                            'shm.art, sh.media_type, shm.content_rating, shm.labels, sh.started, shm.live, shm.guid, ' \
-                            'MAX(sh.started) AS last_watch, COUNT(sh.id) AS total_plays, SUM(sh.d) AS total_duration ' \
-                            'FROM (SELECT *, SUM(CASE WHEN stopped > 0 THEN (stopped - started) - ' \
-                            '       (CASE WHEN paused_counter IS NULL THEN 0 ELSE paused_counter END) ELSE 0 END) ' \
-                            '       AS d ' \
-                            '   FROM session_history ' \
-                            '   WHERE session_history.stopped >= %s ' \
-                            '       AND session_history.media_type = "track" ' \
-                            '   GROUP BY %s) AS sh ' \
-                            'JOIN session_history_metadata AS shm ON shm.id = sh.id ' \
-                            'GROUP BY shm.original_title, shm.grandparent_title ' \
-                            'ORDER BY %s DESC, sh.started DESC ' \
-                            'LIMIT %s OFFSET %s ' % (timestamp, group_by, sort_type, stats_count, stats_start)
-                    result = monitor_db.select(query)
-                except Exception as e:
-                    logger.warn("RetroArcher DataFactory :: Unable to execute database query for get_home_stats: top_music: %s." % e)
-                    return None
-
-                for item in result:
-                    row = {'title': item['original_title'] or item['grandparent_title'],
-                           'year': item['year'],
-                           'total_plays': item['total_plays'],
-                           'total_duration': item['total_duration'],
-                           'users_watched': '',
-                           'rating_key': item['grandparent_rating_key'],
-                           'grandparent_rating_key': item['grandparent_rating_key'],
-                           'last_play': item['last_watch'],
-                           'grandparent_thumb': item['grandparent_thumb'],
-                           'thumb': item['grandparent_thumb'],
-                           'art': item['art'],
-                           'section_id': item['section_id'],
-                           'media_type': item['media_type'],
-                           'content_rating': item['content_rating'],
-                           'labels': item['labels'].split(';') if item['labels'] else (),
-                           'user': '',
-                           'friendly_name': '',
-                           'platform': '',
-                           'live': item['live'],
-                           'guid': item['guid'],
-                           'row_id': item['id']
-                           }
-                    top_music.append(row)
-
-                home_stats.append({'stat_id': stat,
-                                   'stat_type': sort_type,
-                                   'stat_title': 'Most Played Artists',
-                                   'rows': session.mask_session_info(top_music)})
-
-            elif stat == 'popular_music':
-                popular_music = []
-                try:
-                    query = 'SELECT sh.id, shm.grandparent_title, shm.original_title, shm.year, ' \
-                            'sh.grandparent_rating_key, shm.grandparent_thumb, sh.section_id, ' \
-                            'shm.art, sh.media_type, shm.content_rating, shm.labels, sh.started, shm.live, shm.guid, ' \
-                            'COUNT(DISTINCT sh.user_id) AS users_watched, ' \
-                            'MAX(sh.started) AS last_watch, COUNT(sh.id) as total_plays, SUM(sh.d) AS total_duration ' \
-                            'FROM (SELECT *, SUM(CASE WHEN stopped > 0 THEN (stopped - started) - ' \
-                            '       (CASE WHEN paused_counter IS NULL THEN 0 ELSE paused_counter END) ELSE 0 END) ' \
-                            '       AS d ' \
-                            '   FROM session_history ' \
-                            '   WHERE session_history.stopped >= %s ' \
-                            '       AND session_history.media_type = "track" ' \
-                            '   GROUP BY %s) AS sh ' \
-                            'JOIN session_history_metadata AS shm ON shm.id = sh.id ' \
-                            'GROUP BY shm.original_title, shm.grandparent_title ' \
-                            'ORDER BY users_watched DESC, %s DESC, sh.started DESC ' \
-                            'LIMIT %s OFFSET %s ' % (timestamp, group_by, sort_type, stats_count, stats_start)
-                    result = monitor_db.select(query)
-                except Exception as e:
-                    logger.warn("RetroArcher DataFactory :: Unable to execute database query for get_home_stats: popular_music: %s." % e)
-                    return None
-
-                for item in result:
-                    row = {'title': item['original_title'] or item['grandparent_title'],
-                           'year': item['year'],
-                           'users_watched': item['users_watched'],
-                           'rating_key': item['grandparent_rating_key'],
-                           'grandparent_rating_key': item['grandparent_rating_key'],
-                           'last_play': item['last_watch'],
-                           'total_plays': item['total_plays'],
-                           'grandparent_thumb': item['grandparent_thumb'],
-                           'thumb': item['grandparent_thumb'],
-                           'art': item['art'],
-                           'section_id': item['section_id'],
-                           'media_type': item['media_type'],
-                           'content_rating': item['content_rating'],
-                           'labels': item['labels'].split(';') if item['labels'] else (),
-                           'user': '',
-                           'friendly_name': '',
-                           'platform': '',
-                           'live': item['live'],
-                           'guid': item['guid'],
-                           'row_id': item['id']
-                           }
-                    popular_music.append(row)
-
-                home_stats.append({'stat_id': stat,
-                                   'stat_title': 'Most Popular Artists',
-                                   'rows': session.mask_session_info(popular_music)})
 
             elif stat == 'top_libraries':
                 top_libraries = []
@@ -861,7 +649,7 @@ class DataFactory(object):
                     last_watched.append(row)
 
                 home_stats.append({'stat_id': stat,
-                                   'stat_title': 'Recently Watched',
+                                   'stat_title': 'Recently Played',
                                    'rows': session.mask_session_info(last_watched)})
 
             elif stat == 'most_concurrent':
