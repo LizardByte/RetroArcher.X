@@ -136,6 +136,7 @@ class ActivityProcessor(object):
                       'stopped': helpers.timestamp()
                       }
 
+            #if values['media_type'] == 'movie': # only "movies" for RetroArcher
             keys = {'session_key': session.get('session_key', ''),
                     'rating_key': session.get('rating_key', '')}
 
@@ -155,10 +156,6 @@ class ActivityProcessor(object):
                 if notify:
                     session.update(timestamp)
                     plexpy.NOTIFY_QUEUE.put({'stream_data': session.copy(), 'notify_action': 'on_play'})
-
-                # Add Live TV library if it hasn't been added
-                if values['live']:
-                    libraries.add_live_tv_library()
 
                 return True
 
@@ -210,7 +207,8 @@ class ActivityProcessor(object):
                                              media_type=session['media_type'],
                                              stopped=stopped)
 
-            if str(session['rating_key']).isdigit() and session['media_type'] in ('movie', 'episode', 'track'):
+            #if str(session['rating_key']).isdigit() and session['media_type'] in ('movie', 'episode', 'track'):
+            if str(session['rating_key']).isdigit() and session['media_type'] == 'movie': # only "movie" for RetroArcher
                 logging_enabled = True
             else:
                 logger.debug("RetroArcher ActivityProcessor :: Session %s ratingKey %s not logged. "
@@ -221,21 +219,23 @@ class ActivityProcessor(object):
             real_play_time = stopped - helpers.cast_to_int(session['started']) - helpers.cast_to_int(session['paused_counter'])
 
             if not is_import and plexpy.CONFIG.LOGGING_IGNORE_INTERVAL:
-                if (session['media_type'] == 'movie' or session['media_type'] == 'episode') and \
+                #if (session['media_type'] == 'movie' or session['media_type'] == 'episode') and \
+                #only "movie" for RetroArcher
+                if (session['media_type'] == 'movie') and \
                         (real_play_time < int(plexpy.CONFIG.LOGGING_IGNORE_INTERVAL)):
                     logging_enabled = False
                     logger.debug("RetroArcher ActivityProcessor :: Play duration for session %s ratingKey %s is %s secs "
                                  "which is less than %s seconds, so we're not logging it." %
                                  (session['session_key'], session['rating_key'], str(real_play_time),
                                   plexpy.CONFIG.LOGGING_IGNORE_INTERVAL))
-            if not is_import and session['media_type'] == 'track':
-                if real_play_time < 15 and helpers.cast_to_int(session['duration']) >= 30:
-                    logging_enabled = False
-                    logger.debug("RetroArcher ActivityProcessor :: Play duration for session %s ratingKey %s is %s secs, "
-                                 "looks like it was skipped so we're not logging it" %
-                                 (session['session_key'], session['rating_key'], str(real_play_time)))
+            if not is_import and session['media_type'] in ('episode', 'track'):
+                logging_enabled = False
+                logger.debug("RetroArcher ActivityProcessor :: Session %s ratingKey %s not logged. "
+                             "Does not meet logging criteria. Media type is '%s'" %
+                             (session['session_key'], session['rating_key'], session['media_type']))
             elif is_import and import_ignore_interval:
-                if (session['media_type'] == 'movie' or session['media_type'] == 'episode') and \
+                #if (session['media_type'] == 'movie' or session['media_type'] == 'episode') and \
+                if (session['media_type'] == 'movie') and \
                         (real_play_time < int(import_ignore_interval)):
                     logging_enabled = False
                     logger.debug("RetroArcher ActivityProcessor :: Play duration for ratingKey %s is %s secs which is less than %s "
