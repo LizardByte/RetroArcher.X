@@ -50,6 +50,8 @@
                 <li role="presentation"><a id="nav-tabs-general" href="#tabs-general" aria-controls="tabs-general" role="tab" data-toggle="tab">General</a></li>
                 <li role="presentation"><a id="nav-tabs-homepage" href="#tabs-homepage" aria-controls="tabs-homepage" role="tab" data-toggle="tab">Homepage</a></li>
                 <li role="presentation"><a id="nav-tabs-web_interface" href="#tabs-web_interface" aria-controls="tabs-web_interface" role="tab" data-toggle="tab">Web Interface</a></li>
+                <li role="presentation"><a id="nav-tabs-games" href="#tabs-games" aria-controls="tabs-emulators" role="tab" data-toggle="tab">Games</a></li>
+                <li role="presentation"><a id="nav-tabs-emulators" href="#tabs-emulators" aria-controls="tabs-emulators" role="tab" data-toggle="tab">Emulators</a></li>
                 <li role="presentation"><a id="nav-tabs-plex_media_server" href="#tabs-plex_media_server" aria-controls="tabs-plex_media_server" role="tab" data-toggle="tab">Plex Media Server</a></li>
                 <li role="presentation"><a id="nav-tabs-notifications" href="#tabs-notifications" aria-controls="tabs-notifications" role="tab" data-toggle="tab">Notifications & Newsletters</a></li>
                 <li role="presentation"><a id="nav-tabs-notification_agents" href="#tabs-notification_agents" aria-controls="tabs-notification_agents" role="tab" data-toggle="tab">Notification Agents</a></li>
@@ -704,6 +706,119 @@
                             </div>
                         </div>
 
+                        <p><input type="button" class="btn btn-bright save-button" value="Save" data-success="Changes saved successfully"></p>
+
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="tabs-games">
+
+                        <div class="padded-header">
+                            <h3>ROMS</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rom_directory">ROM Directory</label>
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="rom_directory" name="rom_directory" value="${config['rom_directory']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#rom_directory_error"  data-parsley-error-message="Shortcuts are not recognized.">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-form" type="button" id="rom_directory_browse" data-toggle="browse" data-filter=".folderonly" data-target="#rom_directory">Browse</button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div id="rom_directory_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Required: Set your ROM directory. The ROM directory is required for RetroArcher to function properly.
+                                A complete folder path is required, shortcuts are not recognized, and the path must be accessible from the machine where RetroArcher is installed.
+                            </p>
+                        </div>
+                        
+                        <div class="padded-header">
+                            <h3>Platforms</h3>
+                        </div>
+                        
+                        <div class="padded-header">
+                            <h3>FFMPEG</h3>
+                        </div>
+                        
+                        <p><input type="button" class="btn btn-bright save-button" value="Save" data-success="Changes saved successfully"></p>
+
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="tabs-emulators">
+                    
+                        <div class="padded-header">
+                            <h3>Multi Platform</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="retroarch_directory">RetroArch Directory</label>
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="retroarch_directory" name="retroarch_directory" value="${config['retroarch_directory']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#retroarch_directory_error"  data-parsley-error-message="Shortcuts are not recognized.">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-form" type="button" id="retroarch_directory_browse" data-toggle="browse" data-filter=".folderonly" data-target="#retroarch_directory">Browse</button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div id="retroarch_directory_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Optional: Set the directory for RetroArch. RetroArch is required for emulation of most platforms.
+                                A complete folder path is required, shortcuts are not recognized, and the path must be accessible from the machine where RetroArcher is installed.
+                            </p>
+                        </div>
+                    
+                        % if common.PLATFORM in ('Windows'):
+                        <div class="padded-header">
+                            <h3>Nintendo Wii U</h3>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cemu_directory">CEMU Directory</label>
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="cemu_directory" name="cemu_directory" value="${config['cemu_directory']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#cemu_directory_error"  data-parsley-error-message="Shortcuts are not recognized.">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-form" type="button" id="cemu_directory_browse" data-toggle="browse" data-filter=".folderonly" data-target="#cemu_directory">Browse</button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div id="cemu_directory_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Optional: Set the directory for CEMU. CEMU is required for Nintnedo Wii U emulation.
+                                A complete folder path is required, shortcuts are not recognized, and the path must be accessible from the machine where RetroArcher is installed.
+                            </p>
+                        </div>
+                        % endif
+                        
+                        <div class="padded-header">
+                            <h3>Sony PlayStation 3</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rpcs3_directory">RPCS3 Directory</label>
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="rpcs3_directory" name="rpcs3_directory" value="${config['rpcs3_directory']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#rpcs3_directory_error"  data-parsley-error-message="Shortcuts are not recognized.">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-form" type="button" id="rpcs3_directory_browse" data-toggle="browse" data-filter=".folderonly" data-target="#rpcs3_directory">Browse</button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div id="rpcs3_directory_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Optional: Set the directory for RPCS3. RPCS3 is required for Sony PlayStation 3 emulation.
+                                A complete folder path is required, shortcuts are not recognized, and the path must be accessible from the machine where RetroArcher is installed.
+                            </p>
+                        </div>
+                        
                         <p><input type="button" class="btn btn-bright save-button" value="Save" data-success="Changes saved successfully"></p>
 
                     </div>
