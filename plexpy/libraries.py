@@ -51,34 +51,34 @@ def refresh_libraries():
         new_keys = []
 
         # Keep track of section_id to update is_active status
-        section_ids = [common.LIVE_TV_SECTION_ID]  # Live TV library always considered active
+        section_ids = []  # Remove Live TV section
 
         for section in library_sections:
-            section_ids.append(helpers.cast_to_int(section['section_id']))
+            
+            if section['section_type'] == 'movie':
+                section_ids.append(helpers.cast_to_int(section['section_id']))
 
-            section_keys = {'server_id': server_id,
-                            'section_id': section['section_id']}
-            section_values = {'server_id': server_id,
-                              'section_id': section['section_id'],
-                              'section_name': section['section_name'],
-                              'section_type': section['section_type'],
-                              'agent': section['agent'],
-                              'thumb': section['thumb'],
-                              'art': section['art'],
-                              'count': section['count'],
-                              'parent_count': section.get('parent_count', None),
-                              'child_count': section.get('child_count', None),
-                              'is_active': section['is_active']
-                              }
+                section_keys = {'server_id': server_id,
+                                'section_id': section['section_id']}
+                section_values = {'server_id': server_id,
+                                  'section_id': section['section_id'],
+                                  'section_name': section['section_name'],
+                                  'section_type': section['section_type'],
+                                  'agent': section['agent'],
+                                  'thumb': section['thumb'],
+                                  'art': section['art'],
+                                  'count': section['count'],
+                                  'parent_count': section.get('parent_count', None),
+                                  'child_count': section.get('child_count', None),
+                                  'is_active': section['is_active']
+                                  }
 
-            result = monitor_db.upsert('library_sections', key_dict=section_keys, value_dict=section_values)
+                result = monitor_db.upsert('library_sections', key_dict=section_keys, value_dict=section_values)
 
-            library_keys.append(section['section_id'])
+                library_keys.append(section['section_id'])
 
-            if result == 'insert':
-                new_keys.append(section['section_id'])
-
-        add_live_tv_library(refresh=True)
+                if result == 'insert':
+                    new_keys.append(section['section_id'])
 
         query = 'UPDATE library_sections SET is_active = 0 WHERE server_id != ? OR ' \
                 'section_id NOT IN ({})'.format(', '.join(['?'] * len(section_ids)))
@@ -97,32 +97,6 @@ def refresh_libraries():
     else:
         logger.warn("RetroArcher Libraries :: Unable to refresh libraries list.")
         return False
-
-
-def add_live_tv_library(refresh=False):
-    monitor_db = database.MonitorDatabase()
-    result = monitor_db.select_single('SELECT * FROM library_sections '
-                                      'WHERE section_id = ? and server_id = ?',
-                                      [common.LIVE_TV_SECTION_ID, plexpy.CONFIG.PMS_IDENTIFIER])
-
-    if result and not refresh or not result and refresh:
-        return
-
-    if not refresh:
-        logger.info("RetroArcher Libraries :: Adding Live TV library to the database.")
-
-    section_keys = {'server_id': plexpy.CONFIG.PMS_IDENTIFIER,
-                    'section_id': common.LIVE_TV_SECTION_ID}
-    section_values = {'server_id': plexpy.CONFIG.PMS_IDENTIFIER,
-                      'section_id': common.LIVE_TV_SECTION_ID,
-                      'section_name': common.LIVE_TV_SECTION_NAME,
-                      'section_type': 'live',
-                      'thumb': common.DEFAULT_LIVE_TV_THUMB,
-                      'art': common.DEFAULT_LIVE_TV_ART_FULL,
-                      'is_active': 1
-                      }
-
-    result = monitor_db.upsert('library_sections', key_dict=section_keys, value_dict=section_values)
 
 
 def has_library_type(section_type):
