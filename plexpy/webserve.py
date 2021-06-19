@@ -3222,7 +3222,11 @@ class WebInterface(object):
             "newsletter_password": plexpy.CONFIG.NEWSLETTER_PASSWORD,
             "newsletter_inline_styles": checked(plexpy.CONFIG.NEWSLETTER_INLINE_STYLES),
             "newsletter_custom_dir": plexpy.CONFIG.NEWSLETTER_CUSTOM_DIR,
-            "sys_tray_icon": checked(plexpy.CONFIG.SYS_TRAY_ICON)
+            "sys_tray_icon": checked(plexpy.CONFIG.SYS_TRAY_ICON),
+            "rom_directory": plexpy.CONFIG.ROM_DIRECTORY,
+            "retroarch_directory": plexpy.CONFIG.RETROARCH_DIRECTORY,
+            "cemu_directory": plexpy.CONFIG.CEMU_DIRECTORY,
+            "rpcs3_directory": plexpy.CONFIG.RPCS3_DIRECTORY,
         }
 
         return serve_template(templatename="settings.html", title="Settings", config=config, kwargs=kwargs)
