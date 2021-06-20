@@ -39,7 +39,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="home-padded-header padded-header">
-                <h3 class="pull-left">Watch Statistics</h3>
+                <h3 class="pull-left">Play Statistics</h3>
                 <div class="button-bar">
                     <div class="btn-group pull-left" data-toggle="buttons" id="watch-stats-toggles" style="margin-right: 3px">
                         <label class="btn btn-dark">
@@ -861,7 +861,7 @@
 % if 'watch_stats' in config['home_sections']:
 <script>
     function getHomeStats(time_range, stats_type) {
-        showMsg("Loading watch statistics...", true, false, 0);
+        showMsg("Loading play statistics...", true, false, 0);
 
         $.ajax({
             url: 'home_stats',
