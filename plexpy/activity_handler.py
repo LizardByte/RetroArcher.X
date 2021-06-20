@@ -79,7 +79,8 @@ class ActivityHandler(object):
                     if not session['rating_key']:
                         session['rating_key'] = self.get_rating_key()
                     session['rating_key_websocket'] = self.get_rating_key()
-                    return session
+                    if str(session['section_id']) in plexpy.CONFIG.HOME_LIBRARY_CARDS:
+                        return session
 
         return None
 
