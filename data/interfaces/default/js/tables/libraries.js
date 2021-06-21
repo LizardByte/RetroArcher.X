@@ -98,30 +98,6 @@ libraries_list_table_options = {
         },
         {
             "targets": [5],
-            "data": "parent_count",
-            "createdCell": function (td, cellData, rowData, row, col) {
-                if (cellData !== null && cellData !== '') {
-                    $(td).html(cellData);
-                }
-
-            },
-            "width": "10%",
-            "className": "no-wrap"
-        },
-        {
-            "targets": [6],
-            "data": "child_count",
-            "createdCell": function (td, cellData, rowData, row, col) {
-                if (cellData !== null && cellData !== '') {
-                    $(td).html(cellData);
-                }
-
-            },
-            "width": "10%",
-            "className": "no-wrap"
-        },
-        {
-            "targets": [7],
             "data": "last_accessed",
             "createdCell": function (td, cellData, rowData, row, col) {
                 if (cellData !== null && cellData !== '') {
@@ -135,7 +111,7 @@ libraries_list_table_options = {
             "className": "no-wrap"
         },
         {
-            "targets": [8],
+            "targets": [6],
             "data":"last_played",
             "createdCell": function (td, cellData, rowData, row, col) {
                 if (cellData !== null && cellData !== '') {
@@ -176,7 +152,7 @@ libraries_list_table_options = {
             "className": "datatable-wrap"
         },
         {
-            "targets": [9],
+            "targets": [7],
             "data": "plays",
             "createdCell": function (td, cellData, rowData, row, col) {
                 if (cellData !== null && cellData !== '') {
@@ -188,7 +164,7 @@ libraries_list_table_options = {
             "className": "no-wrap"
         },
         {
-            "targets": [10],
+            "targets": [8],
             "data": "duration",
             "createdCell": function (td, cellData, rowData, row, col) {
                 if (cellData !== null && cellData !== '') {
