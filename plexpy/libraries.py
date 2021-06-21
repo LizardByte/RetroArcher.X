@@ -55,7 +55,7 @@ def refresh_libraries():
 
         for section in library_sections:
             
-            if section['section_type'] == 'movie':
+            if section['section_type'] == 'movie' and section['agent'] == 'com.github.agents.retroarcher.retroarcher':
                 section_ids.append(helpers.cast_to_int(section['section_id']))
 
                 section_keys = {'server_id': server_id,
