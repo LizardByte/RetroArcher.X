@@ -1,0 +1,5 @@
+discord.py==1.7.3
+dotenv==0.18.0
+facebook-skd==3.1.0
+praw==praw==7.3.0
+tweepy==3.10.0
