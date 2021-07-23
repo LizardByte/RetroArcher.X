@@ -46,6 +46,8 @@ if PYTHON2:
     import web_socket
     import webstart
     import config
+    import scanner
+    import collections
 else:
     from plexpy import activity_handler
     from plexpy import activity_pinger
@@ -68,6 +70,8 @@ else:
     from plexpy import web_socket
     from plexpy import webstart
     from plexpy import config
+    from plexpy import scanner
+    from plexpy import collections
 
 
 PROG_DIR = None
@@ -441,6 +445,14 @@ def initialize_scheduler():
                      hours=backup_hours, minutes=0, seconds=0, args=(True, True))
         schedule_job(config.make_backup, 'Backup RetroArcher config',
                      hours=backup_hours, minutes=0, seconds=0, args=(True, True))
+        schedule_job(scanner.scan, 'Scan games',
+                     hours=1, minutes=0, seconds=0)
+        schedule_job(scanner.generate, 'Generate library videos',
+                     hours=1, minutes=0, seconds=0)
+        schedule_job(scanner.clean, 'Empty trash',
+                     hours=1, minutes=0, seconds=0)
+        schedule_job(collections.clean, 'Clean empty Plex collections',
+                     hours=1, minutes=0, seconds=0)
 
         if WS_CONNECTED and CONFIG.PMS_IP and CONFIG.PMS_TOKEN:
             schedule_job(plextv.get_server_resources, 'Refresh Plex server URLs',
@@ -464,7 +476,7 @@ def initialize_scheduler():
                          hours=0, minutes=0, seconds=10 * bool(CONFIG.WEBSOCKET_MONITOR_PING_PONG))
 
         else:
-            # Cancel all jobs
+            # Cancel all Plex jobs
             schedule_job(plextv.get_server_resources, 'Refresh Plex server URLs',
                          hours=0, minutes=0, seconds=0)
 
@@ -829,6 +841,12 @@ def dbcheck():
         'custom_fields TEXT, individual_files INTEGER DEFAULT 0, '
         'file_size INTEGER DEFAULT 0, complete INTEGER DEFAULT 0, '
         'exported_items INTEGER DEFAULT 0, total_items INTEGER DEFAULT 0)'
+    )
+    
+    # game_mapping :: This table keeps a record of game files
+    c_db.execute(
+        'CREATE TABLE IF NOT EXISTS game_mapping (id INTEGER PRIMARY KEY AUTOINCREMENT, '
+        'platform_id INTEGER, platform_name TEXT, rom_folder TEXT, rom_file TEXT, md5_hash TEXT, sha_hash TEXT, video_file TEXT, file_exists INTEGER DEFAULT 1, enabled INTEGER DEFAULT 1, emulator TEXT, core TEXT)'
     )
 
     # Upgrade sessions table from earlier versions
