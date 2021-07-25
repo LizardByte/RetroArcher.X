@@ -2,11 +2,11 @@
 
 added:
   comment: >
-    This feature has been added and will be available in the next release of Tautulli.
+    This feature has been added and will be available in the next release.
 
 fixed:
   comment: >
-    This issue has been fixed and will be available in the next release of Tautulli.
+    This issue has been fixed and will be available in the next release.
 
 invalid:duplicate:
   comment: >
@@ -23,7 +23,7 @@ invalid:support:
   comment: >
     :wave: @{issue-author}, we use the issue tracker exclusively for bug reports.
     However, this issue appears to be a support request. Please use our
-    [Discord Server](https://tautulli.com/discord) to get help with Tautulli. Thanks.
+    [Discord Server](https://retroarcher.github.io/discord) to get help with RetroArcher. Thanks.
   close: true
   lock: true
   lock-reason: 'off-topic'
