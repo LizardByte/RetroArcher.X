@@ -3223,10 +3223,10 @@ class WebInterface(object):
             "newsletter_inline_styles": checked(plexpy.CONFIG.NEWSLETTER_INLINE_STYLES),
             "newsletter_custom_dir": plexpy.CONFIG.NEWSLETTER_CUSTOM_DIR,
             "sys_tray_icon": checked(plexpy.CONFIG.SYS_TRAY_ICON),
-            "rom_directory": plexpy.CONFIG.ROM_DIRECTORY,
-            "retroarch_directory": plexpy.CONFIG.RETROARCH_DIRECTORY,
-            "cemu_directory": plexpy.CONFIG.CEMU_DIRECTORY,
-            "rpcs3_directory": plexpy.CONFIG.RPCS3_DIRECTORY,
+            "rom_dir": plexpy.CONFIG.ROM_DIR,
+            "retroarch_dir": plexpy.CONFIG.RETROARCH_DIR,
+            "cemu_dir": plexpy.CONFIG.CEMU_DIR,
+            "rpcs3_dir": plexpy.CONFIG.RPCS3_DIR,
         }
 
         return serve_template(templatename="settings.html", title="Settings", config=config, kwargs=kwargs)

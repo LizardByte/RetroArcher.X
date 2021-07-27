@@ -716,17 +716,17 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="rom_directory">ROM Directory</label>
+                            <label for="rom_dir">ROM Directory</label>
                             <div class="row">
                                 <div class="col-md-7">
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="rom_directory" name="rom_directory" value="${config['rom_directory']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#rom_directory_error"  data-parsley-error-message="Shortcuts are not recognized.">
+                                        <input type="text" class="form-control" id="rom_dir" name="rom_dir" value="${config['rom_dir']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#rom_dir_error"  data-parsley-error-message="Shortcuts are not recognized.">
                                         <span class="input-group-btn">
-                                            <button class="btn btn-form" type="button" id="rom_directory_browse" data-toggle="browse" data-filter=".folderonly" data-target="#rom_directory">Browse</button>
+                                            <button class="btn btn-form" type="button" id="rom_dir_browse" data-toggle="browse" data-filter=".folderonly" data-target="#rom_dir">Browse</button>
                                         </span>
                                     </div>
                                 </div>
-                                <div id="rom_directory_error" class="alert alert-danger settings-alert" role="alert"></div>
+                                <div id="rom_dir_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
                             <p class="help-block">
                                 Required: Set your ROM directory. The ROM directory is required for RetroArcher to function properly.
@@ -753,17 +753,17 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="retroarch_directory">RetroArch Directory</label>
+                            <label for="retroarch_dir">RetroArch Directory</label>
                             <div class="row">
                                 <div class="col-md-7">
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="retroarch_directory" name="retroarch_directory" value="${config['retroarch_directory']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#retroarch_directory_error"  data-parsley-error-message="Shortcuts are not recognized.">
+                                        <input type="text" class="form-control" id="retroarch_dir" name="retroarch_dir" value="${config['retroarch_dir']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#retroarch_dir_error"  data-parsley-error-message="Shortcuts are not recognized.">
                                         <span class="input-group-btn">
-                                            <button class="btn btn-form" type="button" id="retroarch_directory_browse" data-toggle="browse" data-filter=".folderonly" data-target="#retroarch_directory">Browse</button>
+                                            <button class="btn btn-form" type="button" id="retroarch_dir_browse" data-toggle="browse" data-filter=".folderonly" data-target="#retroarch_dir">Browse</button>
                                         </span>
                                     </div>
                                 </div>
-                                <div id="retroarch_directory_error" class="alert alert-danger settings-alert" role="alert"></div>
+                                <div id="retroarch_dir_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
                             <p class="help-block">
                                 Optional: Set the directory for RetroArch. RetroArch is required for emulation of most platforms.
@@ -777,17 +777,17 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="cemu_directory">CEMU Directory</label>
+                            <label for="cemu_dir">CEMU Directory</label>
                             <div class="row">
                                 <div class="col-md-7">
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="cemu_directory" name="cemu_directory" value="${config['cemu_directory']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#cemu_directory_error"  data-parsley-error-message="Shortcuts are not recognized.">
+                                        <input type="text" class="form-control" id="cemu_dir" name="cemu_dir" value="${config['cemu_dir']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#cemu_dir_error"  data-parsley-error-message="Shortcuts are not recognized.">
                                         <span class="input-group-btn">
-                                            <button class="btn btn-form" type="button" id="cemu_directory_browse" data-toggle="browse" data-filter=".folderonly" data-target="#cemu_directory">Browse</button>
+                                            <button class="btn btn-form" type="button" id="cemu_dir_browse" data-toggle="browse" data-filter=".folderonly" data-target="#cemu_dir">Browse</button>
                                         </span>
                                     </div>
                                 </div>
-                                <div id="cemu_directory_error" class="alert alert-danger settings-alert" role="alert"></div>
+                                <div id="cemu_dir_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
                             <p class="help-block">
                                 Optional: Set the directory for CEMU. CEMU is required for Nintnedo Wii U emulation.
@@ -801,17 +801,17 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="rpcs3_directory">RPCS3 Directory</label>
+                            <label for="rpcs3_dir">RPCS3 Directory</label>
                             <div class="row">
                                 <div class="col-md-7">
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="rpcs3_directory" name="rpcs3_directory" value="${config['rpcs3_directory']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#rpcs3_directory_error"  data-parsley-error-message="Shortcuts are not recognized.">
+                                        <input type="text" class="form-control" id="rpcs3_dir" name="rpcs3_dir" value="${config['rpcs3_dir']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#rpcs3_dir_error"  data-parsley-error-message="Shortcuts are not recognized.">
                                         <span class="input-group-btn">
-                                            <button class="btn btn-form" type="button" id="rpcs3_directory_browse" data-toggle="browse" data-filter=".folderonly" data-target="#rpcs3_directory">Browse</button>
+                                            <button class="btn btn-form" type="button" id="rpcs3_dir_browse" data-toggle="browse" data-filter=".folderonly" data-target="#rpcs3_dir">Browse</button>
                                         </span>
                                     </div>
                                 </div>
-                                <div id="rpcs3_directory_error" class="alert alert-danger settings-alert" role="alert"></div>
+                                <div id="rpcs3_dir_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
                             <p class="help-block">
                                 Optional: Set the directory for RPCS3. RPCS3 is required for Sony PlayStation 3 emulation.
