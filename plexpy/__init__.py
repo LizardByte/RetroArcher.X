@@ -178,6 +178,7 @@ def initialize(config_file):
             CONFIG.CACHE_DIR = CONFIG.CACHE_DIR.replace(old_data_dir, DATA_DIR)
             CONFIG.EXPORT_DIR = CONFIG.EXPORT_DIR.replace(old_data_dir, DATA_DIR)
             CONFIG.NEWSLETTER_DIR = CONFIG.NEWSLETTER_DIR.replace(old_data_dir, DATA_DIR)
+            CONFIG.EMULATOR_DIR = CONFIG.EMULATOR_DIR.replace(old_data_dir, DATA_DIR)
 
         if CONFIG.HTTP_PORT < 21 or CONFIG.HTTP_PORT > 65535:
             logger.warn("HTTP_PORT out of bounds: 21 < %s < 65535", CONFIG.HTTP_PORT)
@@ -244,6 +245,16 @@ def initialize(config_file):
             CONFIG.EXPORT_DIR, os.path.join(DATA_DIR, 'exports'), 'exports')
         CONFIG.NEWSLETTER_DIR, _ = check_folder_writable(
             CONFIG.NEWSLETTER_DIR, os.path.join(DATA_DIR, 'newsletters'), 'newsletters')
+        CONFIG.EMULATOR_DIR, _ = check_folder_writable(
+            CONFIG.EMULATOR_DIR, os.path.join(DATA_DIR, 'emulators'), 'emulators')
+        CONFIG.RETROARCH_DIR, _ = check_folder_writable(
+            CONFIG.RETROARCH_DIR, os.path.join(DATA_DIR, 'emulators', 'retroarch'), 'retroarch')
+        CONFIG.RPCS3_DIR, _ = check_folder_writable(
+            CONFIG.RPCS3_DIR, os.path.join(DATA_DIR, 'emulators', 'rpcs3'), 'rpcs3')
+        CONFIG.CEMU_DIR, _ = check_folder_writable(
+            CONFIG.CEMU_DIR, os.path.join(DATA_DIR, 'emulators', 'cemu'), 'cemu')
+        CONFIG.TEMP_DIR, _ = check_folder_writable(
+            CONFIG.TEMP_DIR, os.path.join(DATA_DIR, 'temp'), 'temp')
 
         # Initialize the database
         logger.info("Checking if the database upgrades are required...")
