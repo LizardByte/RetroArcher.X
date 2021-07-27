@@ -18,6 +18,7 @@ version.lock
 logs/*
 backups/*
 cache/*
+emulators/*
 exports/*
 newsletters/*
 *.mmdb
