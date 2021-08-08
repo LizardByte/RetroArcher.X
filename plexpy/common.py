@@ -229,7 +229,12 @@ SCHEDULER_LIST = [
     ('Refresh Plex server URLs', 'scheduled'),
     ('Optimize RetroArcher database', 'scheduled'),
     ('Backup RetroArcher database', 'scheduled'),
-    ('Backup RetroArcher config', 'scheduled')
+    ('Backup RetroArcher config', 'scheduled'),
+    ('RetroArch Update', 'scheduled'),
+    ('Scan games', 'scheduled'),
+    ('Generate library videos', 'scheduled'),
+    ('Empty trash', 'scheduled'),
+    ('Clean empty Plex collections', 'scheduled')
 ]
 SCHEDULER_LIST = OrderedDict(SCHEDULER_LIST)
 
