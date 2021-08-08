@@ -46,8 +46,10 @@ if PYTHON2:
     import web_socket
     import webstart
     import config
-    import scanner
+
     import collections
+    import emulators
+    import scanner
 else:
     from plexpy import activity_handler
     from plexpy import activity_pinger
@@ -70,8 +72,10 @@ else:
     from plexpy import web_socket
     from plexpy import webstart
     from plexpy import config
-    from plexpy import scanner
+
     from plexpy import collections
+    from plexpy import emulators
+    from plexpy import scanner
 
 
 PROG_DIR = None
@@ -253,6 +257,8 @@ def initialize(config_file):
             CONFIG.RPCS3_DIR, os.path.join(DATA_DIR, 'emulators', 'rpcs3'), 'rpcs3')
         CONFIG.CEMU_DIR, _ = check_folder_writable(
             CONFIG.CEMU_DIR, os.path.join(DATA_DIR, 'emulators', 'cemu'), 'cemu')
+        CONFIG.RESOURCE_DIR, _ = check_folder_writable(
+            CONFIG.RESOURCE_DIR, os.path.join(DATA_DIR, 'resources'), 'resources')
         CONFIG.TEMP_DIR, _ = check_folder_writable(
             CONFIG.TEMP_DIR, os.path.join(DATA_DIR, 'temp'), 'temp')
 
@@ -456,6 +462,8 @@ def initialize_scheduler():
                      hours=backup_hours, minutes=0, seconds=0, args=(True, True))
         schedule_job(config.make_backup, 'Backup RetroArcher config',
                      hours=backup_hours, minutes=0, seconds=0, args=(True, True))
+        schedule_job(emulators.RetroArch().update_base, 'RetroArch Update',
+                     hours=2, minutes=0, seconds=0)
         schedule_job(scanner.scan, 'Scan games',
                      hours=1, minutes=0, seconds=0)
         schedule_job(scanner.generate, 'Generate library videos',
