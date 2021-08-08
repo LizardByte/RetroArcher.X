@@ -38,3 +38,6 @@ urllib3==1.22
 websocket-client==0.57.0
 git+https://github.com/martinblech/xmltodict.git@579a00520315e30681e0f0f81de645ce5680ed47#egg=xmltodict # Tautulli uses unreleased version of xmltodict==0.9.2
 simplejson==3.17.0
+py7zr==0.16.1
+psutil==5.8.0
+pypresence==4.2.0
