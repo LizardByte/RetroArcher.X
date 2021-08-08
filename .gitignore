@@ -19,6 +19,7 @@ logs/*
 backups/*
 cache/*
 emulators/*
+temp/*
 exports/*
 newsletters/*
 *.mmdb
@@ -95,3 +96,6 @@ _ReSharper*/
 .snapcraft
 *_source.tar.bz2
 snap/.snapcraft
+
+# Include 7zip
+!resources/7zip/*
