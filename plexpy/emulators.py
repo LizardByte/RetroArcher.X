@@ -1,26 +1,54 @@
 import platform
 import os
 import re
+
 import requests
+import shutil
 import subprocess
 
 import plexpy
 from plexpy import logger
+from plexpy import download_helper
 
-supported_version = 'v1.9.7'
 
-
-class RetroArch(object):
+class RetroArch:
     """functions related to retroarch"""
 
     def get_current_version(self):
         """return the current version of retroarch"""
         retroarch_dir = plexpy.CONFIG.RETROARCH_DIR
 
-        version_full = subprocess.run([os.path.join(retroarch_dir, 'retroarch'), '--version'], capture_output=True)
-        version = re.search(r"(v(\d+)\.(\d+)\.\d+)", str(version_full.stderr)).group(0)
+        try:
+            version_full = subprocess.run([os.path.join(retroarch_dir, 'retroarch'), '--version'], capture_output=True)
+        except FileNotFoundError:
+            return False
 
-        return version
+        current = re.search(r"(v(\d+)\.(\d+)\.\d+)", str(version_full.stderr)).group(0)[1:]
+        logger.debug("RetroArcher Emulators :: Current version of RetroArch is %s" % (current))
+
+        return current
+
+    def get_latest_version(self):
+        """return the latest version from github"""
+        url = 'https://api.github.com/repos/libretro/retroarch/releases'
+
+        try:
+            response = requests.get(url)
+        except requests.RequestException as e:
+            logger.error("RetroArcher Emulators :: Download error: %s" % (e))
+            return False
+
+        releases = response.json()
+
+        for release in releases:
+            if not release['prerelease'] and not release['draft']:
+                #latest = value['tag_name'][1:]  # example result "v1.9.7" before stripping off the v
+                latest = re.search(r"(v(\d+)\.(\d+)\.\d+)", release['tag_name']).group(0)[1:]
+                logger.info("RetroArcher Emulators :: Latest RetroArch version: %s" % (latest))
+                return latest
+
+        logger.error("RetroArcher Emulators :: Unable to find release of RetroArch")
+        return False
 
     def get_os_build(self):
         """return the os build needed to build the download url"""
@@ -28,6 +56,10 @@ class RetroArch(object):
             'Darwin': 'apple',
             'Linux': 'linux',
             'Windows': 'windows'
+        }
+
+        retroarch_machine_map = {
+            'AMD64': 'x86_64'
         }
 
         os_platform = retroarch_platform_map[platform.system()]
@@ -44,6 +76,11 @@ class RetroArch(object):
         elif os_platform == 'linux' or os_platform == 'windows':
             if os_machine == 'x86_64' or os_machine == 'x86':
                 sub_platform = '%s/RetroArch.7z' % (os_machine)
+            else:
+                try:
+                    sub_platform = '%s/RetroArch.7z' % (retroarch_machine_map[os_machine])
+                except KeyError:
+                    pass
 
         try:
             logger.debug("RetroArcher Emulators :: Sub platform for RetroArch is %s" % (sub_platform))
@@ -52,7 +89,7 @@ class RetroArch(object):
             logger.error("RetroArcher Emulators :: Could not detect sub platform for RetroArch")
             return os_platform, False
 
-    def launch_emu(self):
+    def launch_emu(self, core, game):
         """Function to launch emulator with core and game"""
         core = r"cores\mupen64plus_next_libretro.dll"
         game = r"\\archer\l\RetroArcher\roms\Nintendo 64\007 - GoldenEye (USA).zip"
@@ -69,10 +106,9 @@ class RetroArch(object):
         """Function installs/updates retroarch"""
         current_version = self.get_current_version()
 
-        if current_version != supported_version:
-            logger.debug("RetroArcher Emulators :: Current version of RetroArch is %s" % (current_version))
-            logger.debug("RetroArcher Emulators :: Latest supported version of RetroArch is %s" % (supported_version))
+        latest_version = self.get_latest_version()
 
+        if current_version != latest_version:
             os_platform, sub_platform = self.get_os_build()
 
             if not sub_platform:
@@ -80,8 +116,25 @@ class RetroArch(object):
 
             retroarch_os_build = '%s/%s' % (os_platform, sub_platform)
 
-            download_url = 'https://buildbot.libretro.com/stable/%s/%s' % (supported_version, retroarch_os_build)
+            download_url = 'https://buildbot.libretro.com/stable/%s/%s' % (latest_version, retroarch_os_build)
+
+            temp_dir = os.path.join(plexpy.CONFIG.TEMP_DIR, 'retroarch')
+
+            download = download_helper.download_file(download_url, temp_dir)
+
+            if not download:  # cannot continue
+                logger.error("RetroArcher Emulators :: Cannot install/update RetroArch")
+                return False
+
+            root_dir = download_helper.extract_archive(download, temp_dir)
+
+            updated = download_helper.merge_update(os.path.join(temp_dir, root_dir), plexpy.CONFIG.RETROARCH_DIR)
+
+            shutil.rmtree(temp_dir)
+
+            return updated
 
         else:
             logger.debug(
                 "RetroArcher Emulators :: The latest supported version of RetroArch is already added to RetroArcher")
+            return True
