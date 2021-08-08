@@ -76,6 +76,10 @@ DOCUMENTATION :: END
             <td>${sys.version}</td>
         </tr>
         <tr>
+            <td>RetroArch Version:</td>
+            <td>${plexpy.emulators.RetroArch().get_current_version()}</td>
+        </tr>
+        <tr>
             <td class="top-line">Resources:</td>
             <td class="top-line">
                 <a class="no-highlight" href="${anon_url('https://retroarcher.github.io')}" target="_blank" rel="noreferrer">RetroArcher Website</a> |
