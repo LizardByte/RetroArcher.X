@@ -69,9 +69,9 @@ def extract_archive(archive_file, destination_folder):
 
     if extension == 'zip':
         with zipfile.ZipFile(archive_file, 'r') as archive:
-            root_folder = archive.getinfo()[0]
+            root_folder = archive.namelist()[0]
             archive.extractall(path=destination_folder)
-    elif extension == '7z' or extension == 'exe':
+    elif extension == '7z':
         with py7zr.SevenZipFile(archive_file, 'r') as archive:
             root_folder = archive.getnames()[0]
             methods = archive.archiveinfo().method_names
@@ -92,7 +92,16 @@ def extract_archive(archive_file, destination_folder):
                         return False
 
                     if sevenzip:
-                        command_args = [seven_zip_binary, 'x', archive_file, f'-o{destination_folder}', '-aoa', '-bd', '-y']
+                        command_args = [
+                            seven_zip_binary,
+                            'x',
+                            archive_file,
+                            f'-o{destination_folder}',
+                            '-aoa',
+                            '-bd',
+                            '-y'
+                        ]
+
                         try:
                             proc = subprocess.run(command_args, check=True)
                         except subprocess.CalledProcessError as cpe:
@@ -102,11 +111,17 @@ def extract_archive(archive_file, destination_folder):
                             return False
                 else:
                     logger.error("RetroArcher Download Helper :: Cannot extract file %s" % (archive_file))
+                    return False
+
+    os.remove(archive_file)  # delete the archive file
 
     try:
         return root_folder
     except NameError:
-        return False
+        if os.path.isdir(destination_folder):
+            return destination_folder
+        else:
+            return False
 
 
 def make_dir(directory):
