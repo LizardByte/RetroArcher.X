@@ -462,8 +462,8 @@ def initialize_scheduler():
                      hours=backup_hours, minutes=0, seconds=0, args=(True, True))
         schedule_job(config.make_backup, 'Backup RetroArcher config',
                      hours=backup_hours, minutes=0, seconds=0, args=(True, True))
-        schedule_job(emulators.RetroArch().update_base, 'RetroArch Update',
-                     hours=2, minutes=0, seconds=0)
+        schedule_job(emulators.RetroArch().update_base, 'Update RetroArch',
+                     hours=24, minutes=0, seconds=0)
         schedule_job(scanner.scan, 'Scan games',
                      hours=1, minutes=0, seconds=0)
         schedule_job(scanner.generate, 'Generate library videos',
@@ -472,6 +472,13 @@ def initialize_scheduler():
                      hours=1, minutes=0, seconds=0)
         schedule_job(collections.clean, 'Clean empty Plex collections',
                      hours=1, minutes=0, seconds=0)
+
+        if CONFIG.RETROARCH_NIGHTLY_ASSETS == 1:
+            schedule_job(emulators.RetroArch().update_assets, 'Update RetroArch assets',
+                         hours=24, minutes=0, seconds=0)
+        else:
+            schedule_job(emulators.RetroArch().update_assets, 'Update RetroArch assets',
+                         hours=0, minutes=0, seconds=0)
 
         if WS_CONNECTED and CONFIG.PMS_IP and CONFIG.PMS_TOKEN:
             schedule_job(plextv.get_server_resources, 'Refresh Plex server URLs',

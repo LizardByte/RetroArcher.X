@@ -70,24 +70,28 @@ class RetroArch:
 
         if os_platform == 'apple':
             if os_machine == 'x86_64':
-                sub_platform = 'osx/%s/RetroArch.dmg' % (os_machine)
+                sub_platform = 'osx/%s' % (os_machine)
             else:
-                sub_platform = 'osx/universal/RetroArch.dmg'
+                sub_platform = 'osx/universal'
+            base_file = 'RetroArch.dmg'
+            core_file = None
         elif os_platform == 'linux' or os_platform == 'windows':
             if os_machine == 'x86_64' or os_machine == 'x86':
-                sub_platform = '%s/RetroArch.7z' % (os_machine)
+                sub_platform = os_machine
             else:
                 try:
-                    sub_platform = '%s/RetroArch.7z' % (retroarch_machine_map[os_machine])
+                    sub_platform = retroarch_machine_map[os_machine]
                 except KeyError:
                     pass
+            base_file = 'RetroArch.7z'
+            core_file = 'RetroArch_cores.7z'
 
         try:
             logger.debug("RetroArcher Emulators :: Sub platform for RetroArch is %s" % (sub_platform))
-            return os_platform, sub_platform
+            return os_platform, sub_platform, base_file, core_file
         except NameError:
             logger.error("RetroArcher Emulators :: Could not detect sub platform for RetroArch")
-            return os_platform, False
+            return os_platform, False, base_file, core_file
 
     def launch_emu(self, core, game):
         """Function to launch emulator with core and game"""
@@ -109,12 +113,12 @@ class RetroArch:
         latest_version = self.get_latest_version()
 
         if current_version != latest_version:
-            os_platform, sub_platform = self.get_os_build()
+            os_platform, sub_platform, base_file, core_file = self.get_os_build()
 
             if not sub_platform:
                 return False
 
-            retroarch_os_build = '%s/%s' % (os_platform, sub_platform)
+            retroarch_os_build = '%s/%s/%s' % (os_platform, sub_platform, base_file)
 
             download_url = 'https://buildbot.libretro.com/stable/%s/%s' % (latest_version, retroarch_os_build)
 
@@ -133,7 +137,7 @@ class RetroArch:
 
             # shutil.rmtree(temp_dir)
 
-            self.update_assets()
+            self.update_assets(['cheats'])
 
             return updated
 
@@ -142,7 +146,7 @@ class RetroArch:
                 "RetroArcher Emulators :: The latest supported version of RetroArch is already added to RetroArcher")
             return True
 
-    def update_assets(self):
+    def update_assets(self, list_assets='*'):
         """Update Core info files and individual core files"""
         assets = {
             'assets': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'assets'),
@@ -158,26 +162,62 @@ class RetroArch:
         }
 
         for key, value in assets.items():
-            download_url = f'https://buildbot.libretro.com/assets/frontend/{key}.zip'
-            temp_dir = os.path.join(plexpy.CONFIG.TEMP_DIR, 'retroarch')
-            destination_dir = value
+            if key in list_assets or list_assets == '*':
+                download_url = f'https://buildbot.libretro.com/assets/frontend/{key}.zip'
+                temp_dir = os.path.join(plexpy.CONFIG.TEMP_DIR, 'retroarch')
+                destination_dir = value
 
-            if not os.path.isdir(destination_dir):
-                self.update_base()
+                if not os.path.isdir(destination_dir):
+                    self.update_base()
 
-            # updated = self.update(download_url, temp_dir, destination_dir)
+                # updated = self.update(download_url, temp_dir, destination_dir)
 
-            download = download_helper.download_file(download_url, temp_dir)
+                download = download_helper.download_file(download_url, temp_dir)
 
-            if not download:  # cannot continue
-                logger.error("RetroArcher Emulators :: Cannot update RetroArch asset %s" % (key))
-                return False
+                if not download:  # cannot continue
+                    logger.error("RetroArcher Emulators :: Cannot update RetroArch asset %s" % (key))
+                    return False
 
-            extracted_dir = os.path.join(temp_dir, key)
-            root_dir = download_helper.extract_archive(download, extracted_dir)
+                extracted_dir = os.path.join(temp_dir, key)
+                root_dir = download_helper.extract_archive(download, extracted_dir)
 
-            updated = download_helper.merge_update(extracted_dir, destination_dir)
+                updated = download_helper.merge_update(extracted_dir, destination_dir)
 
-            # shutil.rmtree(temp_dir)
+                # shutil.rmtree(temp_dir)
+
+        self.update_cores()
+
+        return updated
+
+    def update_cores(self):
+        """Update individual core files"""
+
+        os_platform, sub_platform, base_file, core_file = self.get_os_build()
+
+        if not sub_platform:
+            return False
+
+        retroarch_os_build = '%s/%s/%s' % (os_platform, sub_platform, core_file)
+
+        if plexpy.CONFIG.RETROARCH_NIGHTLY_ASSETS == 0:  # get stable cores from time of app release
+            latest_version = self.get_latest_version()
+            download_url = 'https://buildbot.libretro.com/stable/%s/%s' % (latest_version, retroarch_os_build)
+        else:  # get nightly cores
+            download_url = 'https://buildbot.libretro.com/nightly/%s' % (retroarch_os_build)
+
+        temp_dir = os.path.join(plexpy.CONFIG.TEMP_DIR, 'retroarch')
+
+        download = download_helper.download_file(download_url, temp_dir)
+
+        if not download:  # cannot continue
+            logger.error("RetroArcher Emulators :: Cannot install/update RetroArch cores")
+            return False
+
+        root_dir = download_helper.extract_archive(download, temp_dir)
+        destination_dir = plexpy.CONFIG.RETROARCH_DIR
+
+        updated = download_helper.merge_update(os.path.join(temp_dir, root_dir), destination_dir)
+
+        # shutil.rmtree(temp_dir)
 
         return updated

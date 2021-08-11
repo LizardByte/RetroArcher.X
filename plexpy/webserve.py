@@ -3225,6 +3225,7 @@ class WebInterface(object):
             "sys_tray_icon": checked(plexpy.CONFIG.SYS_TRAY_ICON),
             "rom_dir": plexpy.CONFIG.ROM_DIR,
             "retroarch_dir": plexpy.CONFIG.RETROARCH_DIR,
+            "retroarch_nightly_assets": plexpy.CONFIG.RETROARCH_NIGHTLY_ASSETS,
             "cemu_dir": plexpy.CONFIG.CEMU_DIR,
             "rpcs3_dir": plexpy.CONFIG.RPCS3_DIR,
         }
@@ -3264,7 +3265,8 @@ class WebInterface(object):
             "allow_guest_access", "cache_images", "http_proxy", "http_basic_auth", "notify_concurrent_by_ip",
             "history_table_activity", "plexpy_auto_update",
             "themoviedb_lookup", "tvmaze_lookup", "musicbrainz_lookup", "http_plex_admin",
-            "newsletter_self_hosted", "newsletter_inline_styles", "sys_tray_icon"
+            "newsletter_self_hosted", "newsletter_inline_styles", "sys_tray_icon",
+            "retroarch_nightly_assets"
         ]
         for checked_config in checked_configs:
             if checked_config not in kwargs:
@@ -3314,7 +3316,8 @@ class WebInterface(object):
                 kwargs.get('refresh_users_interval') != str(plexpy.CONFIG.REFRESH_USERS_INTERVAL) or \
                 kwargs.get('pms_update_check_interval') != str(plexpy.CONFIG.PMS_UPDATE_CHECK_INTERVAL) or \
                 kwargs.get('monitor_pms_updates') != plexpy.CONFIG.MONITOR_PMS_UPDATES or \
-                kwargs.get('pms_url_manual') != plexpy.CONFIG.PMS_URL_MANUAL:
+                kwargs.get('pms_url_manual') != plexpy.CONFIG.PMS_URL_MANUAL or \
+                kwargs.get('retroarch_nightly_assets') != plexpy.CONFIG.RETROARCH_NIGHTLY_ASSETS:
             reschedule = True
 
         # If we change the SSL setting for PMS or PMS remote setting, make sure we grab the new url.

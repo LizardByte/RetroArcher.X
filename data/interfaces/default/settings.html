@@ -770,7 +770,17 @@
                                 A complete folder path is required, shortcuts are not recognized, and the path must be accessible from the machine where RetroArcher is installed.
                             </p>
                         </div>
-                    
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="retroarch_nightly_assets" name="retroarch_nightly_assets" value="0" ${config['retroarch_nightly_assets']}> Update RetroArch assets daily
+                            </label>
+                            <p class="help-block">
+                                Enable to update RetroArch assets on a daily schedule.
+                                Warning: This may cause significant internet data usage.
+                            </p>
+                        </div>
+
                         % if common.PLATFORM in ('Windows'):
                         <div class="padded-header">
                             <h3>Nintendo Wii U</h3>

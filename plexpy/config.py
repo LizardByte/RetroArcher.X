@@ -187,6 +187,7 @@ _CONFIG_DEFINITIONS = {
     'ROM_DIR':  (str, 'Games', ''),
     'EMULATOR_DIR': (str, 'Emulators', ''),
     'RETROARCH_DIR':  (str, 'Emulators', ''),
+    'RETROARCH_NIGHTLY_ASSETS':  (int, 'Emulators', 0),
     'CEMU_DIR':  (str, 'Emulators', ''),
     'RPCS3_DIR':  (str, 'Emulators', ''),
     'TEMP_DIR':  (str, 'Emulators', ''),
