@@ -127,10 +127,13 @@ class RetroArch:
                 return False
 
             root_dir = download_helper.extract_archive(download, temp_dir)
+            destination_dir = plexpy.CONFIG.RETROARCH_DIR
 
-            updated = download_helper.merge_update(os.path.join(temp_dir, root_dir), plexpy.CONFIG.RETROARCH_DIR)
+            updated = download_helper.merge_update(os.path.join(temp_dir, root_dir), destination_dir)
 
-            shutil.rmtree(temp_dir)
+            # shutil.rmtree(temp_dir)
+
+            self.update_assets()
 
             return updated
 
@@ -138,3 +141,43 @@ class RetroArch:
             logger.debug(
                 "RetroArcher Emulators :: The latest supported version of RetroArch is already added to RetroArcher")
             return True
+
+    def update_assets(self):
+        """Update Core info files and individual core files"""
+        assets = {
+            'assets': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'assets'),
+            'autoconfig': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'autoconfig'),
+            'cheats': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'cheats'),
+            'database-cursors': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'database', 'cursors'),
+            'database-rdb': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'database', 'rdb'),
+            'info': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'info'),
+            'overlays': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'overlays'),
+            'shaders_cg': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'shaders', 'shaders_cg'),
+            'shaders_glsl': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'shaders', 'shaders_glsl'),
+            'shaders_slang': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'shaders', 'shaders_slang')
+        }
+
+        for key, value in assets.items():
+            download_url = f'https://buildbot.libretro.com/assets/frontend/{key}.zip'
+            temp_dir = os.path.join(plexpy.CONFIG.TEMP_DIR, 'retroarch')
+            destination_dir = value
+
+            if not os.path.isdir(destination_dir):
+                self.update_base()
+
+            # updated = self.update(download_url, temp_dir, destination_dir)
+
+            download = download_helper.download_file(download_url, temp_dir)
+
+            if not download:  # cannot continue
+                logger.error("RetroArcher Emulators :: Cannot update RetroArch asset %s" % (key))
+                return False
+
+            extracted_dir = os.path.join(temp_dir, key)
+            root_dir = download_helper.extract_archive(download, extracted_dir)
+
+            updated = download_helper.merge_update(extracted_dir, destination_dir)
+
+            # shutil.rmtree(temp_dir)
+
+        return updated
