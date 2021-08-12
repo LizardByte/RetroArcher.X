@@ -462,7 +462,7 @@ def initialize_scheduler():
                      hours=backup_hours, minutes=0, seconds=0, args=(True, True))
         schedule_job(config.make_backup, 'Backup RetroArcher config',
                      hours=backup_hours, minutes=0, seconds=0, args=(True, True))
-        schedule_job(emulators.RetroArch().update_base, 'Update RetroArch',
+        schedule_job(emulators.update_emulators, 'Update Emulators',
                      hours=24, minutes=0, seconds=0)
         schedule_job(scanner.scan, 'Scan games',
                      hours=1, minutes=0, seconds=0)

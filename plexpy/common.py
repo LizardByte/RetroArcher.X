@@ -230,7 +230,7 @@ SCHEDULER_LIST = [
     ('Optimize RetroArcher database', 'scheduled'),
     ('Backup RetroArcher database', 'scheduled'),
     ('Backup RetroArcher config', 'scheduled'),
-    ('Update RetroArch', 'scheduled'),
+    ('Update Emulators', 'scheduled'),
     ('Update RetroArch assets', 'scheduled'),
     ('Scan games', 'scheduled'),
     ('Generate library videos', 'scheduled'),
