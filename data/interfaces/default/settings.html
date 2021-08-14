@@ -756,26 +756,7 @@
                     <div role="tabpanel" class="tab-pane" id="tabs-emulators">
                     
                         <div class="padded-header">
-                            <h3>Multi Platform</h3>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="retroarch_dir">RetroArch Directory</label>
-                            <div class="row">
-                                <div class="col-md-7">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="retroarch_dir" name="retroarch_dir" value="${config['retroarch_dir']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#retroarch_dir_error"  data-parsley-error-message="Shortcuts are not recognized.">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-form" type="button" id="retroarch_dir_browse" data-toggle="browse" data-filter=".folderonly" data-target="#retroarch_dir">Browse</button>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div id="retroarch_dir_error" class="alert alert-danger settings-alert" role="alert"></div>
-                            </div>
-                            <p class="help-block">
-                                Optional: Set the directory for RetroArch. RetroArch is required for emulation of most platforms.
-                                A complete folder path is required, shortcuts are not recognized, and the path must be accessible from the machine where RetroArcher is installed.
-                            </p>
+                            <h3>RetroArch [Platform: Multiple]</h3>
                         </div>
 
                         <div class="checkbox">
@@ -790,50 +771,12 @@
 
                         % if common.PLATFORM in ('Windows'):
                         <div class="padded-header">
-                            <h3>Nintendo Wii U</h3>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="cemu_dir">CEMU Directory</label>
-                            <div class="row">
-                                <div class="col-md-7">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="cemu_dir" name="cemu_dir" value="${config['cemu_dir']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#cemu_dir_error"  data-parsley-error-message="Shortcuts are not recognized.">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-form" type="button" id="cemu_dir_browse" data-toggle="browse" data-filter=".folderonly" data-target="#cemu_dir">Browse</button>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div id="cemu_dir_error" class="alert alert-danger settings-alert" role="alert"></div>
-                            </div>
-                            <p class="help-block">
-                                Optional: Set the directory for CEMU. CEMU is required for Nintnedo Wii U emulation.
-                                A complete folder path is required, shortcuts are not recognized, and the path must be accessible from the machine where RetroArcher is installed.
-                            </p>
+                            <h3>Cemu [Platform: Nintendo Wii U]</h3>
                         </div>
                         % endif
                         
                         <div class="padded-header">
-                            <h3>Sony PlayStation 3</h3>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="rpcs3_dir">RPCS3 Directory</label>
-                            <div class="row">
-                                <div class="col-md-7">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="rpcs3_dir" name="rpcs3_dir" value="${config['rpcs3_dir']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#rpcs3_dir_error"  data-parsley-error-message="Shortcuts are not recognized.">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-form" type="button" id="rpcs3_dir_browse" data-toggle="browse" data-filter=".folderonly" data-target="#rpcs3_dir">Browse</button>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div id="rpcs3_dir_error" class="alert alert-danger settings-alert" role="alert"></div>
-                            </div>
-                            <p class="help-block">
-                                Optional: Set the directory for RPCS3. RPCS3 is required for Sony PlayStation 3 emulation.
-                                A complete folder path is required, shortcuts are not recognized, and the path must be accessible from the machine where RetroArcher is installed.
-                            </p>
+                            <h3>RPCS3 [Platform: Sony PlayStation 3]</h3>
                         </div>
                         
                         <p><input type="button" class="btn btn-bright save-button" value="Save" data-success="Changes saved successfully"></p>
