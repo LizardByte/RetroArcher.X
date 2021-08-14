@@ -41,3 +41,4 @@ simplejson==3.17.0
 py7zr==0.16.1
 psutil==5.8.0
 pypresence==4.2.0
+pywin32==301
