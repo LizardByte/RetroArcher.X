@@ -2,6 +2,7 @@ import platform
 import os
 import re
 
+from bs4 import BeautifulSoup
 import requests
 import shutil
 import subprocess
@@ -23,7 +24,7 @@ class RetroArch:
         except FileNotFoundError:
             return False
 
-        current = re.search(r"(v(\d+)\.(\d+)\.\d+)", str(version_full.stderr)).group(0)[1:]
+        current = re.search(r"(v((\d+)\.(\d+)\.(\d+)))", str(version_full.stderr)).group(2)
         logger.debug("RetroArcher Emulators :: Current version of RetroArch is %s" % (current))
 
         return current
@@ -243,7 +244,6 @@ class RPCS3:
     def get_latest_version(self, sub_platform, base_file_ends_with):
         """return the latest version from github"""
         url = f'https://api.github.com/repos/rpcs3/{sub_platform}/releases'
-        print(url)
 
         try:
             response = requests.get(url)
@@ -345,8 +345,129 @@ class RPCS3:
             return True
 
 
+class Cemu:
+    """functions related to cemu"""
+
+    def get_current_version(self):
+        """return the current version of cemu"""
+        emulator_dir = plexpy.CONFIG.CEMU_DIR
+
+        file_info = plexpy.helpers.get_file_properties(os.path.join(emulator_dir, 'cemu.exe'))
+        current = file_info['StringFileInfo']['ProductVersion']
+        logger.debug("RetroArcher Emulators :: Current version of Cemu is %s" % (current))
+
+        return current
+
+    def get_latest_version(self):
+        """return the latest version from cemu website"""
+        url = 'https://cemu.info'
+
+        try:
+            response = requests.get(url)
+        except requests.RequestException as e:
+            logger.error("RetroArcher Emulators :: Requests error: %s" % (e))
+            return False
+
+        soup = BeautifulSoup(response.content, "lxml")
+
+        for item in soup.find_all('p', class_='font-big custom'):
+            latest = False
+            try:
+                latest = re.search(r"(Cemu ((\d+)\.(\d+)\.(\d+\w*)) \(((\d{4})\-(\d{2})\-(\d{2}))\))",
+                                   item.string.strip()).group(2)
+            except AttributeError:
+                pass
+
+            try:
+                if latest:
+                    logger.info("RetroArcher Emulators :: Latest Cemu version: %s" % (latest))
+                    break
+            except NameError:
+                pass
+
+        for item in soup.find_all('a', class_='btn btn-info btn-lg btn-block'):
+            base_file = item.get('href')
+            if base_file.endswith('.zip'):
+                return latest, base_file
+
+        logger.error("RetroArcher Emulators :: Unable to find release of Cemu")
+        return False
+
+    def get_os_build(self):
+        """return the os build, cemu only supports windows"""
+        emulator_platform_map = {
+            'Darwin': 'mac',
+            'Linux': 'linux',
+            'Windows': 'windows'
+        }
+
+        os_platform = emulator_platform_map[platform.system()]
+
+        if os_platform == 'mac':
+            logger.debug("RetroArcher Emulators :: Platform %s not supported by Cemu" % (os_platform))
+            return False
+        elif os_platform == 'linux':
+            logger.debug("RetroArcher Emulators :: Platform %s not supported by Cemu" % (os_platform))
+            return False
+        elif os_platform == 'windows':
+            logger.debug("RetroArcher Emulators :: Platform for Cemu is %s" % (os_platform))
+            return True
+        else:
+            logger.debug("RetroArcher Emulators :: Platform not supported by Cemu")
+            return False
+
+    def launch_emu(self, game):
+        """Function to launch emulator"""
+        game = r"\\archer\l\RetroArcher\roms\Nintendo WiiU\..."
+
+        emulator = subprocess.run(['cemu', "-L", game], capture_output=True)
+
+        if emulator.stdout == b'' and emulator.stderr == b'':
+            logger.error("RetroArcher Emulators :: Cemu failed to start game %s" % (game))
+            return False
+        else:
+            return True
+
+    def update_base(self):
+        """Function installs/updates cemu"""
+        current_version = self.get_current_version()
+
+        supported = self.get_os_build()
+
+        if not supported:
+            return False
+
+        latest_version, base_file = self.get_latest_version()
+
+        if current_version != latest_version:
+
+            download_url = base_file
+
+            temp_dir = os.path.join(plexpy.CONFIG.TEMP_DIR, 'cemu')
+
+            download = download_helper.download_file(download_url, temp_dir)
+
+            if not download:  # cannot continue
+                logger.error("RetroArcher Emulators :: Cannot install/update Cemu")
+                return False
+
+            root_dir = download_helper.extract_archive(download, temp_dir)
+            destination_dir = plexpy.CONFIG.CEMU_DIR
+
+            updated = download_helper.merge_update(os.path.join(temp_dir, root_dir), destination_dir)
+
+            # shutil.rmtree(temp_dir)
+
+            return updated
+
+        else:
+            logger.debug(
+                "RetroArcher Emulators :: The latest supported version of Cemu is already added to RetroArcher")
+            return True
+
+
 def update_emulators():
-    emulators = [RetroArch, RPCS3]
+    emulators = [RetroArch, RPCS3, Cemu]
 
     for emulator in emulators:
         emulator().update_base()
