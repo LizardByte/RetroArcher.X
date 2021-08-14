@@ -21,6 +21,7 @@ httpagentparser==1.7.8
 IPy==0.83
 ipwhois==1.2.0 # Tautulli uses a patched version of 1.1.0... 1.2.0 tested, seems to be okay
 logutils==0.3.3
+lxml==4.6.3
 Mako==1.1.2
 musicbrainzngs==0.7
 # osxnotify==1.0 # does not appear to be same as publicly available osxnotify library
