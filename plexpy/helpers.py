@@ -34,10 +34,12 @@ import sys
 import time
 import unicodedata
 from future.moves.urllib.parse import urlencode
+import win32api
 from xml.dom import minidom
 import xmltodict
 
 import plexpy
+
 if plexpy.PYTHON2:
     import common
     import logger
@@ -62,6 +64,7 @@ def addtoapi(*dargs, **dkwargs):
             @addtoapi()
 
     """
+
     def rd(function):
         @wraps(function)
         def wrapper(*args, **kwargs):
@@ -92,7 +95,6 @@ def checked(variable):
 
 
 def radio(variable, pos):
-
     if variable == pos:
         return 'Checked'
     else:
@@ -146,7 +148,6 @@ def latinToAscii(unicrap, replace=False):
 
 
 def convert_milliseconds(ms):
-
     seconds = ms // 1000
     gmtime = time.gmtime(seconds)
     if seconds > 3600:
@@ -180,7 +181,6 @@ def seconds_to_minutes(s):
 
 
 def convert_seconds(s):
-
     gmtime = time.gmtime(s)
     if s > 3600:
         minutes = time.strftime("%H:%M:%S", gmtime)
@@ -191,7 +191,6 @@ def convert_seconds(s):
 
 
 def convert_seconds_to_minutes(s):
-
     if str(s).isdigit():
         minutes = round(float(s) / 60, 0)
 
@@ -298,7 +297,6 @@ def format_timedelta_Hms(td):
 
 
 def get_age(date):
-
     try:
         split_date = date.split('-')
     except:
@@ -313,7 +311,6 @@ def get_age(date):
 
 
 def bytes_to_mb(bytes):
-
     mb = float(bytes) / 1048576
     size = '%.1f MB' % mb
     return size
@@ -351,7 +348,6 @@ def piratesize(size):
 
 
 def replace_all(text, dic, normalize=False):
-
     if not text:
         return ''
 
@@ -378,7 +374,6 @@ def replace_illegal_chars(string, type="file"):
 
 
 def cleanName(string):
-
     pass1 = latinToAscii(string).lower()
     out_string = re.sub('[\.\-\/\!\@\#\$\%\^\&\*\(\)\+\-\"\'\,\;\:\[\]\{\}\<\>\=\_]', '', pass1).encode('utf-8')
 
@@ -386,7 +381,6 @@ def cleanName(string):
 
 
 def cleanTitle(title):
-
     title = re.sub('[\.\-\/\_]', ' ', title).lower()
 
     # Strip out extra whitespace
@@ -442,7 +436,8 @@ def split_path(f):
 
 def extract_logline(s):
     # Default log format
-    pattern = re.compile(r'(?P<timestamp>.*?)\s\-\s(?P<level>.*?)\s*\:\:\s(?P<thread>.*?)\s\:\s(?P<message>.*)', re.VERBOSE)
+    pattern = re.compile(r'(?P<timestamp>.*?)\s\-\s(?P<level>.*?)\s*\:\:\s(?P<thread>.*?)\s\:\s(?P<message>.*)',
+                         re.VERBOSE)
     match = pattern.match(s)
     if match:
         timestamp = match.group("timestamp")
@@ -526,7 +521,6 @@ def convert_xml_to_dict(xml):
 
 
 def get_percent(value1, value2):
-
     value1 = cast_to_float(value1)
     value2 = cast_to_float(value2)
 
@@ -646,11 +640,14 @@ def sort_helper(k, sort_key, sort_keys):
 def sanitize_out(*dargs, **dkwargs):
     """ Helper decorator that sanitized the output
     """
+
     def rd(function):
         @wraps(function)
         def wrapper(*args, **kwargs):
             return sanitize(function(*args, **kwargs))
+
         return wrapper
+
     return rd
 
 
@@ -697,7 +694,6 @@ def is_valid_ip(address):
 
 
 def whois_lookup(ip_address):
-
     nets = []
     err = None
     try:
@@ -708,7 +704,7 @@ def whois_lookup(ip_address):
         for net in nets:
             net['country'] = countries.get(net['country'])
             if net['postal_code']:
-                 net['postal_code'] = net['postal_code'].replace('-', ' ')
+                net['postal_code'] = net['postal_code'].replace('-', ' ')
     except ValueError as e:
         err = 'Invalid IP address provided: %s.' % ip_address
     except ipwhois.exceptions.IPDefinedError as e:
@@ -758,7 +754,8 @@ def upload_to_imgur(img_data, img_title='', rating_key='', fallback=''):
     img_url = delete_hash = ''
 
     if not plexpy.CONFIG.IMGUR_CLIENT_ID:
-        logger.error("RetroArcher Helpers :: Cannot upload image to Imgur. No Imgur client id specified in the settings.")
+        logger.error(
+            "RetroArcher Helpers :: Cannot upload image to Imgur. No Imgur client id specified in the settings.")
         return img_url, delete_hash
 
     headers = {'Authorization': 'Client-ID %s' % plexpy.CONFIG.IMGUR_CLIENT_ID}
@@ -777,9 +774,12 @@ def upload_to_imgur(img_data, img_title='', rating_key='', fallback=''):
         delete_hash = imgur_response_data.get('deletehash', '')
     else:
         if err_msg:
-            logger.error("RetroArcher Helpers :: Unable to upload image '{}' ({}) to Imgur: {}".format(img_title, fallback, err_msg))
+            logger.error(
+                "RetroArcher Helpers :: Unable to upload image '{}' ({}) to Imgur: {}".format(img_title, fallback,
+                                                                                              err_msg))
         else:
-            logger.error("RetroArcher Helpers :: Unable to upload image '{}' ({}) to Imgur.".format(img_title, fallback))
+            logger.error(
+                "RetroArcher Helpers :: Unable to upload image '{}' ({}) to Imgur.".format(img_title, fallback))
 
         if req_msg:
             logger.debug("RetroArcher Helpers :: Request response: {}".format(req_msg))
@@ -790,7 +790,8 @@ def upload_to_imgur(img_data, img_title='', rating_key='', fallback=''):
 def delete_from_imgur(delete_hash, img_title='', fallback=''):
     """ Deletes an image from Imgur """
     if not plexpy.CONFIG.IMGUR_CLIENT_ID:
-        logger.error("RetroArcher Helpers :: Cannot delete image from Imgur. No Imgur client id specified in the settings.")
+        logger.error(
+            "RetroArcher Helpers :: Cannot delete image from Imgur. No Imgur client id specified in the settings.")
         return False
 
     headers = {'Authorization': 'Client-ID %s' % plexpy.CONFIG.IMGUR_CLIENT_ID}
@@ -803,9 +804,12 @@ def delete_from_imgur(delete_hash, img_title='', fallback=''):
         return True
     else:
         if err_msg:
-            logger.error("RetroArcher Helpers :: Unable to delete image '{}' ({}) from Imgur: {}".format(img_title, fallback, err_msg))
+            logger.error(
+                "RetroArcher Helpers :: Unable to delete image '{}' ({}) from Imgur: {}".format(img_title, fallback,
+                                                                                                err_msg))
         else:
-            logger.error("RetroArcher Helpers :: Unable to delete image '{}' ({}) from Imgur.".format(img_title, fallback))
+            logger.error(
+                "RetroArcher Helpers :: Unable to delete image '{}' ({}) from Imgur.".format(img_title, fallback))
         return False
 
 
@@ -814,7 +818,8 @@ def upload_to_cloudinary(img_data, img_title='', rating_key='', fallback=''):
     img_url = ''
 
     if not plexpy.CONFIG.CLOUDINARY_CLOUD_NAME or not plexpy.CONFIG.CLOUDINARY_API_KEY or not plexpy.CONFIG.CLOUDINARY_API_SECRET:
-        logger.error("RetroArcher Helpers :: Cannot upload image to Cloudinary. Cloudinary settings not specified in the settings.")
+        logger.error(
+            "RetroArcher Helpers :: Cannot upload image to Cloudinary. Cloudinary settings not specified in the settings.")
         return img_url
 
     cloudinary.config(
@@ -837,7 +842,8 @@ def upload_to_cloudinary(img_data, img_title='', rating_key='', fallback=''):
         logger.debug("RetroArcher Helpers :: Image '{}' ({}) uploaded to Cloudinary.".format(img_title, fallback))
         img_url = response.get('url', '')
     except Exception as e:
-        logger.error("RetroArcher Helpers :: Unable to upload image '{}' ({}) to Cloudinary: {}".format(img_title, fallback, e))
+        logger.error(
+            "RetroArcher Helpers :: Unable to upload image '{}' ({}) to Cloudinary: {}".format(img_title, fallback, e))
 
     return img_url
 
@@ -845,7 +851,8 @@ def upload_to_cloudinary(img_data, img_title='', rating_key='', fallback=''):
 def delete_from_cloudinary(rating_key=None, delete_all=False):
     """ Deletes an image from Cloudinary """
     if not plexpy.CONFIG.CLOUDINARY_CLOUD_NAME or not plexpy.CONFIG.CLOUDINARY_API_KEY or not plexpy.CONFIG.CLOUDINARY_API_SECRET:
-        logger.error("RetroArcher Helpers :: Cannot delete image from Cloudinary. Cloudinary settings not specified in the settings.")
+        logger.error(
+            "RetroArcher Helpers :: Cannot delete image from Cloudinary. Cloudinary settings not specified in the settings.")
         return False
 
     cloudinary.config(
@@ -871,7 +878,8 @@ def cloudinary_transform(rating_key=None, width=1000, height=1500, opacity=100, 
     url = ''
 
     if not plexpy.CONFIG.CLOUDINARY_CLOUD_NAME or not plexpy.CONFIG.CLOUDINARY_API_KEY or not plexpy.CONFIG.CLOUDINARY_API_SECRET:
-        logger.error("RetroArcher Helpers :: Cannot transform image on Cloudinary. Cloudinary settings not specified in the settings.")
+        logger.error(
+            "RetroArcher Helpers :: Cannot transform image on Cloudinary. Cloudinary settings not specified in the settings.")
         return url
 
     cloudinary.config(
@@ -903,7 +911,9 @@ def cloudinary_transform(rating_key=None, width=1000, height=1500, opacity=100, 
         url, options = cloudinary_url('{}_{}'.format(fallback, rating_key), **img_options)
         logger.debug("RetroArcher Helpers :: Image '{}' ({}) transformed on Cloudinary.".format(img_title, fallback))
     except Exception as e:
-        logger.error("RetroArcher Helpers :: Unable to transform image '{}' ({}) on Cloudinary: {}".format(img_title, fallback, e))
+        logger.error(
+            "RetroArcher Helpers :: Unable to transform image '{}' ({}) on Cloudinary: {}".format(img_title, fallback,
+                                                                                                  e))
 
     return url
 
@@ -987,7 +997,7 @@ def human_file_size(bytes, si=True):
     else:
         return bytes
 
-    #thresh = 1000 if si else 1024
+    # thresh = 1000 if si else 1024
     thresh = 1024  # Always divide by 2^10 but display SI units
     if bytes < thresh:
         return str(bytes) + ' B'
@@ -1064,7 +1074,7 @@ def parse_condition_logic_string(s, num_cond=0):
                 stack.pop()
                 nest_and -= 1
 
-        elif bool_next and x == 'and' and i < len(tokens)-1:
+        elif bool_next and x == 'and' and i < len(tokens) - 1:
             stack[-1].append([])
             stack.append(stack[-1][-1])
             stack[-1].append(stack[-2].pop(-2))
@@ -1075,7 +1085,7 @@ def parse_condition_logic_string(s, num_cond=0):
             close_bracket_next = False
             nest_and += 1
 
-        elif bool_next and x == 'or' and i < len(tokens)-1:
+        elif bool_next and x == 'or' and i < len(tokens) - 1:
             stack[-1].append(x)
             cond_next = True
             bool_next = False
@@ -1395,7 +1405,7 @@ def dict_merge(a, b, path=None):
     return a
 
 
-#https://stackoverflow.com/a/26853961
+# https://stackoverflow.com/a/26853961
 def dict_update(*dict_args):
     """
     Given any number of dictionaries, shallow copy and merge into a new dict,
@@ -1666,3 +1676,54 @@ def short_season(title):
     if title.startswith('Season ') and title[7:].isdigit():
         return 'S%s' % title[7:]
     return title
+
+
+def get_file_properties(filename):
+    """
+    Read all properties of the given file return them as a dictionary... Windows only.
+    """
+    property_names = ('Comments', 'InternalName', 'ProductName',
+                      'CompanyName', 'LegalCopyright', 'ProductVersion',
+                      'FileDescription', 'LegalTrademarks', 'PrivateBuild',
+                      'FileVersion', 'OriginalFilename', 'SpecialBuild')
+
+    props = {'FixedFileInfo': None, 'StringFileInfo': None, 'FileVersion': None}
+
+    try:
+        # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
+        fixed_info = win32api.GetFileVersionInfo(filename, '\\')
+        props['FixedFileInfo'] = fixed_info
+        props['FileVersion'] = "%d.%d.%d.%d" % (
+            fixed_info['FileVersionMS'] / 65536,
+            fixed_info['FileVersionMS'] % 65536,
+            fixed_info['FileVersionLS'] / 65536,
+            fixed_info['FileVersionLS'] % 65536
+        )
+
+        # \VarFileInfo\Translation returns list of available (language, codepage)
+        # pairs that can be used to retreive string info. We are using only the first pair.
+        lang, codepage = win32api.GetFileVersionInfo(filename, '\VarFileInfo\Translation')[0]
+
+        # any other must be of the form \StringfileInfo\%04X%04X\parm_name, middle
+        # two are language/codepage pair returned from above
+
+        str_info = {}
+        for property_name in property_names:
+            str_info_path = u'\StringFileInfo\%04X%04X\%s' % (lang, codepage, property_name)
+
+            str_info[property_name] = win32api.GetFileVersionInfo(filename, str_info_path)
+
+        props['StringFileInfo'] = str_info
+    except:
+        pass
+
+    return props
+
+
+def glob_file_exists(full_file_path):
+    """Ignore extensions and check if file exists"""
+    import glob
+    if glob.glob(f'{full_file_path}.*'):
+        return True
+    else:
+        return False
