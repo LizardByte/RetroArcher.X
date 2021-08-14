@@ -3438,6 +3438,11 @@ class WebInterface(object):
 
     @cherrypy.expose
     @requireAuth(member_of("admin"))
+    def get_third_party_table(self, **kwargs):
+        return serve_template(templatename="third_party_table.html")
+
+    @cherrypy.expose
+    @requireAuth(member_of("admin"))
     def get_scheduler_table(self, **kwargs):
         return serve_template(templatename="scheduler_table.html")
 

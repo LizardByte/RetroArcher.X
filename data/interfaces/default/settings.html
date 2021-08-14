@@ -86,6 +86,13 @@
                             <br>
                         </div>
                         <div class="padded-header">
+                            <h3>Third Party</h3>
+                        </div>
+                        <div id="plexpy-third_party-table">
+                            <div class='text-muted'><i class="fa fa-refresh fa-spin"></i> Loading third party table...</div>
+                            <br>
+                        </div>
+                        <div class="padded-header">
                             <h3>RetroArcher Scheduled Tasks</h3>
                         </div>
                         <div id="plexpy-scheduler-table">
@@ -2210,6 +2217,17 @@ Rating: {rating}/10   --> Rating: /10
         });
     }
 
+    function getThirdPartyTable() {
+        $.ajax({
+            url: 'get_third_party_table',
+            cache: false,
+            async: true,
+            complete: function(xhr, status) {
+                $("#plexpy-third_party-table").html(xhr.responseText);
+            }
+        });
+    }
+
     function getSchedulerTable() {
         $.ajax({
             url: 'get_scheduler_table',
@@ -2390,6 +2408,7 @@ $(document).ready(function() {
         }
         $("#http_hashed_password").val($("#http_hash_password").is(":checked") ? 1 : 0);
         getConfigurationTable();
+        getThirdPartyTable();
         getSchedulerTable();
         getNotifiersTable();
         getNewslettersTable();
@@ -2477,6 +2496,7 @@ $(document).ready(function() {
 
     advancedSettings();
     getConfigurationTable();
+    getThirdPartyTable();
     getSchedulerTable();
     getNotifiersTable();
     getNewslettersTable();

@@ -1,0 +1,75 @@
+<%doc>
+USAGE DOCUMENTATION :: PLEASE LEAVE THIS AT THE TOP OF THIS FILE
+
+For Mako templating syntax documentation please visit: http://docs.makotemplates.org/en/latest/
+
+Filename:           third_party_table.html
+Version:            0.1
+
+DOCUMENTATION :: END
+</%doc>
+
+<%!
+    import os
+    import sys
+    import plexpy
+    from plexpy import common, logger
+    from plexpy.helpers import anon_url
+%>
+
+<table class="config-info-table small-muted">
+    <tbody>
+        % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'retroarch')):
+        <tr>
+            <td>RetroArch Version:</td>
+            <td>${plexpy.emulators.RetroArch().get_current_version()}</td>
+        </tr>
+        % endif
+        % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.RPCS3_DIR, 'rpcs3')):
+        <tr>
+            <td>RPCS3 Version:</td>
+            <td>${plexpy.emulators.RPCS3().get_current_version()}</td>
+        </tr>
+        % endif
+        % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.CEMU_DIR, 'cemu')):
+        <tr>
+            <td>Cemu Version:</td>
+            <td>${plexpy.emulators.Cemu().get_current_version()}</td>
+        </tr>
+        % endif
+        <tr>
+            <td class="top-line">Third Party Support:</td>
+            <td class="top-line">
+                <a class="no-highlight" href="${anon_url('https://discord.com/invite/C4amCeV')}" target="_blank" rel="noreferrer">RetroArch Discord</a> |
+                <a class="no-highlight" href="${anon_url('https://discord.me/rpcs3')}" target="_blank" rel="noreferrer">RPCS3 Discord</a> |
+                <a class="no-highlight" href="${anon_url('https://discord.gg/5psYsup')}" target="_blank" rel="noreferrer">Cemu Discord</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        $('.guidelines-modal-link').on('click', function (e) {
+            e.preventDefault();
+            $('#guidelines-type').text($(this).data('id'))
+            $('#guidelines-modal').modal();
+            $('#guidelines-continue').attr('href', $(this).attr('href')).on('click', function () {
+                $('#guidelines-modal').modal('hide');
+            });
+        });
+        $('.support-modal-link').on('click', function (e) {
+            e.preventDefault();
+            $('#support-modal').modal();
+            $('#support-continue').attr('href', $(this).attr('href')).on('click', function () {
+                $('#support-modal').modal('hide');
+            });
+        });
+
+        $('body').tooltip({
+            selector: '[data-toggle="tooltip"]',
+            container: 'body'
+        });
+
+    });
+</script>
