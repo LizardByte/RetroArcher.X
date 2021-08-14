@@ -17,7 +17,13 @@ DOCUMENTATION :: END
     from plexpy.helpers import anon_url
 %>
 
-<table class="config-info-table small-muted">
+<table class="config-scheduler-table small-muted">
+    <thead>
+        <tr>
+            <th>Application</th>
+            <th>Version</th>
+        </tr>
+    </thead>
     <tbody>
         % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'retroarch')):
         <tr>
@@ -37,12 +43,65 @@ DOCUMENTATION :: END
             <td>${plexpy.emulators.Cemu().get_current_version()}</td>
         </tr>
         % endif
+    </tbody>
+</table>
+
+<table class="config-scheduler-table small-muted">
+    <thead>
         <tr>
-            <td class="top-line">Third Party Support:</td>
-            <td class="top-line">
-                <a class="no-highlight" href="${anon_url('https://discord.com/invite/C4amCeV')}" target="_blank" rel="noreferrer">RetroArch Discord</a> |
-                <a class="no-highlight" href="${anon_url('https://discord.me/rpcs3')}" target="_blank" rel="noreferrer">RPCS3 Discord</a> |
+            <th>Application</th>
+            <th>Discord</th>
+            <th>Reddit</th>
+            <th>Website</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Moonlight</td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://moonlight-stream.org/discord')}" target="_blank" rel="noreferrer">Moonlight Discord</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://www.reddit.com/r/MoonlightStreaming')}" target="_blank" rel="noreferrer">Moonlight Unofficial Subreddit</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://moonlight-stream.org')}" target="_blank" rel="noreferrer">Moonlight Website</a>
+            </td>
+        </tr>
+        <tr>
+            <td>RetroArch</td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://discord.com/invite/C4amCeV')}" target="_blank" rel="noreferrer">RetroArch Discord</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://www.reddit.com/r/RetroArch')}" target="_blank" rel="noreferrer">RetroArch Subreddit</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://www.retroarch.com')}" target="_blank" rel="noreferrer">RetroArch Website</a>
+            </td>
+        </tr>
+        <tr>
+            <td>RPCS3</td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://discord.me/rpcs3')}" target="_blank" rel="noreferrer">RPCS3 Discord</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://www.reddit.com/r/rpcs3')}" target="_blank" rel="noreferrer">RPCS3 Subreddit</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://rpcs3.net')}" target="_blank" rel="noreferrer">RPCS3 Website</a>
+            </td>
+        </tr>
+        <tr>
+            <td>Cemu</td>
+            <td>
                 <a class="no-highlight" href="${anon_url('https://discord.gg/5psYsup')}" target="_blank" rel="noreferrer">Cemu Discord</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://www.reddit.com/r/cemu')}" target="_blank" rel="noreferrer">Cemu Subreddit</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('http://cemu.info')}" target="_blank" rel="noreferrer">Cemu Website</a>
             </td>
         </tr>
     </tbody>
