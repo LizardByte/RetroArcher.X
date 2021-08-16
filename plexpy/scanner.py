@@ -5,9 +5,12 @@ from plexpy import logger
 
 
 def scan():
+    logger.debug("RetroArcher Scanner :: Scan Task Initiated")
+
+    plexpy.emulators.update_mapping()  # update the platform to core mapping dictionary
+
     rom_folder = plexpy.CONFIG.ROM_DIR
 
-    logger.debug("RetroArcher Scanner :: Scan Task Initiated")
     if os.path.isdir(rom_folder):
         logger.debug("RetroArcher Scanner :: Found rom folder %s" % (rom_folder))
         return True

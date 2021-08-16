@@ -4,12 +4,14 @@ import re
 
 from bs4 import BeautifulSoup
 import requests
-import shutil
 import subprocess
+import configparser
+import itertools
 
 import plexpy
 from plexpy import logger
 from plexpy import download_helper
+from plexpy import platforms
 
 
 class RetroArch:
@@ -223,6 +225,87 @@ class RetroArch:
 
         return updated
 
+    def update_mapping(self, mapping):
+        """update mapping dictionary"""
+        core_folder = os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'cores')
+        info_folder = os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'info')
+
+        for core in os.listdir(core_folder):
+            core_name = core.split('.')[0]
+            info_file = os.path.join(info_folder, f'{core_name}.info')
+
+            core_info = configparser.ConfigParser(interpolation=None)
+            # interpolation set to None to prevent issues with strings that contain "%"
+
+            try:
+                with open(info_file, 'r') as f:
+                    try:
+                        core_info.read_file(itertools.chain(['[CORE_INFO]'], f))
+                    except configparser.DuplicateOptionError as e:
+                        logger.error("RetroArcher Emulators :: RetroArch core info file %s contains duplicate options" % (info_file))
+                        logger.error("RetroArcher Emulators :: Duplicate option error %s" % (e))
+                        continue
+            except FileNotFoundError:
+                logger.warning("RetroArcher Emulators :: RetroArch core info file %s not found" % (info_file))
+                continue
+
+            for core_info_key, core_info_value in core_info['CORE_INFO'].items():
+                if core_info_value.strip().startswith('"') and core_info_value.strip().endswith('"'):
+                    # strip off first and last double quotes
+                    core_info['CORE_INFO'][core_info_key] = core_info_value.strip()[1:-1]
+
+            strict_matching = plexpy.CONFIG.RETROARCH_STRICT_CORE_MATCHING
+
+            for mapping_key, mapping_value in mapping.items():
+                # set these for each loop cycle
+                fallback = False
+                matched = False
+
+                # mapping_key is retroarcher platform name
+                try:
+                    databases = core_info['CORE_INFO']['database'].split('|')
+                    for database in databases:
+                        if database in mapping_value['systemIds']['retroarch']['databases']:
+                            matched = True
+                except KeyError:
+                    fallback = True  # force checking system_id when database is not in info file
+
+                if (matched and strict_matching) or fallback:
+                    try:
+                        if core_info['CORE_INFO']['systemid'] in mapping_value['systemIds']['retroarch']['ids']:
+                            matched = True
+                        else:
+                            matched = False
+                    except KeyError:
+                        if matched:  # continue because there is no systemid in info file
+                            pass
+                        else:  # database and systemid missing from info file
+                            matched = False
+
+                if matched:
+                    try:
+                        mapping[mapping_key]['emulators']['retroarch']['cores'][core] = {}
+
+                        forced_list_keys = ['supported_extensions', 'database', 'authors']
+
+                        for core_info_key, core_info_value in core_info['CORE_INFO'].items():
+                            if '|' in core_info_value or core_info_key in forced_list_keys:
+                                # convert values with pipes "|" to list
+                                # ensure keys in force_list_keys are always list
+                                core_info_value = core_info_value.split('|')
+
+                                if core_info_key == 'supported_extensions':
+                                    # add core extensions to platform extensions list
+                                    for extension in core_info_value:
+                                        if extension not in mapping[mapping_key]['romExtensions']:
+                                            mapping[mapping_key]['romExtensions'].append(extension)
+
+                            # set the core_info_value for each core_info_key
+                            mapping[mapping_key]['emulators']['retroarch']['cores'][core][core_info_key] = core_info_value
+
+                    except KeyError as e:
+                        pass
+
 
 class RPCS3:
     """functions related to rpcs3"""
@@ -343,6 +426,24 @@ class RPCS3:
             logger.debug(
                 "RetroArcher Emulators :: The latest supported version of RPCS3 is already added to RetroArcher")
             return True
+
+    def update_mapping(self, mapping):
+        """update mapping dictionary"""
+
+        supported_extensions = ['bin']
+        emulator = 'rpcs3'
+
+        for mapping_key, value_key in mapping.items():
+            try:
+                mapping[mapping_key]['emulators'][emulator]
+
+                # add core extensions to platform extensions list
+                for extension in supported_extensions:
+                    if extension not in mapping[mapping_key]['romExtensions']:
+                        mapping[mapping_key]['romExtensions'].append(extension)
+
+            except KeyError:
+                continue
 
 
 class Cemu:
@@ -465,9 +566,36 @@ class Cemu:
                 "RetroArcher Emulators :: The latest supported version of Cemu is already added to RetroArcher")
             return True
 
+    def update_mapping(self, mapping):
+        """update mapping dictionary"""
+
+        supported_extensions = ['rpx', 'wud']
+        emulator = 'cemu'
+
+        for mapping_key, value_key in mapping.items():
+            try:
+                mapping[mapping_key]['emulators'][emulator]
+
+                # add core extensions to platform extensions list
+                for extension in supported_extensions:
+                    if extension not in mapping[mapping_key]['romExtensions']:
+                        mapping[mapping_key]['romExtensions'].append(extension)
+
+            except KeyError:
+                continue
+
 
 def update_emulators():
     emulators = [RetroArch, RPCS3, Cemu]
 
     for emulator in emulators:
         emulator().update_base()
+
+
+def update_mapping():
+    emulators = [RetroArch, RPCS3, Cemu]
+
+    mapping = platforms.mapping
+
+    for emulator in emulators:
+        emulator().update_mapping(mapping)

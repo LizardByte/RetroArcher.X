@@ -769,6 +769,16 @@
                             </p>
                         </div>
 
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="retroarch_strict_core_matching" name="retroarch_strict_core_matching" value="1" ${config['retroarch_strict_core_matching']}> Use strict core matching
+                            </label>
+                            <p class="help-block">
+                                Enable to force matching database and systemid from core info file.
+                                Disable to only use database. Fallback to systemid if database is not found in core info file.
+                            </p>
+                        </div>
+
                         % if common.PLATFORM in ('Windows'):
                         <div class="padded-header">
                             <h3>Cemu [Platform: Nintendo Wii U]</h3>

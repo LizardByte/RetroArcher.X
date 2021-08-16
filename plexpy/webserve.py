@@ -3226,6 +3226,7 @@ class WebInterface(object):
             "rom_dir": plexpy.CONFIG.ROM_DIR,
             "retroarch_dir": plexpy.CONFIG.RETROARCH_DIR,
             "retroarch_nightly_assets": plexpy.CONFIG.RETROARCH_NIGHTLY_ASSETS,
+            "retroarch_strict_core_matching": plexpy.CONFIG.RETROARCH_STRICT_CORE_MATCHING,
             "cemu_dir": plexpy.CONFIG.CEMU_DIR,
             "rpcs3_dir": plexpy.CONFIG.RPCS3_DIR,
         }

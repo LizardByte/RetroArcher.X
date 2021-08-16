@@ -188,6 +188,7 @@ _CONFIG_DEFINITIONS = {
     'EMULATOR_DIR': (str, 'Emulators', ''),
     'RETROARCH_DIR':  (str, 'Emulators', ''),
     'RETROARCH_NIGHTLY_ASSETS':  (int, 'Emulators', 0),
+    'RETROARCH_STRICT_CORE_MATCHING':  (int, 'Emulators', 1),
     'CEMU_DIR':  (str, 'Emulators', ''),
     'RPCS3_DIR':  (str, 'Emulators', ''),
     'TEMP_DIR':  (str, 'Emulators', ''),
