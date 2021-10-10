@@ -3229,6 +3229,14 @@ class WebInterface(object):
             "retroarch_strict_core_matching": plexpy.CONFIG.RETROARCH_STRICT_CORE_MATCHING,
             "cemu_dir": plexpy.CONFIG.CEMU_DIR,
             "rpcs3_dir": plexpy.CONFIG.RPCS3_DIR,
+            "sunshine_moonlight_name": plexpy.CONFIG.SUNSHINE_MOONLIGHT_NAME,
+            "sunshine_external_ip_method": plexpy.CONFIG.SUNSHINE_EXTERNAL_IP_METHOD,
+            "sunshine_external_ip": plexpy.CONFIG.SUNSHINE_EXTERNAL_IP,
+            "sunshine_port": plexpy.CONFIG.SUNSHINE_PORT,
+            "sunshine_upnp": plexpy.CONFIG.SUNSHINE_UPNP,
+            "sunshine_audio_sink": plexpy.CONFIG.SUNSHINE_AUDIO_SINK,
+            "sunshine_allowed_fps": plexpy.CONFIG.SUNSHINE_ALLOWED_FPS,
+            "sunshine_allowed_resolutions": plexpy.CONFIG.SUNSHINE_ALLOWED_RESOLUTIONS,
         }
 
         return serve_template(templatename="settings.html", title="Settings", config=config, kwargs=kwargs)

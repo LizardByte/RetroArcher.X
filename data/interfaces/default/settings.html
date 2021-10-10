@@ -12,6 +12,10 @@
 
     available_notification_agents = sorted(notifiers.available_notification_agents(), key=lambda k: k['label'].lower())
     available_newsletter_agents = sorted(newsletters.available_newsletter_agents(), key=lambda k: k['label'].lower())
+
+    audio_device_dict = plexpy.devices.get_sound_devices()
+    display_resolution_list = plexpy.devices.get_display_resolutions()
+    fps_mode_list = plexpy.devices.get_fps_modes()
 %>
 <%def name="headIncludes()">
 </%def>
@@ -50,8 +54,9 @@
                 <li role="presentation"><a id="nav-tabs-general" href="#tabs-general" aria-controls="tabs-general" role="tab" data-toggle="tab">General</a></li>
                 <li role="presentation"><a id="nav-tabs-homepage" href="#tabs-homepage" aria-controls="tabs-homepage" role="tab" data-toggle="tab">Homepage</a></li>
                 <li role="presentation"><a id="nav-tabs-web_interface" href="#tabs-web_interface" aria-controls="tabs-web_interface" role="tab" data-toggle="tab">Web Interface</a></li>
-                <li role="presentation"><a id="nav-tabs-games" href="#tabs-games" aria-controls="tabs-emulators" role="tab" data-toggle="tab">Games</a></li>
+                <li role="presentation"><a id="nav-tabs-games" href="#tabs-games" aria-controls="tabs-games" role="tab" data-toggle="tab">Games</a></li>
                 <li role="presentation"><a id="nav-tabs-emulators" href="#tabs-emulators" aria-controls="tabs-emulators" role="tab" data-toggle="tab">Emulators</a></li>
+                <li role="presentation"><a id="nav-tabs-streaming" href="#tabs-streaming" aria-controls="tabs-streaming" role="tab" data-toggle="tab">Streaming</a></li>
                 <li role="presentation"><a id="nav-tabs-plex_media_server" href="#tabs-plex_media_server" aria-controls="tabs-plex_media_server" role="tab" data-toggle="tab">Plex Media Server</a></li>
                 <li role="presentation"><a id="nav-tabs-notifications" href="#tabs-notifications" aria-controls="tabs-notifications" role="tab" data-toggle="tab">Notifications & Newsletters</a></li>
                 <li role="presentation"><a id="nav-tabs-notification_agents" href="#tabs-notification_agents" aria-controls="tabs-notification_agents" role="tab" data-toggle="tab">Notification Agents</a></li>
@@ -761,7 +766,8 @@
 
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="retroarch_nightly_assets" name="retroarch_nightly_assets" value="0" ${config['retroarch_nightly_assets']}> Update RetroArch assets daily
+                                <input type="checkbox" id="retroarch_nightly_assets_checkbox" class="checkbox-toggle emulator-settings" data-id="retroarch_nightly_assets" value="1" ${config['retroarch_nightly_assets']}> Update RetroArch assets daily
+                                <input type="hidden" id="retroarch_nightly_assets" name="retroarch_nightly_assets" value="${config['retroarch_nightly_assets']}">
                             </label>
                             <p class="help-block">
                                 Enable to update RetroArch assets on a daily schedule.
@@ -771,7 +777,8 @@
 
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="retroarch_strict_core_matching" name="retroarch_strict_core_matching" value="1" ${config['retroarch_strict_core_matching']}> Use strict core matching
+                                <input type="checkbox" id="retroarch_strict_core_matching_checkbox" class="checkbox-toggle emulator-settings" data-id="retroarch_strict_core_matching" value="1" ${config['retroarch_strict_core_matching']}> Use strict core matching
+                                <input type="hidden" id="retroarch_strict_core_matching" name="retroarch_strict_core_matching" value="${config['retroarch_strict_core_matching']}">
                             </label>
                             <p class="help-block">
                                 Enable to force matching database and systemid from core info file.
@@ -789,6 +796,126 @@
                             <h3>RPCS3 [Platform: Sony PlayStation 3]</h3>
                         </div>
                         
+                        <p><input type="button" class="btn btn-bright save-button" value="Save" data-success="Changes saved successfully"></p>
+
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="tabs-streaming">
+
+                        <div class="padded-header">
+                            <h3>Network</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sunshine_moonlight_name">Moonlight Name</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input type="text" class="form-control sunshine-settings" type="text" id="sunshine_moonlight_name" name="sunshine_moonlight_name" value="${config['sunshine_moonlight_name']}" size="30" data-parsley-trigger="change" data-parsley-errors-container="sunshine_moonlight_name" required>
+                                </div>
+                                <div id="sunshine_moonlight_name_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">Name that is advertised to Moonlight clients.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sunshine_external_ip_method">External IP Address detection method</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <select class="form-control" id="sunshine_external_ip_method" name="sunshine_external_ip_method">
+                                        <option value="0" ${'selected' if config['sunshine_external_ip_method'] == 0 else ''}>manual input</option>
+                                        <option value="1" ${'selected' if config['sunshine_external_ip_method'] == 1 else ''}>https://api.ipify.org</option>
+                                        <option value="2" ${'selected' if config['sunshine_external_ip_method'] == 2 else ''}>https://ident.me</option>
+                                        <option value="3" ${'selected' if config['sunshine_external_ip_method'] == 3 else ''}>https://ipinfo.io/ip</option>
+                                        <option value="4" ${'selected' if config['sunshine_external_ip_method'] == 4 else ''}>https://ipv4bot.whatismyipaddress.com/</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help-block">Select method for detection of external IP address.</p>
+                        </div>
+
+                        <div id="manual_input_options" style="overflow: hidden; display: ${'none' if config['sunshine_external_ip_method'] != 0 else 'block'}">
+                            <div class="form-group">
+                                <label for="sunshine_external_ip">External IP Address</label>
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" id="sunshine_external_ip" name="sunshine_external_ip" value="${config['sunshine_external_ip']}" size="30" readonly>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    The server URL that Sunshine will use to setup remote game streaming. Note that RetroArcher cannot yet connect to remote clients.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_port">Sunshine Port</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_port" name="sunshine_port" value="${config['sunshine_port']}" size="30" data-parsley-trigger="change" data-parsley-errors-container="sunshine_port_error" required>
+                                </div>
+                                <div id="sunshine_port_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">Port that Sunshine is listening on.</p>
+                        </div>
+
+                        <div class="checkbox advanced-setting">
+                            <label>
+                                <input type="checkbox" id="sunshine_upnp_checkbox" class="checkbox-toggle sunshine-settings"data-id="sunshine_upnp" value="1" ${config['sunshine_upnp']}> Enable UPnP
+                                <input type="hidden" id="sunshine_upnp" name="sunshine_upnp" value="${config['sunshine_upnp']}">
+                            </label>
+                            <p class="help-block">Check this to have Sunshine automatically configure ports for remote streaming. Note that RetroArcher cannot yet connect to remote clients.</p>
+                        </div>
+
+                        <div class="padded-header">
+                            <h3>Devices</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sunshine_audio_sink">Sound Device</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <select class="form-control" id="sunshine_audio_sink" name="sunshine_audio_sink">
+                                        % for key, device in audio_device_dict.items():
+                                        <option value="${device['id']}" ${'selected' if config['sunshine_audio_sink'] == device['id'] else ''}>${device['description']}</option>
+                                        % endfor
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help-block">Sound device to use when streaming. If selected device is not available at time of stream initialization, default device will be used.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>FPS Modes Allowed</label>
+                            <p class="help-block">Checked FPS modes will be advertised to Moonlight clients.</p>
+
+                            % for fps in fps_mode_list:
+                            <div class="checkbox">
+                                <label>
+                                    <label>
+                                        <input type="checkbox" id=${fps} class="fps-checkbox-toggle sunshine-settings" data-id=${fps} value="1" ${plexpy.devices.get_checked_fps(fps)}> ${fps}
+                                    </label>
+                                </label>
+                            </div>
+                            % endfor
+                            <input type="hidden" id="sunshine_allowed_fps" name="sunshine_allowed_fps" value="${config['sunshine_allowed_fps']}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Display Resolutions Allowed</label>
+                            <p class="help-block">Checked display resolutions will be advertised to Moonlight clients.</p>
+
+                            % for resolution in display_resolution_list:
+                            <div class="checkbox">
+                                <label>
+                                    <label>
+                                        <input type="checkbox" id=${resolution} class="resolution-checkbox-toggle sunshine-settings" data-id=${resolution} value="1" ${plexpy.devices.get_checked_resolution(resolution)}> ${resolution}
+                                    </label>
+                                </label>
+                            </div>
+                            % endfor
+                            <input type="hidden" id="sunshine_allowed_resolutions" name="sunshine_allowed_resolutions" value="${config['sunshine_allowed_resolutions']}">
+                        </div>
+
                         <p><input type="button" class="btn btn-bright save-button" value="Save" data-success="Changes saved successfully"></p>
 
                     </div>
@@ -2583,6 +2710,30 @@ $(document).ready(function() {
         }
     });
 
+    $('.resolution-checkbox-toggle').click(function () {
+        var allowedResolutions = [];
+
+        $('.resolution-checkbox-toggle').each(function () {
+            if ($(this).is(':checked')) {
+                allowedResolutions.push($(this).data('id'));
+            }
+        });
+
+        $('#sunshine_allowed_resolutions').val(allowedResolutions.toString());
+    });
+
+    $('.fps-checkbox-toggle').click(function () {
+        var allowedFps = [];
+
+        $('.fps-checkbox-toggle').each(function () {
+            if ($(this).is(':checked')) {
+                allowedFps.push($(this).data('id'));
+            }
+        });
+
+        $('#sunshine_allowed_fps').val(allowedFps.toString());
+    });
+
     var $select_pms = $('#pms_ip_selectize').selectize({
         createOnBlur: true,
         openOnFocus: true,
@@ -3259,7 +3410,7 @@ $(document).ready(function() {
 
     var retroarcher_news = $('#retroarcher-news')
     $.ajax({
-        url: 'https://retroarcher.com/news/retroarcher-news.json',
+        url: 'https://retroarcher.github.io/news/retroarcher-news.json',
         type: 'GET',
         dataType: 'json',
         cache: false,
@@ -3308,6 +3459,19 @@ $(document).ready(function() {
     });
 
     toggleRevealTokens();
+
+    function externalIp() {
+        var list_val = $('#sunshine_external_ip_method').val();
+        if (list_val === '0') {
+            $('#manual_input_options').slideDown();
+        } else {
+            $('#manual_input_options').slideUp();
+        }
+        var parent;
+    }
+    $('#sunshine_external_ip_method').change(function () {
+        externalIp();
+    });
 });
 </script>
 </%def>

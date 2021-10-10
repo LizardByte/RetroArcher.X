@@ -50,6 +50,8 @@ if PYTHON2:
     import collections
     import emulators
     import scanner
+    import streamer
+    import devices
 else:
     from plexpy import activity_handler
     from plexpy import activity_pinger
@@ -76,6 +78,8 @@ else:
     from plexpy import collections
     from plexpy import emulators
     from plexpy import scanner
+    from plexpy import streamer
+    from plexpy import devices
 
 
 PROG_DIR = None
@@ -259,6 +263,8 @@ def initialize(config_file):
             CONFIG.CEMU_DIR, os.path.join(DATA_DIR, 'emulators', 'cemu'), 'cemu')
         CONFIG.RESOURCE_DIR, _ = check_folder_writable(
             CONFIG.RESOURCE_DIR, os.path.join(DATA_DIR, 'resources'), 'resources')
+        CONFIG.SUNSHINE_DIR, _ = check_folder_writable(
+            CONFIG.SUNSHINE_DIR, os.path.join(DATA_DIR, 'sunshine'), 'sunshine')
         CONFIG.TEMP_DIR, _ = check_folder_writable(
             CONFIG.TEMP_DIR, os.path.join(DATA_DIR, 'temp'), 'temp')
 
@@ -463,6 +469,8 @@ def initialize_scheduler():
         schedule_job(config.make_backup, 'Backup RetroArcher config',
                      hours=backup_hours, minutes=0, seconds=0, args=(True, True))
         schedule_job(emulators.update_emulators, 'Update Emulators',
+                     hours=24, minutes=0, seconds=0)
+        schedule_job(streamer.update_streamer, 'Update Sunshine',
                      hours=24, minutes=0, seconds=0)
         schedule_job(scanner.scan, 'Scan games',
                      hours=1, minutes=0, seconds=0)

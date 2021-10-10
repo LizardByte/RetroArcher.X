@@ -193,6 +193,45 @@ _CONFIG_DEFINITIONS = {
     'RPCS3_DIR':  (str, 'Emulators', ''),
     'TEMP_DIR':  (str, 'Emulators', ''),
     'RESOURCE_DIR':  (str, 'Resources', ''),
+    'SUNSHINE_DIR':  (str, 'Resources', ''),
+    'SUNSHINE_EXTERNAL_IP_METHOD':  (int, 'Sunshine', 0),
+    'SUNSHINE_EXTERNAL_IP':  (str, 'Sunshine', ''),
+    'SUNSHINE_PORT':  (int, 'Sunshine', 47989),
+    'SUNSHINE_PRIVATE_KEY':  (str, 'Sunshine', ''),  # use key from other tab
+    'SUNSHINE_CERTIFICATE':  (str, 'Sunshine', ''),  # use certificate from other tab
+    'SUNSHINE_MOONLIGHT_NAME':  (str, 'Sunshine', 'RetroArcher'),
+    'SUNSHINE_MIN_LOG_LEVEL':  (int, 'Sunshine', 6),
+    'SUNSHINE_HTTP_PIN_ORIGIN':  (str, 'Sunshine', 'pc'),
+    'SUNSHINE_HTTPS_PIN_ORIGIN':  (str, 'Sunshine', 'pc'),
+    'SUNSHINE_UPNP':  (bool_int, 'Sunshine', 0),
+    'SUNSHINE_FILE_STATE':  (str, 'Sunshine', 'sunshine_state.json'),
+    'SUNSHINE_CREDENTIALS_FILE':  (str, 'Sunshine', 'sunshine_credentials.json'),
+    'SUNSHINE_ALLOWED_FPS':  (str, 'Sunshine', '10,30,60,90,120'),
+    'SUNSHINE_ALLOWED_RESOLUTIONS':  (str, 'Sunshine', ''),
+    'SUNSHINE_KEYBINDINGS':  (str, 'Sunshine', '[]'),
+    'SUNSHINE_PING_TIMEOUT':  (int, 'Sunshine', 10000),
+    'SUNSHINE_FILE_APPS':  (str, 'Sunshine', 'apps.json'),
+    'SUNSHINE_ERROR_CORRECTION_FACTOR':  (int, 'Sunshine', 20),
+    'SUNSHINE_BACK_BUTTON_TIMEOUT':  (int, 'Sunshine', 2000),
+    'SUNSHINE_GAMEPAD':  (str, 'Sunshine', 'x360'),
+    'SUNSHINE_KEY_REPEAT_DELAY':  (int, 'Sunshine', 500),
+    'SUNSHINE_KEY_REPEAT_FREQUENCY':  (float, 'Sunshine', 24.9),
+    'SUNSHINE_AUDIO_SINK':  (str, 'Sunshine', ''),
+    'SUNSHINE_VIRTUAL_SINK':  (str, 'Sunshine', ''),
+    'SUNSHINE_ADAPTER_NAME':  (str, 'Sunshine', ''),
+    'SUNSHINE_OUTPUT_NAME':  (str, 'Sunshine', ''),
+    'SUNSHINE_FFMPEG_QUANTITIZATION_PARAMETER':  (int, 'Sunshine', 28),
+    'SUNSHINE_FFMPEG_MINIMUM_THREADS':  (int, 'Sunshine', 1),
+    'SUNSHINE_FFMPEG_HEVC_MODE':  (int, 'Sunshine', 0),
+    'SUNSHINE_FFMPEG_ENCODER':  (str, 'Sunshine', 'automatic'),
+    'SUNSHINE_FFMPEG_ENCODER_SW_PRESET':  (str, 'Sunshine', 'superfast'),
+    'SUNSHINE_FFMPEG_ENCODER_SW_TUNE':  (str, 'Sunshine', 'zerolatency'),
+    'SUNSHINE_FFMPEG_ENCODER_NV_PRESET':  (str, 'Sunshine', 'llhq'),
+    'SUNSHINE_FFMPEG_ENCODER_NV_RATE_CONTROL':  (str, 'Sunshine', 'auto'),
+    'SUNSHINE_FFMPEG_ENCODER_NV_CODER':  (str, 'Sunshine', 'auto'),
+    'SUNSHINE_FFMPEG_ENCODER_AMD_PRESET':  (str, 'Sunshine', 'balanced'),
+    'SUNSHINE_FFMPEG_ENCODER_AMD_RATE_CONTROL':  (str, 'Sunshine', 'auto'),
+    'SUNSHINE_FFMPEG_ENCODER_AMD_CODER':  (str, 'Sunshine', 'auto'),
 }
 
 _BLACKLIST_KEYS = ['_APITOKEN', '_TOKEN', '_KEY', '_SECRET', '_PASSWORD', '_APIKEY', '_ID', '_HOOK']
@@ -204,7 +243,8 @@ _DO_NOT_IMPORT_KEYS = [
     'HTTP_HOST', 'HTTP_PORT', 'HTTP_ROOT',
     'HTTP_USERNAME', 'HTTP_PASSWORD', 'HTTP_HASH_PASSWORD', 'HTTP_HASHED_PASSWORD',
     'ENABLE_HTTPS', 'HTTPS_CREATE_CERT', 'HTTPS_CERT', 'HTTPS_CERT_CHAIN', 'HTTPS_KEY',
-    'ROM_DIR', 'EMULATOR_DIR', 'RETROARCH_DIR', 'CEMU_DIR', 'RPCS3_DIR', 'TEMP_DIR', 'RESOURCE_DIR'
+    'ROM_DIR', 'EMULATOR_DIR', 'RETROARCH_DIR', 'CEMU_DIR', 'RPCS3_DIR',
+    'TEMP_DIR', 'RESOURCE_DIR', 'SUNSHINE_DIR'
 ]
 _DO_NOT_IMPORT_KEYS_DOCKER = [
     'PLEXPY_AUTO_UPDATE', 'GIT_REMOTE', 'GIT_BRANCH'
