@@ -766,7 +766,7 @@
 
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="retroarch_nightly_assets_checkbox" class="checkbox-toggle emulator-settings" data-id="retroarch_nightly_assets" value="1" ${config['retroarch_nightly_assets']}> Update RetroArch assets daily
+                                <input type="checkbox" id="retroarch_nightly_assets_checkbox" class="checkbox-toggle emulator-settings" data-id="retroarch_nightly_assets" value="1" ${checked(config['retroarch_nightly_assets'])}> Update RetroArch assets daily
                                 <input type="hidden" id="retroarch_nightly_assets" name="retroarch_nightly_assets" value="${config['retroarch_nightly_assets']}">
                             </label>
                             <p class="help-block">
@@ -777,7 +777,7 @@
 
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="retroarch_strict_core_matching_checkbox" class="checkbox-toggle emulator-settings" data-id="retroarch_strict_core_matching" value="1" ${config['retroarch_strict_core_matching']}> Use strict core matching
+                                <input type="checkbox" id="retroarch_strict_core_matching_checkbox" class="checkbox-toggle emulator-settings" data-id="retroarch_strict_core_matching" value="1" ${checked(config['retroarch_strict_core_matching'])}> Use strict core matching
                                 <input type="hidden" id="retroarch_strict_core_matching" name="retroarch_strict_core_matching" value="${config['retroarch_strict_core_matching']}">
                             </label>
                             <p class="help-block">
@@ -957,7 +957,7 @@
 
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="sunshine_emulate_guide_button" name="sunshine_emulate_guide_button" value="1" ${config['sunshine_emulate_guide_button']}> Emulate Guide Button
+                                <input type="checkbox" id="sunshine_emulate_guide_button" name="sunshine_emulate_guide_button" value="1" ${checked(config['sunshine_emulate_guide_button'])}> Emulate Guide Button
                             </label>
                             <p class="help-block">Check this to emulate the Home/Guide button by holding the back/select button.</p>
                         </div>
