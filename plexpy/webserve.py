@@ -3234,9 +3234,17 @@ class WebInterface(object):
             "sunshine_external_ip": plexpy.CONFIG.SUNSHINE_EXTERNAL_IP,
             "sunshine_port": plexpy.CONFIG.SUNSHINE_PORT,
             "sunshine_upnp": plexpy.CONFIG.SUNSHINE_UPNP,
+            "sunshine_ping_timeout": plexpy.CONFIG.SUNSHINE_PING_TIMEOUT,
             "sunshine_audio_sink": plexpy.CONFIG.SUNSHINE_AUDIO_SINK,
             "sunshine_allowed_fps": plexpy.CONFIG.SUNSHINE_ALLOWED_FPS,
             "sunshine_allowed_resolutions": plexpy.CONFIG.SUNSHINE_ALLOWED_RESOLUTIONS,
+            "sunshine_gamepad": plexpy.CONFIG.SUNSHINE_GAMEPAD,
+            "sunshine_emulate_guide_button": plexpy.CONFIG.SUNSHINE_EMULATE_GUIDE_BUTTON,
+            "sunshine_back_button_timeout": plexpy.CONFIG.SUNSHINE_BACK_BUTTON_TIMEOUT,
+            "sunshine_key_repeat_delay": plexpy.CONFIG.SUNSHINE_KEY_REPEAT_DELAY,
+            "sunshine_key_repeat_frequency": plexpy.CONFIG.SUNSHINE_KEY_REPEAT_FREQUENCY,
+            "sunshine_error_correction_factor": plexpy.CONFIG.SUNSHINE_ERROR_CORRECTION_FACTOR,
+            "sunshine_multicasting_channels": plexpy.CONFIG.SUNSHINE_MULTICASTING_CHANNELS,
         }
 
         return serve_template(templatename="settings.html", title="Settings", config=config, kwargs=kwargs)
@@ -3275,7 +3283,8 @@ class WebInterface(object):
             "history_table_activity", "plexpy_auto_update",
             "themoviedb_lookup", "tvmaze_lookup", "musicbrainz_lookup", "http_plex_admin",
             "newsletter_self_hosted", "newsletter_inline_styles", "sys_tray_icon",
-            "retroarch_nightly_assets"
+            "retroarch_nightly_assets", "retroarch_strict_core_matching",
+            "sunshine_upnp", "sunshine_emulate_guide_button"
         ]
         for checked_config in checked_configs:
             if checked_config not in kwargs:

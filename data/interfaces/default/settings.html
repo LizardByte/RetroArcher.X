@@ -809,7 +809,7 @@
                         <div class="form-group">
                             <label for="sunshine_moonlight_name">Moonlight Name</label>
                             <div class="row">
-                                <div class="col-md-2">
+                                <div class="col-md-6">
                                     <input type="text" class="form-control sunshine-settings" type="text" id="sunshine_moonlight_name" name="sunshine_moonlight_name" value="${config['sunshine_moonlight_name']}" size="30" data-parsley-trigger="change" data-parsley-errors-container="sunshine_moonlight_name" required>
                                 </div>
                                 <div id="sunshine_moonlight_name_error" class="alert alert-danger settings-alert" role="alert"></div>
@@ -820,7 +820,7 @@
                         <div class="form-group">
                             <label for="sunshine_external_ip_method">External IP Address detection method</label>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <select class="form-control" id="sunshine_external_ip_method" name="sunshine_external_ip_method">
                                         <option value="0" ${'selected' if config['sunshine_external_ip_method'] == 0 else ''}>manual input</option>
                                         <option value="1" ${'selected' if config['sunshine_external_ip_method'] == 1 else ''}>https://api.ipify.org</option>
@@ -851,19 +851,39 @@
                             <label for="sunshine_port">Sunshine Port</label>
                             <div class="row">
                                 <div class="col-md-2">
-                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_port" name="sunshine_port" value="${config['sunshine_port']}" size="30" data-parsley-trigger="change" data-parsley-errors-container="sunshine_port_error" required>
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_port" name="sunshine_port" value="${config['sunshine_port']}" size="30" data-parsley-range="[0,65535]" data-parsley-trigger="change" data-parsley-errors-container="sunshine_port_error" required>
                                 </div>
                                 <div id="sunshine_port_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
-                            <p class="help-block">Port that Sunshine is listening on.</p>
+                            <p class="help-block">
+                                Port that Sunshine is listening on.<br>
+                                Range 0-65535, default 47989.
+                            </p>
                         </div>
 
                         <div class="checkbox advanced-setting">
                             <label>
-                                <input type="checkbox" id="sunshine_upnp_checkbox" class="checkbox-toggle sunshine-settings"data-id="sunshine_upnp" value="1" ${config['sunshine_upnp']}> Enable UPnP
+                                <input type="checkbox" id="sunshine_upnp_checkbox" class="checkbox-toggle sunshine-settings"data-id="sunshine_upnp" value="1" ${checked(config['sunshine_upnp'])}> Enable UPnP
                                 <input type="hidden" id="sunshine_upnp" name="sunshine_upnp" value="${config['sunshine_upnp']}">
                             </label>
-                            <p class="help-block">Check this to have Sunshine automatically configure ports for remote streaming. Note that RetroArcher cannot yet connect to remote clients.</p>
+                            <p class="help-block">
+                                Check this to have Sunshine automatically configure ports for remote streaming.<br>
+                                Note that RetroArcher cannot yet connect to remote clients.
+                            </p>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_ping_timeout">Ping Timeout</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_ping_timeout" name="sunshine_ping_timeout" value="${config['sunshine_ping_timeout']}" size="30" data-parsley-min="1" data-parsley-trigger="change" data-parsley-errors-container="sunshine_ping_timeout_error" required>
+                                </div>
+                                <div id="sunshine_ping_timeout_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                How long to wait in milliseconds for data from moonlight before shutting down the stream.<br>
+                                Minimum 1, default 10000.
+                            </p>
                         </div>
 
                         <div class="padded-header">
@@ -914,6 +934,111 @@
                             </div>
                             % endfor
                             <input type="hidden" id="sunshine_allowed_resolutions" name="sunshine_allowed_resolutions" value="${config['sunshine_allowed_resolutions']}">
+                        </div>
+
+                        <div class="padded-header">
+                            <h3>Gamepad</h3>
+                        </div>
+
+                        % if common.PLATFORM in ('Windows'):
+                        <div class="form-group">
+                            <label for="sunshine_gamepad">Emulated Gamepad</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <select class="form-control" id="sunshine_gamepad" name="sunshine_gamepad">
+                                        <option value="x360" ${'selected' if config['sunshine_gamepad'] == 'x360' else ''}>Xbox 360</option>
+                                        <option value="ds4" ${'selected' if config['sunshine_gamepad'] == 'ds4' else ''}>Dualshock 4</option>
+                                    </select>
+                                </div>
+                                <p class="help-block">The controller type to emulate.</p>
+                            </div>
+                        </div>
+                        % endif
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="sunshine_emulate_guide_button" name="sunshine_emulate_guide_button" value="1" ${config['sunshine_emulate_guide_button']}> Emulate Guide Button
+                            </label>
+                            <p class="help-block">Check this to emulate the Home/Guide button by holding the back/select button.</p>
+                        </div>
+                        <div id="sunshine_emulate_guide_button_options" style="overflow: hidden; display: ${'block' if config['sunshine_emulate_guide_button'] == 'checked' else 'none'}">
+                            <div class="form-group advanced-setting">
+                                <label for="sunshine_back_button_timeout">Back Button Timeout</label>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_back_button_timeout" name="sunshine_back_button_timeout" value="${config['sunshine_back_button_timeout']}" size="30" data-parsley-min="1" data-parsley-trigger="change" data-parsley-errors-container="sunshine_back_button_timeout_error" required>
+                                    </div>
+                                    <div id="sunshine_back_button_timeout_error" class="alert alert-danger settings-alert" role="alert"></div>
+                                </div>
+                                <p class="help-block">
+                                    Amount of time in milliseconds to hold back button before emulating Home/Guide button.<br>
+                                    Minimum 1, default 2000.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_key_repeat_delay">Key Repeat Delay</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_key_repeat_delay" name="sunshine_key_repeat_delay" value="${config['sunshine_key_repeat_delay']}" size="30" data-parsley-min="1" data-parsley-trigger="change" data-parsley-errors-container="sunshine_key_repeat_delay_error" required>
+                                </div>
+                                <div id="sunshine_key_repeat_delay_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                The initial delay in milliseconds before repeating keys.<br>
+                                Minimum 1, default 500.
+                            </p>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_key_repeat_frequency">Key Repeat Frequency</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_key_repeat_frequency" name="sunshine_key_repeat_frequency" value="${config['sunshine_key_repeat_frequency']}" size="30" data-parsley-min="1" data-parsley-trigger="change" data-parsley-errors-container="sunshine_key_repeat_frequency_error" required>
+                                </div>
+                                <div id="sunshine_key_repeat_frequency_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                How often keys repeat every second.<br>
+                                Minimum 1, default 25.
+                            </p>
+                        </div>
+
+                        <div class="padded-header">
+                            <h3>Misc.</h3>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_error_correction_factor">Error Correction Factor</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_error_correction_factor" name="sunshine_error_correction_factor" value="${config['sunshine_error_correction_factor']}" size="30" data-parsley-range="[1,255]" data-parsley-trigger="change" data-parsley-errors-container="sunshine_error_correction_factor_error" required>
+                                </div>
+                                <div id="sunshine_error_correction_factor_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Percentage of error correcting packets per data packet in each video frame.<br>
+                                Higher values can correct for more network packet loss, but at the cost of increasing bandwidth usage.<br>
+                                Range 1-255, default 20.
+                            </p>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_multicasting_channels">Multicasting Channels</label>
+                            <div class="row">
+                                <div class="col-md-1">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_multicasting_channels" name="sunshine_multicasting_channels" value="${config['sunshine_multicasting_channels']}" size="30" data-parsley-range="[1,4]" data-parsley-trigger="change" data-parsley-errors-container="sunshine_multicasting_channels_error" required>
+                                </div>
+                                <div id="sunshine_multicasting_channels_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Increase to have different configurations for each connected Client.<br>
+                                Unlike simply broadcasting to multiple Client, this will generate distinct video streams.<br>
+                                CPU usage increases for each distinct video stream generated.<br>
+                                Range 1-4, default 1.<br>
+                                !!!Beta, may be able to allow multiple users to connect to same gaming session. May be able to use Plex's "Watch Together" feature.
+                            </p>
                         </div>
 
                         <p><input type="button" class="btn btn-bright save-button" value="Save" data-success="Changes saved successfully"></p>
@@ -2533,6 +2658,7 @@ $(document).ready(function() {
     initConfigCheckbox('#check_github');
     initConfigCheckbox('#monitor_pms_updates');
     initConfigCheckbox('#newsletter_self_hosted');
+    initConfigCheckbox('#sunshine_emulate_guide_button');
 
     $('#menu_link_shutdown').click(function() {
         $('#confirm-message').text("Are you sure you want to quit RetroArcher?");
