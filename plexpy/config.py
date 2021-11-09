@@ -225,7 +225,7 @@ _CONFIG_DEFINITIONS = {
     'SUNSHINE_FFMPEG_QUANTITIZATION_PARAMETER':  (int, 'Sunshine', 28),
     'SUNSHINE_FFMPEG_MINIMUM_THREADS':  (int, 'Sunshine', 1),
     'SUNSHINE_FFMPEG_HEVC_MODE':  (int, 'Sunshine', 0),
-    'SUNSHINE_FFMPEG_ENCODER':  (str, 'Sunshine', 'automatic'),
+    'SUNSHINE_FFMPEG_ENCODER':  (str, 'Sunshine', ''),
     'SUNSHINE_FFMPEG_ENCODER_SW_PRESET':  (str, 'Sunshine', 'superfast'),
     'SUNSHINE_FFMPEG_ENCODER_SW_TUNE':  (str, 'Sunshine', 'zerolatency'),
     'SUNSHINE_FFMPEG_ENCODER_NV_PRESET':  (str, 'Sunshine', 'llhq'),
