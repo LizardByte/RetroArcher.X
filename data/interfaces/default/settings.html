@@ -14,6 +14,7 @@
     available_newsletter_agents = sorted(newsletters.available_newsletter_agents(), key=lambda k: k['label'].lower())
 
     audio_device_dict = plexpy.devices.get_sound_devices()
+    monitor_device_dict = plexpy.devices.get_monitor_devices()
     display_resolution_list = plexpy.devices.get_display_resolutions()
     fps_mode_list = plexpy.devices.get_fps_modes()
 %>
@@ -905,6 +906,20 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="sunshine_output_name">Output</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <select class="form-control" id="sunshine_output_name" name="sunshine_output_name">
+                                        % for key, device in monitor_device_dict.items():
+                                        <option value="${device['output_name']}" ${'selected' if config['sunshine_output_name'] == device['output_name'] else ''}>${device['monitor_name']} (${device['output_name']})</option>
+                                        % endfor
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help-block">Monitor to stream. If selected device is not available at time of stream initialization, default device will be used.</p>
+                        </div>
+
+                        <div class="form-group">
                             <label>FPS Modes Allowed</label>
                             <p class="help-block">Checked FPS modes will be advertised to Moonlight clients.</p>
 
@@ -950,8 +965,8 @@
                                         <option value="ds4" ${'selected' if config['sunshine_gamepad'] == 'ds4' else ''}>Dualshock 4</option>
                                     </select>
                                 </div>
-                                <p class="help-block">The controller type to emulate.</p>
                             </div>
+                            <p class="help-block">The controller type to emulate.</p>
                         </div>
                         % endif
 
@@ -1003,6 +1018,244 @@
                                 How often keys repeat every second.<br>
                                 Minimum 1, default 25.
                             </p>
+                        </div>
+
+                        <div class="padded-header">
+                            <h3>FFMPEG</h3>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_ffmpeg_quantitization_parameter">Quantitization Parameter</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_ffmpeg_quantitization_parameter" name="sunshine_ffmpeg_quantitization_parameter" value="${config['sunshine_ffmpeg_quantitization_parameter']}" size="30" data-parsley-min="1" data-parsley-trigger="change" data-parsley-errors-container="sunshine_ffmpeg_quantitization_parameter_error" required>
+                                </div>
+                                <div id="sunshine_ffmpeg_quantitization_parameter_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Some devices don't support Constant Bit Rate. For those devices, QP is used instead.<br>
+                                Higher value means more compression, but less quality.<br>
+                                Minimum 1, default 28.
+                            </p>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_ffmpeg_minimum_threads">Minimum Threads</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_ffmpeg_minimum_threads" name="sunshine_ffmpeg_minimum_threads" value="${config['sunshine_ffmpeg_minimum_threads']}" size="30" data-parsley-range="[1,${os.cpu_count()}]" data-parsley-trigger="change" data-parsley-errors-container="sunshine_ffmpeg_minimum_threads_error" required>
+                                </div>
+                                <div id="sunshine_ffmpeg_minimum_threads_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Minimum number of threads used by ffmpeg to encode the video. Increasing the value slightly reduces encoding efficiency, but the tradeoff is usually worth it to gain the use of more CPU cores for encoding. The ideal value is the lowest value that can reliably encode at your desired streaming settings on your hardware.<br>
+                                Range 1-${os.cpu_count()}, default 1.
+                            </p>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_ffmpeg_hevc_mode">HEVC Mode</label>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <select class="form-control" id="sunshine_ffmpeg_hevc_mode" name="sunshine_ffmpeg_hevc_mode">
+                                        <option value="0" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == '0' else ''}>Automatic Profile</option>
+                                        <option value="1" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == '1' else ''}>No HEVC Profile</option>
+                                        <option value="2" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == '2' else ''}>HEVC Main Profile</option>
+                                        <option value="3" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == '3' else ''}>HEVC Main and Main 10 (HDR) Profiles</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help-block">
+                                When an HEVC profile is enabled the client is able to request HEVC Main or HEVC Main10 video streams.<br>
+                                HEVC is more CPU-intensive to encode, so enabling this may reduce performance when using software encoding.
+                            </p>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_ffmpeg_encoder">Encoder</label>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <select class="form-control" id="sunshine_ffmpeg_encoder" name="sunshine_ffmpeg_encoder">
+                                        <option value="0" ${'selected' if config['sunshine_ffmpeg_encoder'] == '0' else ''}>Autodetect</option>
+                                        <option value="nvenc" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == 'nvenc' else ''}>nVidia NVENC</option>
+                                        <option value="amdvce" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == 'amdvce' else ''}>AMD AMF/VCE</option>
+                                        % if common.PLATFORM in ('Darwin'):
+                                            <option value="vaapi" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == 'vaapi' else ''}>VA-API</option>
+                                        % endif
+                                        <option value="software" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == 'software' else ''}>Software</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help-block">Select the encoder to utilize.</p>
+                            <div id="ffmpeg_encoder_automatic" style="overflow: hidden; display: ${'none' if config['sunshine_ffmpeg_encoder'] != '0' else 'block'}">
+                                <div class="form-group">
+                                    <p class="help-block">
+                                        Sunshine will use the first encoder that is available.<br>
+                                        Select a specific encoder to change options related to that encoder.
+                                    </p>
+                                </div>
+                            </div>
+                            <div id="ffmpeg_encoder_nvenc" style="overflow: hidden; display: ${'none' if config['sunshine_ffmpeg_encoder'] != 'nvenc' else 'block'}">
+                                <div class="form-group">
+                                    <p class="help-block">Sunshine will use the nVidia encoder.</p>
+                                </div>
+                                <label for="sunshine_ffmpeg_encoder_nv_preset">NVENC Encoder Preset</label>
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_nv_preset" name="sunshine_ffmpeg_encoder_nv_preset">
+                                            <option value="ll" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'll' else ''}>low latency default</option>
+                                            <option value="llhp" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'llhp' else ''}>low latency high performance</option>
+                                            <option value="llhq" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'llhq' else ''}>low latency high quality</option>
+                                            <option value="hp" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'hp' else ''}>high performance default</option>
+                                            <option value="fast" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'fast' else ''}>high performance 1 pass</option>
+                                            <option value="hq" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'hq' else ''}>high quality default</option>
+                                            <option value="medium" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'medium' else ''}>high quality 1 pass</option>
+                                            <option value="slow" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'slow' else ''}>high quality 2 passes</option>
+                                            <option value="bd" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'bd' else ''}>Blu-ray compatible</option>
+                                            <option value="lossless" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'lossless' else ''}>lossless default</option>
+                                            <option value="losslesshp" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'losslesshp' else ''}>lossless high performance</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    Preset to use when using NVENC encoding. Recommended using a low latency preset.<br>
+                                    Default: low latency high quality
+                                </p>
+                                <label for="sunshine_ffmpeg_encoder_nv_rate_control">NVENC Encoder Rate Control</label>
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_nv_rate_control" name="sunshine_ffmpeg_encoder_nv_rate_control">
+                                            <option value="auto" ${'selected' if config['sunshine_ffmpeg_encoder_nv_rate_control'] == 'auto' else ''}>automatic</option>
+                                            <option value="constqp" ${'selected' if config['sunshine_ffmpeg_encoder_nv_rate_control'] == 'constqp' else ''}>constant QP mode</option>
+                                            <option value="cbr" ${'selected' if config['sunshine_ffmpeg_encoder_nv_rate_control'] == 'cbr' else ''}>constant bitrate</option>
+                                            <option value="cbr_hq" ${'selected' if config['sunshine_ffmpeg_encoder_nv_rate_control'] == 'cbr_hq' else ''}>constant bitrate high quality</option>
+                                            <option value="cbr_ld_hq" ${'selected' if config['sunshine_ffmpeg_encoder_nv_rate_control'] == 'cbr_ld_hq' else ''}>constant bitrate low delay high quality</option>
+                                            <option value="vbr" ${'selected' if config['sunshine_ffmpeg_encoder_nv_rate_control'] == 'vbr' else ''}>variable bitrate</option>
+                                            <option value="vbr_hq" ${'selected' if config['sunshine_ffmpeg_encoder_nv_rate_control'] == 'vbr_hq' else ''}>variable bitrate high quality</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    The algorithm that ffmpeg will utilize for NVENC rate control.<br>
+                                    Default: automatic
+                                </p>
+                                <label for="sunshine_ffmpeg_encoder_nv_coder">NVENC Encoder Entropy Coding</label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_nv_coder" name="sunshine_ffmpeg_encoder_nv_coder">
+                                            <option value="auto" ${'selected' if config['sunshine_ffmpeg_encoder_nv_coder'] == 'auto' else ''}>automatic</option>
+                                            <option value="cabac" ${'selected' if config['sunshine_ffmpeg_encoder_nv_coder'] == 'cabac' else ''}>Context-adaptive binary arithmetic coding (CABAC)</option>
+                                            <option value="cavlc" ${'selected' if config['sunshine_ffmpeg_encoder_nv_coder'] == 'cavlc' else ''}>Contect-adaptive variable-length coding (CAVLC)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    The method that ffmpeg will utilize for NVENC H264 entropy coding.<br>
+                                    CABAC requires more processing power to decode, but compression is much better.<br>
+                                    CAVLC requires less processing power to decode, but does not compress the data as effectively.<br>
+                                    Default: automatic
+                                </p>
+                            </div>
+                            <div id="ffmpeg_encoder_amdvce" style="overflow: hidden; display: ${'none' if config['sunshine_ffmpeg_encoder'] != 'amdvce' else 'block'}">
+                                <div class="form-group">
+                                    <p class="help-block">Sunshine will use the AMD encoder. This encoder is in alpha stage and the cursor will not be displayed.</p>
+                                </div>
+                                <label for="sunshine_ffmpeg_encoder_amd_preset">AMD Encoder Preset</label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_amd_preset" name="sunshine_ffmpeg_encoder_amd_preset">
+                                            <option value="balanced" ${'selected' if config['sunshine_ffmpeg_encoder_amd_preset'] == 'balanced' else ''}>balanced</option>
+                                            <option value="speed" ${'selected' if config['sunshine_ffmpeg_encoder_amd_preset'] == 'speed' else ''}>speed</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    Preset to use when using AMD encoding.<br>
+                                    Default: balanced
+                                </p>
+                                <label for="sunshine_ffmpeg_encoder_amd_rate_control">AMD Encoder Rate Control</label>
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_amd_rate_control" name="sunshine_ffmpeg_encoder_amd_rate_control">
+                                            <option value="auto" ${'selected' if config['sunshine_ffmpeg_encoder_amd_rate_control'] == 'auto' else ''}>automatic</option>
+                                            <option value="constqp" ${'selected' if config['sunshine_ffmpeg_encoder_amd_rate_control'] == 'constqp' else ''}>constant QP mode</option>
+                                            <option value="cbr" ${'selected' if config['sunshine_ffmpeg_encoder_amd_rate_control'] == 'cbr' else ''}>constant bitrate</option>
+                                            <option value="vbr_latency" ${'selected' if config['sunshine_ffmpeg_encoder_amd_rate_control'] == 'vbr_latency' else ''}>variable bitrate latency constrained</option>
+                                            <option value="vbr_peak" ${'selected' if config['sunshine_ffmpeg_encoder_amd_rate_control'] == 'vbr_peak' else ''}>variable bitrate peak constrained</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    The algorithm that ffmpeg will utilize for AMD rate control.<br>
+                                    Default: automatic
+                                </p>
+                                <label for="sunshine_ffmpeg_encoder_amd_coder">AMD Encoder Entropy Coding</label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_amd_coder" name="sunshine_ffmpeg_encoder_amd_coder">
+                                            <option value="auto" ${'selected' if config['sunshine_ffmpeg_encoder_amd_coder'] == 'auto' else ''}>automatic</option>
+                                            <option value="cabac" ${'selected' if config['sunshine_ffmpeg_encoder_amd_coder'] == 'cabac' else ''}>Context-adaptive binary arithmetic coding (CABAC)</option>
+                                            <option value="cavlc" ${'selected' if config['sunshine_ffmpeg_encoder_amd_coder'] == 'cavlc' else ''}>Contect-adaptive variable-length coding (CAVLC)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    The method that ffmpeg will utilize for AMD H264 entropy coding.<br>
+                                    CABAC requires more processing power to decode, but compression is much better.<br>
+                                    CAVLC requires less processing power to decode, but does not compress the data as effectively.<br>
+                                    Default: automatic
+                                </p>
+                            </div>
+                            <div id="ffmpeg_encoder_vaapi" style="overflow: hidden; display: ${'none' if config['sunshine_ffmpeg_encoder'] != 'vaapi' else 'block'}">
+                                <div class="form-group">
+                                    <p class="help-block">Sunshine will use the VA-API encoder. This encoder is only available for Linux.</p>
+                                </div>
+                            </div>
+                            <div id="ffmpeg_encoder_software" style="overflow: hidden; display: ${'none' if config['sunshine_ffmpeg_encoder'] != 'software' else 'block'}">
+                                <div class="form-group">
+                                    <p class="help-block">Sunshine will use CPU encoding.</p>
+                                </div>
+                                <label for="sunshine_ffmpeg_encoder_sw_preset">Software Encoder Preset</label>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_sw_preset" name="sunshine_ffmpeg_encoder_sw_preset">
+                                            <option value="ultrafast" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'ultrafast' else ''}>ultrafast</option>
+                                            <option value="superfast" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'superfast' else ''}>superfast</option>
+                                            <option value="veryfast" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'veryfast' else ''}>veryfast</option>
+                                            <option value="faster" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'faster' else ''}>faster</option>
+                                            <option value="fast" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'fast' else ''}>fast</option>
+                                            <option value="medium" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'medium' else ''}>medium</option>
+                                            <option value="slow" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'slow' else ''}>slow</option>
+                                            <option value="slower" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'slower' else ''}>slower</option>
+                                            <option value="veryslow" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'veryslow' else ''}>veryslow</option>
+                                            <option value="placebo" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'placebo' else ''}>placebo</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    Preset to use when using software encoding. Faster encoding results in less compression.<br>
+                                    Default: superfast
+                                </p>
+                                <label for="sunshine_ffmpeg_encoder_sw_tune">Software Encoder Tune</label>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_sw_tune" name="sunshine_ffmpeg_encoder_sw_tune">
+                                            <option value="zerolatency" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'zerolatency' else ''}>zerolatency</option>
+                                            <option value="fastdecode" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'fastdecode' else ''}>fastdecode</option>
+                                            <option value="ssim" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'ssim' else ''}>ssim</option>
+                                            <option value="psnr" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'psnr' else ''}>psnr</option>
+                                            <option value="stillimage" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'stillimage' else ''}>stillimage</option>
+                                            <option value="grain" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'grain' else ''}>grain</option>
+                                            <option value="animation" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'animation' else ''}>animation</option>
+                                            <option value="film" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'film' else ''}>film</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    Tune options to use when using software encoding. This further optimizes the preset options.<br>
+                                    Default: zerolatency
+                                </p>
+                            </div>
                         </div>
 
                         <div class="padded-header">
@@ -3597,6 +3850,39 @@ $(document).ready(function() {
     }
     $('#sunshine_external_ip_method').change(function () {
         externalIp();
+    });
+
+    function ffmpegEncoderNotes() {
+        var list_val = $('#sunshine_ffmpeg_encoder').val();
+        if (list_val === '0') {
+            $('#ffmpeg_encoder_automatic').slideDown();
+        } else {
+            $('#ffmpeg_encoder_automatic').slideUp();
+        }
+        if (list_val === 'nvenc') {
+            $('#ffmpeg_encoder_nvenc').slideDown();
+        } else {
+            $('#ffmpeg_encoder_nvenc').slideUp();
+        }
+        if (list_val === 'amdvce') {
+            $('#ffmpeg_encoder_amdvce').slideDown();
+        } else {
+            $('#ffmpeg_encoder_amdvce').slideUp();
+        }
+        if (list_val === 'vaapi') {
+            $('#ffmpeg_encoder_vaapi').slideDown();
+        } else {
+            $('#ffmpeg_encoder_vaapi').slideUp();
+        }
+        if (list_val === 'software') {
+            $('#ffmpeg_encoder_software').slideDown();
+        } else {
+            $('#ffmpeg_encoder_software').slideUp();
+        }
+        var parent;
+    }
+    $('#sunshine_ffmpeg_encoder').change(function () {
+        ffmpegEncoderNotes();
     });
 });
 </script>
