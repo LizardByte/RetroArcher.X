@@ -52,7 +52,7 @@ def get_monitor_devices():
 
     device_map = {}
 
-    if platform.system().lower() == 'Windows':
+    if platform.system().lower() == 'windows':
         x = 0
         while True:
             try:
@@ -67,7 +67,7 @@ def get_monitor_devices():
                 continue
 
             device_map[x] = {
-                'adapter_name': adapter.DeviceSting,
+                'adapter_name': adapter.DeviceString,
                 'output_name': adapter.DeviceName,
                 'monitor_name': monitor.DeviceString
             }
