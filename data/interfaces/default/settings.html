@@ -1079,7 +1079,7 @@
                                         <option value="0" ${'selected' if config['sunshine_ffmpeg_encoder'] == '0' else ''}>Autodetect</option>
                                         <option value="nvenc" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == 'nvenc' else ''}>nVidia NVENC</option>
                                         <option value="amdvce" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == 'amdvce' else ''}>AMD AMF/VCE</option>
-                                        % if common.PLATFORM in ('Darwin'):
+                                        % if common.PLATFORM in ('Linux'):
                                             <option value="vaapi" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == 'vaapi' else ''}>VA-API</option>
                                         % endif
                                         <option value="software" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == 'software' else ''}>Software</option>
