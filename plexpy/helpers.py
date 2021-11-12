@@ -28,13 +28,13 @@ import operator
 import os
 import re
 import shlex
+import shutil
 import socket
 import string
 import sys
 import time
 import unicodedata
 from future.moves.urllib.parse import urlencode
-import win32api
 from xml.dom import minidom
 import xmltodict
 
@@ -50,6 +50,9 @@ else:
     from plexpy import logger
     from plexpy import request
     from plexpy.api2 import API2
+
+if common.PLATFORM == 'Windows':
+    import win32api
 
 
 def addtoapi(*dargs, **dkwargs):
@@ -1727,3 +1730,9 @@ def glob_file_exists(full_file_path):
         return True
     else:
         return False
+
+
+def is_tool(name):
+    """Check whether `name` is on PATH and marked as executable."""
+
+    return shutil.which(name) is not None

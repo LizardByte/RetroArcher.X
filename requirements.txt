@@ -42,8 +42,9 @@ simplejson==3.17.0
 py7zr==0.16.1
 psutil==5.8.0
 pypresence==4.2.0
-pywin32==301
+pywin32==301; sys_platform == 'Windows'
 PyQt6==6.2.0 # used to determine sound devices for Sunshine configuration
+pulsectl==21.10.5
 pygame==2.0.1 # used to list available display resolutions for Sunshine configuration
 GPUtil==1.4.0 # get info about nvidia gpus
 screeninfo==0.7 # get info about monitors

@@ -1,12 +1,17 @@
-import platform
-
 import plexpy
+from plexpy import common
+from plexpy import helpers
 import pygame
 from PyQt6.QtMultimedia import QMediaDevices
 from PyQt6.QtCore import QStringDecoder
 from screeninfo import get_monitors
-from win32api import EnumDisplayDevices
-import pywintypes
+
+if common.PLATFORM == 'Windows':
+    from win32api import EnumDisplayDevices
+    import pywintypes
+
+if helpers.is_tool('pacmd'):  # if pulseaudio is installed
+    import pulsectl
 
 
 def get_display_resolutions():
@@ -52,7 +57,7 @@ def get_monitor_devices():
 
     device_map = {}
 
-    if platform.system().lower() == 'windows':
+    if common.PLATFORM == 'Windows':
         x = 0
         while True:
             try:
@@ -86,8 +91,8 @@ def get_monitor_devices():
 
             device_map[index] = {
                 'adapter_name': str(device),
-                'output_name': device.name,
-                'monitor_name': None
+                'output_name': str(index),
+                'monitor_name': device.name
             }
             if index != 0:
                 x += 1
@@ -99,22 +104,38 @@ def get_sound_devices():
     """returns a dictionary of audio devices"""
     device_map = {}
 
-    devices = QMediaDevices.audioOutputs()
-    default_device = QMediaDevices.defaultAudioOutput()
+    if helpers.is_tool('pacmd'):  # if pulseaudio is installed
+        pulse = pulsectl.Pulse()
+        devices = pulse.sink_list()
 
-    x = 1
-    for device in devices:
-        index = x
+        x = 0
+        for device in devices:
+            index = x
 
-        if device == default_device:
-            index = 0
+            device_map[index] = {
+                'description': device.description,
+                'id': device.name
+            }
 
-        device_map[index] = {
-            'description': device.description(),
-            'id': convert_qt_bytes(device.id())
-        }
-        if index != 0:
             x += 1
+
+    else:
+        devices = QMediaDevices.audioOutputs()
+        default_device = QMediaDevices.defaultAudioOutput()
+
+        x = 1
+        for device in devices:
+            index = x
+
+            if device == default_device:
+                index = 0
+
+            device_map[index] = {
+                'description': device.description(),
+                'id': convert_qt_bytes(device.id())
+            }
+            if index != 0:
+                x += 1
 
     return device_map
 
