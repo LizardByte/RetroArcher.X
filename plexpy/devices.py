@@ -5,6 +5,7 @@ import pygame
 from PyQt6.QtMultimedia import QMediaDevices
 from PyQt6.QtCore import QStringDecoder
 from screeninfo import get_monitors
+import subprocess
 
 if common.PLATFORM == 'Windows':
     from win32api import EnumDisplayDevices
@@ -136,6 +137,31 @@ def get_sound_devices():
             }
             if index != 0:
                 x += 1
+
+    return device_map
+
+
+def get_vaapi_devices():
+    """returns a dictionary of va-api capable devices"""
+    if common.PLATFORM != 'Linux':
+        return False
+
+    command = 'vainfo'
+
+    if not helpers.is_tool(command):  # if vainfo is not installed
+        return False
+    else:
+        proc = subprocess.Popen([command], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = proc.communicate()
+        returncode = proc.returncode
+
+        if returncode != 0:
+            return {
+                'error': result[-1].decode(),
+                'returncode': returncode
+            }
+
+    device_map = {'error': None}
 
     return device_map
 

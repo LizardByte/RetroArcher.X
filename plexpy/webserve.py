@@ -12,6 +12,7 @@ import json
 import linecache
 import os
 import shutil
+import subprocess
 import sys
 import threading
 import zipfile
@@ -3260,6 +3261,7 @@ class WebInterface(object):
             "sunshine_ffmpeg_encoder_amd_coder": plexpy.CONFIG.SUNSHINE_FFMPEG_ENCODER_AMD_CODER,
             "sunshine_error_correction_factor": plexpy.CONFIG.SUNSHINE_ERROR_CORRECTION_FACTOR,
             "sunshine_multicasting_channels": plexpy.CONFIG.SUNSHINE_MULTICASTING_CHANNELS,
+            "sunshine_vaapi_device": plexpy.CONFIG.SUNSHINE_VAAPI_DEVICE,
         }
 
         return serve_template(templatename="settings.html", title="Settings", config=config, kwargs=kwargs)
@@ -4275,6 +4277,37 @@ class WebInterface(object):
             mobile_app.set_temp_device_token(apikey, add=True)
 
         return apikey
+
+    @cherrypy.expose
+    @requireAuth(member_of("admin"))
+    def sudo_install(self, **kwargs):
+        """installs a package using apt-get and sudo password as supplied by the user in the web interface
+
+        returns 'true' as a string if the install succeeded
+        returns 'false' as a string if the install failed
+
+        returning bool values fails which is the reason for returning strings
+        """
+        _user_pw = kwargs['sudo_password']
+        package = kwargs['package']
+
+        logger.info("User installed VAINFO using Sudo Password from #Settings.")
+        #logger._BLACKLIST_WORDS.add(sudo_password)
+
+        proc = subprocess.Popen(['sudo', '-S', 'apt-get', 'install', '-y', package], stdin=subprocess.PIPE, stderr=subprocess.PIPE,
+          universal_newlines=True)
+
+        bypass_sudo_prompt = proc.communicate(_user_pw + '\n')[1]
+
+        returncode = proc.returncode
+        proc.kill()
+
+        if returncode == 0:
+            status = 'true'
+        else:
+            status = 'false'
+
+        return status
 
     @cherrypy.expose
     @cherrypy.tools.json_out()

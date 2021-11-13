@@ -194,7 +194,7 @@ _CONFIG_DEFINITIONS = {
     'TEMP_DIR':  (str, 'Emulators', ''),
     'RESOURCE_DIR':  (str, 'Resources', ''),
     'SUNSHINE_DIR':  (str, 'Resources', ''),
-    'SUNSHINE_EXTERNAL_IP_METHOD':  (int, 'Sunshine', 0),
+    'SUNSHINE_EXTERNAL_IP_METHOD':  (int, 'Sunshine', 1),
     'SUNSHINE_EXTERNAL_IP':  (str, 'Sunshine', ''),
     'SUNSHINE_PORT':  (int, 'Sunshine', 47989),
     'SUNSHINE_PRIVATE_KEY':  (str, 'Sunshine', ''),  # use key from other tab
@@ -234,6 +234,7 @@ _CONFIG_DEFINITIONS = {
     'SUNSHINE_FFMPEG_ENCODER_AMD_PRESET':  (str, 'Sunshine', 'balanced'),
     'SUNSHINE_FFMPEG_ENCODER_AMD_RATE_CONTROL':  (str, 'Sunshine', 'auto'),
     'SUNSHINE_FFMPEG_ENCODER_AMD_CODER':  (str, 'Sunshine', 'auto'),
+    'SUNSHINE_VAAPI_DEVICE':  (str, 'Sunshine', ''),
 }
 
 _BLACKLIST_KEYS = ['_APITOKEN', '_TOKEN', '_KEY', '_SECRET', '_PASSWORD', '_APIKEY', '_ID', '_HOOK']
@@ -250,6 +251,10 @@ _DO_NOT_IMPORT_KEYS = [
 ]
 _DO_NOT_IMPORT_KEYS_DOCKER = [
     'PLEXPY_AUTO_UPDATE', 'GIT_REMOTE', 'GIT_BRANCH'
+]
+
+_DO_NOT_SAVE_KEYS = [  # list of names to ignore
+    'install_vainfo'
 ]
 
 IS_IMPORTING = False
@@ -387,6 +392,7 @@ class Config(object):
         key = name.upper()
         ini_key = name.lower()
         definition = _CONFIG_DEFINITIONS[key]
+
         if len(definition) == 3:
             definition_type, section, default = definition
         else:
@@ -481,8 +487,9 @@ class Config(object):
         Given a big bunch of key value pairs, apply them to the ini.
         """
         for name, value in kwargs.items():
-            key, definition_type, section, ini_key, default = self._define(name)
-            self._config[section][ini_key] = definition_type(value)
+            if name not in _DO_NOT_SAVE_KEYS:
+                key, definition_type, section, ini_key, default = self._define(name)
+                self._config[section][ini_key] = definition_type(value)
 
     def _upgrade(self):
         """

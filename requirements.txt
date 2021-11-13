@@ -48,3 +48,4 @@ pulsectl==21.10.5
 pygame==2.0.1 # used to list available display resolutions for Sunshine configuration
 GPUtil==1.4.0 # get info about nvidia gpus
 screeninfo==0.7 # get info about monitors
+pylspci==0.4.0; sys_platform == 'Linux'

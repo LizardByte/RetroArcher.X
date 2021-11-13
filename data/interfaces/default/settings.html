@@ -15,6 +15,7 @@
 
     audio_device_dict = plexpy.devices.get_sound_devices()
     monitor_device_dict = plexpy.devices.get_monitor_devices()
+    vaapi_device_dict = plexpy.devices.get_vaapi_devices()
     display_resolution_list = plexpy.devices.get_display_resolutions()
     fps_mode_list = plexpy.devices.get_fps_modes()
 %>
@@ -1021,39 +1022,10 @@
                         </div>
 
                         <div class="padded-header">
-                            <h3>FFMPEG</h3>
+                            <h3>Encoding</h3>
                         </div>
 
-                        <div class="form-group advanced-setting">
-                            <label for="sunshine_ffmpeg_quantitization_parameter">Quantitization Parameter</label>
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_ffmpeg_quantitization_parameter" name="sunshine_ffmpeg_quantitization_parameter" value="${config['sunshine_ffmpeg_quantitization_parameter']}" size="30" data-parsley-min="1" data-parsley-trigger="change" data-parsley-errors-container="sunshine_ffmpeg_quantitization_parameter_error" required>
-                                </div>
-                                <div id="sunshine_ffmpeg_quantitization_parameter_error" class="alert alert-danger settings-alert" role="alert"></div>
-                            </div>
-                            <p class="help-block">
-                                Some devices don't support Constant Bit Rate. For those devices, QP is used instead.<br>
-                                Higher value means more compression, but less quality.<br>
-                                Minimum 1, default 28.
-                            </p>
-                        </div>
-
-                        <div class="form-group advanced-setting">
-                            <label for="sunshine_ffmpeg_minimum_threads">Minimum Threads</label>
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_ffmpeg_minimum_threads" name="sunshine_ffmpeg_minimum_threads" value="${config['sunshine_ffmpeg_minimum_threads']}" size="30" data-parsley-range="[1,${os.cpu_count()}]" data-parsley-trigger="change" data-parsley-errors-container="sunshine_ffmpeg_minimum_threads_error" required>
-                                </div>
-                                <div id="sunshine_ffmpeg_minimum_threads_error" class="alert alert-danger settings-alert" role="alert"></div>
-                            </div>
-                            <p class="help-block">
-                                Minimum number of threads used by ffmpeg to encode the video. Increasing the value slightly reduces encoding efficiency, but the tradeoff is usually worth it to gain the use of more CPU cores for encoding. The ideal value is the lowest value that can reliably encode at your desired streaming settings on your hardware.<br>
-                                Range 1-${os.cpu_count()}, default 1.
-                            </p>
-                        </div>
-
-                        <div class="form-group advanced-setting">
+                        <div class="form-group">
                             <label for="sunshine_ffmpeg_hevc_mode">HEVC Mode</label>
                             <div class="row">
                                 <div class="col-md-5">
@@ -1077,12 +1049,12 @@
                                 <div class="col-md-3">
                                     <select class="form-control" id="sunshine_ffmpeg_encoder" name="sunshine_ffmpeg_encoder">
                                         <option value="0" ${'selected' if config['sunshine_ffmpeg_encoder'] == '0' else ''}>Autodetect</option>
-                                        <option value="nvenc" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == 'nvenc' else ''}>nVidia NVENC</option>
-                                        <option value="amdvce" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == 'amdvce' else ''}>AMD AMF/VCE</option>
+                                        <option value="nvenc" ${'selected' if config['sunshine_ffmpeg_encoder'] == 'nvenc' else ''}>nVidia NVENC</option>
+                                        <option value="amdvce" ${'selected' if config['sunshine_ffmpeg_encoder'] == 'amdvce' else ''}>AMD AMF/VCE</option>
                                         % if common.PLATFORM in ('Linux'):
-                                            <option value="vaapi" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == 'vaapi' else ''}>VA-API</option>
+                                            <option value="vaapi" ${'selected' if config['sunshine_ffmpeg_encoder'] == 'vaapi' else ''}>VA-API</option>
                                         % endif
-                                        <option value="software" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == 'software' else ''}>Software</option>
+                                        <option value="software" ${'selected' if config['sunshine_ffmpeg_encoder'] == 'software' else ''}>Software</option>
                                     </select>
                                 </div>
                             </div>
@@ -1210,6 +1182,50 @@
                                 <div class="form-group">
                                     <p class="help-block">Sunshine will use the VA-API encoder. This encoder is only available for Linux.</p>
                                 </div>
+
+                                % if vaapi_device_dict == False:
+                                <div id="install_vainfo_group" style="overflow: hidden; display: ${'none' if vaapi_device_dict != False else 'block'}">
+                                    <div class="form-group">
+                                        <label for="install_vainfo">Sudo Password</label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-form reveal-token" type="button"><i class="fa fa-eye-slash"></i></button>
+                                                    </span>
+                                                    <input type="password" class="form-control" name="install_vainfo" id="install_vainfo" value="" size="20">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-form" type="button" id="sudo_install_vainfo">Install VAINFO</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="help-block">
+                                            VAINFO is not installed. This is required in order to use VA-API.<br>
+                                            Enter Sudo password and click install to begin installation of VAINFO.<br>
+                                            RetroArcher will never save your Sudo password.
+                                        </p>
+                                    </div>
+                                </div>
+                                % else:
+                                % if vaapi_device_dict['error'] != None:
+                                <p class="help-block settings-warning vaapi_device_warning">${vaapi_device_dict['error']}</p>
+                                % else:
+                                <div class="form-group">
+                                    <label for="sunshine_vaapi_device">VA-API Adapter</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <select class="form-control" id="sunshine_vaapi_device" name="sunshine_vaapi_device">
+                                                % for key, device in vaapi_device_dict['devices'].items():
+                                                <option value="${device['output_name']}" ${'selected' if config['sunshine_vaapi_device'] == device['output_name'] else ''}>${device['description']} (${device['output_name']})</option>
+                                                % endfor
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <p class="help-block">Unlike with AMDVCE and NVENC, VA-API allows the video encoding to be done on a different GPU.</p>
+                                </div>
+                                % endif
+                                % endif
                             </div>
                             <div id="ffmpeg_encoder_software" style="overflow: hidden; display: ${'none' if config['sunshine_ffmpeg_encoder'] != 'software' else 'block'}">
                                 <div class="form-group">
@@ -1258,8 +1274,19 @@
                             </div>
                         </div>
 
-                        <div class="padded-header">
-                            <h3>Misc.</h3>
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_ffmpeg_quantitization_parameter">Quantitization Parameter</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_ffmpeg_quantitization_parameter" name="sunshine_ffmpeg_quantitization_parameter" value="${config['sunshine_ffmpeg_quantitization_parameter']}" size="30" data-parsley-min="1" data-parsley-trigger="change" data-parsley-errors-container="sunshine_ffmpeg_quantitization_parameter_error" required>
+                                </div>
+                                <div id="sunshine_ffmpeg_quantitization_parameter_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Some devices don't support Constant Bit Rate. For those devices, QP is used instead.<br>
+                                Higher value means more compression, but less quality.<br>
+                                Minimum 1, default 28.
+                            </p>
                         </div>
 
                         <div class="form-group advanced-setting">
@@ -1274,6 +1301,20 @@
                                 Percentage of error correcting packets per data packet in each video frame.<br>
                                 Higher values can correct for more network packet loss, but at the cost of increasing bandwidth usage.<br>
                                 Range 1-255, default 20.
+                            </p>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_ffmpeg_minimum_threads">Minimum Threads</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_ffmpeg_minimum_threads" name="sunshine_ffmpeg_minimum_threads" value="${config['sunshine_ffmpeg_minimum_threads']}" size="30" data-parsley-range="[1,${os.cpu_count()}]" data-parsley-trigger="change" data-parsley-errors-container="sunshine_ffmpeg_minimum_threads_error" required>
+                                </div>
+                                <div id="sunshine_ffmpeg_minimum_threads_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Minimum number of threads used by ffmpeg to encode the video. Increasing the value slightly reduces encoding efficiency, but the tradeoff is usually worth it to gain the use of more CPU cores for encoding. The ideal value is the lowest value that can reliably encode at your desired streaming settings on your hardware.<br>
+                                Range 1-${os.cpu_count()}, default 1.
                             </p>
                         </div>
 
@@ -3043,7 +3084,7 @@ $(document).ready(function() {
     });
 
     $("#reset_git_install").click(function () {
-        var msg = 'Are you sure you want to reset your RetroArcher installtion back to <strong>${common.RELEASE}</strong>?' +
+        var msg = 'Are you sure you want to reset your RetroArcher installation back to <strong>${common.RELEASE}</strong>?' +
                 '<br /><br />RetroArcher will restart.';
         $('#confirm-message').html(msg);
         $('#confirm-modal').modal();
@@ -3058,6 +3099,24 @@ $(document).ready(function() {
         $.get('generate_api_key',
             function (apikey) {
                 $('#api_key').val(apikey);
+        });
+    });
+
+    $('#install_vainfo').click(function(){ $('#install_vainfo').select() });
+    $("#sudo_install_vainfo").click(function() {
+        $.get('sudo_install',
+            {
+            sudo_password: $("#install_vainfo").val(),
+            package: 'vainfo'
+            },
+            function (status) {
+                if (status === 'true') {
+                    showMsg('<i class="fa fa-check"></i> Successfully installed VAINFO.', false, true, 5000);
+                    $('#install_vainfo_group').slideUp();
+                    $('#install_vainfo').val(null);
+                } else {
+                    showMsg('<i class="fa fa-exclamation-circle"></i> Failed to install VAINFO.', false, true, 5000, true)
+                };
         });
     });
 
