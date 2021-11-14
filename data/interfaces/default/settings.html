@@ -1209,7 +1209,11 @@
                                 </div>
                                 % else:
                                 % if vaapi_device_dict['error'] != None:
-                                <p class="help-block settings-warning vaapi_device_warning">${vaapi_device_dict['error']}</p>
+                                <p class="help-block settings-warning vaapi_device_warning">
+                                    % for line in vaapi_device_dict['error'].splitlines():
+                                        ${line}<br>
+                                    % endfor
+                                </p>
                                 % else:
                                 <div class="form-group">
                                     <label for="sunshine_vaapi_device">VA-API Adapter</label>
