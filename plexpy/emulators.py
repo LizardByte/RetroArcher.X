@@ -9,6 +9,7 @@ import configparser
 import itertools
 
 import plexpy
+from plexpy import common
 from plexpy import logger
 from plexpy import download_helper
 from plexpy import platforms
@@ -17,12 +18,58 @@ from plexpy import platforms
 class RetroArch:
     """functions related to retroarch"""
 
+    def get_paths(self):
+        """return dictionary of paths for retroarch"""
+        if common.PLATFORM in ('Linux'):
+            path_prefix = os.path.join('RetroArch.AppImage.home', '.config', 'retroarch')
+            path_info = os.path.join('cores')
+        else:
+            path_prefix = os.path.join('')
+            path_info = os.path.join('info')
+
+        path_assets = os.path.join('assets')
+        path_autoconfig = os.path.join('autoconfig')
+        path_cheats = os.path.join('cheats')
+        path_cores = os.path.join('cores')
+        path_database_cursors = os.path.join('database', 'cursors')
+        path_database_rdb = os.path.join('database', 'rdb')
+        path_overlays = os.path.join('overlays')
+        path_shaders_cg = os.path.join('shaders', 'shaders_cg')
+        path_shaders_glsl = os.path.join('shaders', 'shaders_glsl')
+        path_shaders_slang = os.path.join('shaders', 'shaders_slang')
+
+        paths = {
+            'assets': os.path.join(plexpy.CONFIG.RETROARCH_DIR, path_prefix, path_assets),
+            'autoconfig': os.path.join(plexpy.CONFIG.RETROARCH_DIR, path_prefix, path_autoconfig),
+            'cheats': os.path.join(plexpy.CONFIG.RETROARCH_DIR, path_prefix, path_cheats),
+            'cores': os.path.join(plexpy.CONFIG.RETROARCH_DIR, path_prefix, path_cores),
+            'database-cursors': os.path.join(plexpy.CONFIG.RETROARCH_DIR, path_prefix, path_database_cursors),
+            'database-rdb': os.path.join(plexpy.CONFIG.RETROARCH_DIR, path_prefix, path_database_rdb),
+            'info': os.path.join(plexpy.CONFIG.RETROARCH_DIR, path_prefix, path_info),
+            'overlays': os.path.join(plexpy.CONFIG.RETROARCH_DIR, path_prefix, path_overlays),
+            'shaders_cg': os.path.join(plexpy.CONFIG.RETROARCH_DIR, path_prefix, path_shaders_cg),
+            'shaders_glsl': os.path.join(plexpy.CONFIG.RETROARCH_DIR, path_prefix, path_shaders_glsl),
+            'shaders_slang': os.path.join(plexpy.CONFIG.RETROARCH_DIR, path_prefix, path_shaders_slang)
+        }
+
+        return paths
+
+
+    def get_binary_name(self):
+        map = {
+            'Darwin': 'RetroArch.dmg',
+            'Linux': 'RetroArch.AppImage',
+            'Windows': 'retroarch.exe'
+        }
+
+        return map[common.PLATFORM]
+
     def get_current_version(self):
         """return the current version of retroarch"""
         emulator_dir = plexpy.CONFIG.RETROARCH_DIR
 
         try:
-            version_full = subprocess.run([os.path.join(emulator_dir, 'retroarch'), '--version'], capture_output=True)
+            version_full = subprocess.run([os.path.join(emulator_dir, self.get_binary_name()), '--version'], capture_output=True)
         except FileNotFoundError:
             return False
 
@@ -101,7 +148,7 @@ class RetroArch:
         core = r"cores\mupen64plus_next_libretro.dll"
         game = r"\\archer\l\RetroArcher\roms\Nintendo 64\007 - GoldenEye (USA).zip"
 
-        emulator = subprocess.run(['retroarch', "-L", core, game], capture_output=True)
+        emulator = subprocess.run([self.get_binary_name(), "-L", core, game], capture_output=True)
 
         if emulator.stdout == b'' and emulator.stderr == b'':
             logger.error("RetroArcher Emulators :: RetroArch failed to start game %s with core %s" % (game, core))
@@ -136,6 +183,8 @@ class RetroArch:
             root_dir = download_helper.extract_archive(download, temp_dir)
             destination_dir = plexpy.CONFIG.RETROARCH_DIR
 
+            download_helper.simplify_names(os.path.join(temp_dir, root_dir), 'RetroArch')
+
             updated = download_helper.merge_update(os.path.join(temp_dir, root_dir), destination_dir)
 
             # shutil.rmtree(temp_dir)
@@ -151,27 +200,18 @@ class RetroArch:
 
     def update_assets(self, list_assets='*'):
         """Update Core info files and individual core files"""
-        assets = {
-            'assets': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'assets'),
-            'autoconfig': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'autoconfig'),
-            'cheats': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'cheats'),
-            'database-cursors': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'database', 'cursors'),
-            'database-rdb': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'database', 'rdb'),
-            'info': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'info'),
-            'overlays': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'overlays'),
-            'shaders_cg': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'shaders', 'shaders_cg'),
-            'shaders_glsl': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'shaders', 'shaders_glsl'),
-            'shaders_slang': os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'shaders', 'shaders_slang')
-        }
+        assets = self.get_paths()
 
         for key, value in assets.items():
             if key in list_assets or list_assets == '*':
                 download_url = f'https://buildbot.libretro.com/assets/frontend/{key}.zip'
                 temp_dir = os.path.join(plexpy.CONFIG.TEMP_DIR, 'retroarch')
+
                 destination_dir = value
 
                 if not os.path.isdir(destination_dir):
-                    self.update_base()
+                    # self.update_base()
+                    os.mkdir(destination_dir)
 
                 # updated = self.update(download_url, temp_dir, destination_dir)
 
@@ -218,6 +258,8 @@ class RetroArch:
 
         root_dir = download_helper.extract_archive(download, temp_dir)
         destination_dir = plexpy.CONFIG.RETROARCH_DIR
+
+        download_helper.simplify_names(os.path.join(temp_dir, root_dir), 'RetroArch')
 
         updated = download_helper.merge_update(os.path.join(temp_dir, root_dir), destination_dir)
 
@@ -310,12 +352,22 @@ class RetroArch:
 class RPCS3:
     """functions related to rpcs3"""
 
+    def get_binary_name(self):
+        map = {
+            'Darwin': 'rpcs3.dmg',
+            'Linux': 'rpcs3.AppImage',
+            'Windows': 'rpcs3.exe'
+        }
+
+        return map[common.PLATFORM]
+
+
     def get_current_version(self):
         """return the current version of rpcs3"""
         emulator_dir = plexpy.CONFIG.RPCS3_DIR
 
         try:
-            version_full = subprocess.run([os.path.join(emulator_dir, 'rpcs3'), '--version'], capture_output=True)
+            version_full = subprocess.run([os.path.join(emulator_dir, self.get_binary_name()), '--version'], capture_output=True)
         except FileNotFoundError:
             return False
 
@@ -382,7 +434,7 @@ class RPCS3:
         """Function to launch emulator with core and game"""
         game = r"\\archer\l\RetroArcher\roms\Sony Playstation 3\..."
 
-        emulator = subprocess.run(['rpcs3', "-L", game], capture_output=True)
+        emulator = subprocess.run([self.get_binary_name(), "-L", game], capture_output=True)
 
         if emulator.stdout == b'' and emulator.stderr == b'':
             logger.error("RetroArcher Emulators :: RPCS3 failed to start game %s" % (game))
@@ -413,8 +465,20 @@ class RPCS3:
                 logger.error("RetroArcher Emulators :: Cannot install/update RPCS3")
                 return False
 
-            root_dir = download_helper.extract_archive(download, temp_dir)
             destination_dir = plexpy.CONFIG.RPCS3_DIR
+            if download.rsplit('.', 1)[-1].lower() in ('zip', '7z'):  # only try to extract archive files
+                root_dir = download_helper.extract_archive(download, temp_dir)
+            elif download.rsplit('.', 1)[-1] in ('AppImage'):
+                # this is an AppImage file
+
+                # set permissions
+                # we will change the permissions so it can be executed
+                st_mode = 33261
+                os.chmod(download, st_mode)  # https://www.tutorialspoint.com/python/os_chmod.htm
+
+                # rename the file
+                # we will rename it as the original name is dumb... e.g. rpcs3-v0.0.19-13010-7dc3a50d_linux64.AppImage
+                os.rename(download, os.path.join(temp_dir, 'rpcs3.AppImage'))
 
             updated = download_helper.merge_update(temp_dir, destination_dir)
 
@@ -586,14 +650,20 @@ class Cemu:
 
 
 def update_emulators():
-    emulators = [RetroArch, RPCS3, Cemu]
+    emulators = [RetroArch, RPCS3]
+
+    if common.PLATFORM in ('Windows'):
+        emulators.append(Cemu)
 
     for emulator in emulators:
         emulator().update_base()
 
 
 def update_mapping():
-    emulators = [RetroArch, RPCS3, Cemu]
+    emulators = [RetroArch, RPCS3]
+
+    if common.PLATFORM in ('Windows'):
+        emulators.append(Cemu)
 
     mapping = platforms.mapping
 

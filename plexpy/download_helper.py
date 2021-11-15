@@ -69,11 +69,11 @@ def extract_archive(archive_file, destination_folder):
 
     if extension == 'zip':
         with zipfile.ZipFile(archive_file, 'r') as archive:
-            root_folder = archive.namelist()[0]
+            root_folder = min(archive.namelist(), key=len)
             archive.extractall(path=destination_folder)
     elif extension == '7z':
         with py7zr.SevenZipFile(archive_file, 'r') as archive:
-            root_folder = archive.getnames()[0]
+            root_folder = min(archive.getnames(), key=len)
             methods = archive.archiveinfo().method_names
 
             if 'bcj2' not in methods.lower():  # methods is a string... will actually have BCJ2*
@@ -153,3 +153,13 @@ def merge_update(source_dir, destination_dir):
         return False
     else:
         return True
+
+
+def simplify_names(directory, app_name):
+    """Simplify and rename file names for AppImage files"""
+    files_list = os.listdir(directory)
+    for item in files_list:
+        if '.AppImage' in item:
+            right_side_name = item.split('.AppImage', 1)[-1]
+            new_name = f'{app_name}.AppImage{right_side_name}'
+            os.rename(os.path.join(directory, item), os.path.join(directory, new_name))

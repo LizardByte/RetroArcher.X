@@ -25,7 +25,7 @@ DOCUMENTATION :: END
         </tr>
     </thead>
     <tbody>
-        % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'retroarch')):
+        % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'RetroArch')):
         <tr>
             <td>RetroArch Version:</td>
             <td>${plexpy.emulators.RetroArch().get_current_version()}</td>
