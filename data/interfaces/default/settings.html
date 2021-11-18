@@ -853,13 +853,13 @@
                             <label for="sunshine_port">Sunshine Port</label>
                             <div class="row">
                                 <div class="col-md-2">
-                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_port" name="sunshine_port" value="${config['sunshine_port']}" size="30" data-parsley-range="[0,65535]" data-parsley-trigger="change" data-parsley-errors-container="sunshine_port_error" required>
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_port" name="sunshine_port" value="${config['sunshine_port']}" size="30" data-parsley-range="[21,65535]" data-parsley-trigger="change" data-parsley-errors-container="sunshine_port_error" required>
                                 </div>
                                 <div id="sunshine_port_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
                             <p class="help-block">
                                 Port that Sunshine is listening on.<br>
-                                Range 0-65535, default 47989.
+                                Range 21-65535, default 47989.
                             </p>
                         </div>
 
