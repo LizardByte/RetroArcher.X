@@ -2658,7 +2658,7 @@ def initialize_tracker():
         'noninteractive': True
         }
 
-    tracker = Tracker.create('UA-111522699-2', client_id=CONFIG.PMS_UUID, hash_client_id=True,
+    tracker = Tracker.create('UA-213381911-1', client_id=CONFIG.PMS_UUID, hash_client_id=True,
                              user_agent=common.USER_AGENT)
     tracker.set(data)
 
