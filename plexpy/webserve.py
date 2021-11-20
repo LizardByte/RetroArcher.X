@@ -4385,7 +4385,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     def do_state_change(self, signal, title, timer, **kwargs):
         message = title
-        quote = self.random_arnold_quotes()
+        quote = self.random_quotes()
         if signal:
             plexpy.SIGNAL = signal
 
@@ -6193,46 +6193,19 @@ class WebInterface(object):
 
     @cherrypy.expose
     @requireAuth(member_of("admin"))
-    @addtoapi("arnold")
-    def random_arnold_quotes(self, **kwargs):
+    @addtoapi("get_quotes")
+    def random_quotes(self, **kwargs):
         """ Get to the chopper! """
         import random
-        quote_list = ['To crush your enemies, see them driven before you, and to hear the lamentation of their women!',
-                      'Your clothes, give them to me, now!',
-                      'Do it!',
-                      'If it bleeds, we can kill it.',
-                      'See you at the party Richter!',
-                      'Let off some steam, Bennett.',
-                      'I\'ll be back.',
-                      'Get to the chopper!',
-                      'Hasta La Vista, Baby!',
-                      'It\'s not a tumor!',
-                      'Dillon, you son of a bitch!',
-                      'Benny!! Screw you!!',
-                      'Stop whining! You kids are soft. You lack discipline.',
-                      'Nice night for a walk.',
-                      'Stick around!',
-                      'I need your clothes, your boots and your motorcycle.',
-                      'No, it\'s not a tumor. It\'s not a tumor!',
-                      'I LIED!',
-                      'Are you Sarah Connor?',
-                      'I\'m a cop you idiot!',
-                      'Come with me if you want to live.',
-                      'Who is your daddy and what does he do?',
-                      'Oh, cookies! I can\'t wait to toss them.',
-                      'Make it quick because my horse is getting tired.',
-                      'What killed the dinosaurs? The Ice Age!',
-                      'That\'s for sleeping with my wife!',
-                      'Remember when I said I\'d kill you last... I lied!',
-                      'You want to be a farmer? Here\'s a couple of acres.',
-                      'Now, this is the plan. Get your ass to Mars.',
-                      'I just had a terrible thought... What if this is a dream?',
-                      'Well, listen to this one: Rubber baby buggy bumpers!',
-                      'Take your toy back to the carpet!',
-                      'My name is John Kimble... And I love my car.',
-                      'I eat Green Berets for breakfast.',
-                      'Put that cookie down! NOW!'
-                      ]
+        quote_list = [
+            "You have died of dysentery.",
+            "Get over here!",
+            "It's time to kick ass and chew bubblegum... and I'm all outta gum.",
+            "Nothing is true, everything is permitted.",
+            "It’s dangerous to go alone, take this!",
+            "Thank you Mario! But our Princess is in another castle!",
+            "Do a barrel roll!",
+        ]
 
         return random.choice(quote_list)
 
