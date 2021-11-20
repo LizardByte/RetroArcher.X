@@ -3262,6 +3262,7 @@ class WebInterface(object):
             "sunshine_error_correction_factor": plexpy.CONFIG.SUNSHINE_ERROR_CORRECTION_FACTOR,
             "sunshine_multicasting_channels": plexpy.CONFIG.SUNSHINE_MULTICASTING_CHANNELS,
             "sunshine_vaapi_device": plexpy.CONFIG.SUNSHINE_VAAPI_DEVICE,
+            "lock_settings": plexpy.CONFIG.LOCK_SETTINGS,
         }
 
         return serve_template(templatename="settings.html", title="Settings", config=config, kwargs=kwargs)

@@ -12,7 +12,6 @@ try:
 except (ModuleNotFoundError, ImportError):
     qt6 = False
 from PyQt5.QtMultimedia import QAudioDeviceInfo
-qt6 = False
 
 if common.PLATFORM == 'Windows':
     from win32api import EnumDisplayDevices

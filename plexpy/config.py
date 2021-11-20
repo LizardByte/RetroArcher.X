@@ -235,6 +235,7 @@ _CONFIG_DEFINITIONS = {
     'SUNSHINE_FFMPEG_ENCODER_AMD_RATE_CONTROL':  (str, 'Sunshine', 'auto'),
     'SUNSHINE_FFMPEG_ENCODER_AMD_CODER':  (str, 'Sunshine', 'auto'),
     'SUNSHINE_VAAPI_DEVICE':  (str, 'Sunshine', ''),
+    'LOCK_SETTINGS':  (bool_int, 'Admin', 0),
 }
 
 _BLACKLIST_KEYS = ['_APITOKEN', '_TOKEN', '_KEY', '_SECRET', '_PASSWORD', '_APIKEY', '_ID', '_HOOK']

@@ -2947,7 +2947,13 @@ $(document).ready(function() {
     }
 
     $('.save-button').click(function() {
-        preSaveChecks(function () { saveSettings(true, postSaveChecks) });
+        var locked_settings = "${config['lock_settings']}";
+
+        if (locked_settings === '1') {
+            showMsg('<i class="fa fa-exclamation-circle"></i> Settings are locked.', false, true, 5000, true)
+        } else {
+            preSaveChecks(function () { saveSettings(true, postSaveChecks) });
+        }
     });
 
     initConfigCheckbox('#api_enabled');
