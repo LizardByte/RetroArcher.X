@@ -43,7 +43,7 @@ py7zr==0.16.1
 psutil==5.8.0
 pypresence==4.2.0
 pywin32==301; sys_platform == 'Windows'
-PyQt6==6.2.0 # used to determine sound devices for Sunshine configuration
+PyQt6==6.2.0;python_version>"3.8" # used to determine sound devices for Sunshine configuration
 PyQt5==5.15.6;python_version<"3.9" # this is a hack for running demo in replit
 pulsectl==21.10.5
 pygame==2.0.1 # used to list available display resolutions for Sunshine configuration
