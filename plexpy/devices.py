@@ -2,10 +2,17 @@ import plexpy
 from plexpy import common
 from plexpy import helpers
 import pygame
-from PyQt6.QtMultimedia import QMediaDevices
-from PyQt6.QtCore import QStringDecoder
 from screeninfo import get_monitors
 import subprocess
+
+try:
+    from PyQt6.QtMultimedia import QMediaDevices
+    from PyQt6.QtCore import QStringDecoder
+    qt6 = True
+except (ModuleNotFoundError, ImportError):
+    qt6 = False
+from PyQt5.QtMultimedia import QAudioDeviceInfo
+qt6 = False
 
 if common.PLATFORM == 'Windows':
     from win32api import EnumDisplayDevices
@@ -121,22 +128,43 @@ def get_sound_devices():
             x += 1
 
     else:
-        devices = QMediaDevices.audioOutputs()
-        default_device = QMediaDevices.defaultAudioOutput()
+        if qt6:
+            devices = QMediaDevices.audioOutputs()
+            default_device = QMediaDevices.defaultAudioOutput()
 
-        x = 1
-        for device in devices:
-            index = x
+            x = 1
+            for device in devices:
+                index = x
 
-            if device == default_device:
-                index = 0
+                if device == default_device:
+                    index = 0
 
-            device_map[index] = {
-                'description': device.description(),
-                'id': convert_qt_bytes(device.id())
-            }
-            if index != 0:
-                x += 1
+                device_map[index] = {
+                    'description': device.description(),
+                    'id': convert_qt_bytes(device.id())
+                }
+                if index != 0:
+                    x += 1
+        else:
+            # PyQt5
+            # This is just here for compatibility reasons, trying to run a demo of RetroArcher.X in replit
+            # why do we get two devices using PyQt5 and only 1 using PyQt6?
+            devices = QAudioDeviceInfo.availableDevices(1)  # https://www.riverbankcomputing.com/static/Docs/PyQt5/api/qtmultimedia/qaudio.html#Mode
+            default_device = QAudioDeviceInfo.defaultOutputDevice()
+
+            x = 1
+            for device in devices:
+                index = x
+
+                if device == default_device:
+                    index = 0
+
+                device_map[index] = {
+                    'description': device.deviceName(),
+                    'id': device.supportedByteOrders()  # need to figure out how to get device id using PyQt6
+                }
+                if index != 0:
+                    x += 1
 
     return device_map
 
