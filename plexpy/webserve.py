@@ -6195,16 +6195,30 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi("get_quotes")
     def random_quotes(self, **kwargs):
-        """ Get to the chopper! """
+        """ Returns a random quote """
         import random
         quote_list = [
-            "You have died of dysentery.",
-            "Get over here!",
-            "It's time to kick ass and chew bubblegum... and I'm all outta gum.",
-            "Nothing is true, everything is permitted.",
-            "It’s dangerous to go alone, take this!",
-            "Thank you Mario! But our Princess is in another castle!",
+            "All Your Base Are Belong To Us",
             "Do a barrel roll!",
+            "Finish Him!",
+            "Get over here!",
+            "Hell, it's about time",
+            "I gotta believe!!",
+            "I used to be an adventurer like you. Then I took an arrow in the knee.",
+            "I want to restore this world, but I fear I can't do it alone. Perhaps you could give me a hand?",
+            "It’s dangerous to go alone, take this!",
+            "It's time to kick ass and chew bubblegum... and I'm all outta gum.",
+            "No Gods or Kings, only Man",
+            "Nothing is true, everything is permitted.",
+            "Sir. Finishing this fight.",
+            "The Cake Is a Lie",
+            "Thank you Mario! But our Princess is in another castle!",
+            "Thought I'd Try Shooting My Way Out—Mix Things Up A Little.",
+            "We all make choices, but in the end our choices make us.",
+            "We should start from the first floor, okay? And, Jill, here's a lock pick. It might be handy if you, the master of unlocking, take it with you.",
+            "Yes sir, I need a weapon.",
+            "You have died of dysentery.",
+            "You must construct additional pylons.",
         ]
 
         return random.choice(quote_list)
