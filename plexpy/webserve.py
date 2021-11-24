@@ -2962,6 +2962,282 @@ class WebInterface(object):
         return newsletter_logs
 
     @cherrypy.expose
+    @requireAuth(member_of("admin"))
+    def get_sunshine_log(self, **kwargs):
+        json_data = helpers.process_json_kwargs(json_kwargs=kwargs.get('json_data'))
+        log_level = kwargs.get('log_level', "")
+
+        start = json_data['start']
+        length = json_data['length']
+        order_column = json_data['order'][0]['column']
+        order_dir = json_data['order'][0]['dir']
+        search_value = json_data['search']['value']
+        sortcolumn = 0
+
+        filt = []
+        filtered = []
+        fa = filt.append
+
+        log_directory = plexpy.CONFIG.LOG_DIR
+        filename = 'sunshine.log'
+
+        with open(os.path.join(log_directory, filename), 'r', encoding='utf-8') as f:
+            for l in f.readlines():
+                if l.startswith('['):  # new entry
+                    temp_timestamp = l.split('[', 1)[-1].split(']', 1)[0].split(':')
+                    timestamp = f'{temp_timestamp[0]}-{temp_timestamp[1]}-{temp_timestamp[2]} {temp_timestamp[3]}:{temp_timestamp[4]}:{temp_timestamp[5]}'
+                    loglvl = l.split(': ', 2)[1].upper()
+                    msg = helpers.sanitize(l.split(': ', 2)[-1].replace('\n', ''))
+                    fa([timestamp, loglvl, msg])
+                else:  # continued entry
+                    tl = (len(filt) - 1)
+                    n = len(l) - len(l.lstrip(' '))
+                    ll = '&nbsp;' * (2 * n) + helpers.sanitize(l[n:])
+                    if l.lower().startswith('device description'):
+                        filt[tl][2] = ll
+                    else:
+                        filt[tl][2] += '<br>' + ll
+                    continue
+
+        log_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR']
+        if log_level in log_levels:
+            log_levels = log_levels[log_levels.index(log_level)::]
+            filtered = [row for row in filt if row[1] in log_levels]
+        else:
+            filtered = filt
+
+        if search_value:
+            filtered = [row for row in filtered for column in row if search_value.lower() in column.lower()]
+
+        if order_column == '1':
+            sortcolumn = 2
+        elif order_column == '2':
+            sortcolumn = 1
+
+        filtered.sort(key=lambda x: x[sortcolumn])
+
+        if order_dir == 'desc':
+            filtered = filtered[::-1]
+
+        rows = filtered[start:(start + length)]
+
+        return json.dumps({
+            'recordsFiltered': len(filtered),
+            'recordsTotal': len(filt),
+            'data': rows,
+        })
+
+    @cherrypy.expose
+    @requireAuth(member_of("admin"))
+    def get_retroarch_log(self, **kwargs):
+        json_data = helpers.process_json_kwargs(json_kwargs=kwargs.get('json_data'))
+        log_level = kwargs.get('log_level', "")
+
+        start = json_data['start']
+        length = json_data['length']
+        order_column = json_data['order'][0]['column']
+        order_dir = json_data['order'][0]['dir']
+        search_value = json_data['search']['value']
+        sortcolumn = 0
+
+        filt = []
+        filtered = []
+        fa = filt.append
+
+        log_directory = plexpy.CONFIG.RETROARCH_DIR
+        filename = 'retroarch.log'
+
+        with open(os.path.join(log_directory, 'logs', filename), 'r', encoding='utf-8') as f:
+            index = 0
+            for l in f.readlines():
+                if l.startswith('['):  # new entry
+                    timestamp = index
+                    loglvl = l.split('[', 1)[-1].split(']', 1)[0]
+                    msg = helpers.sanitize(l.split('] ', 1)[-1].replace('\n', ''))
+                    fa([timestamp, loglvl, msg])
+                    index += 1
+                else:  # continued entry
+                    tl = (len(filt) - 1)
+                    n = len(l) - len(l.lstrip(' '))
+                    ll = '&nbsp;' * (2 * n) + helpers.sanitize(l[n:])
+                    filt[tl][2] += '<br>' + ll
+                    continue
+
+        log_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR']
+        if log_level in log_levels:
+            log_levels = log_levels[log_levels.index(log_level)::]
+            filtered = [row for row in filt if row[1] in log_levels]
+        else:
+            filtered = filt
+
+        if search_value:
+            filtered = [row for row in filtered for column in row if search_value.lower() in column.lower()]
+
+        if order_column == '1':
+            sortcolumn = 2
+        elif order_column == '2':
+            sortcolumn = 1
+
+        filtered.sort(key=lambda x: x[sortcolumn])
+
+        if order_dir == 'desc':
+            filtered = filtered[::-1]
+
+        rows = filtered[start:(start + length)]
+
+        return json.dumps({
+            'recordsFiltered': len(filtered),
+            'recordsTotal': len(filt),
+            'data': rows,
+        })
+
+    @cherrypy.expose
+    @requireAuth(member_of("admin"))
+    def get_rpcs3_log(self, **kwargs):
+        json_data = helpers.process_json_kwargs(json_kwargs=kwargs.get('json_data'))
+        log_level = kwargs.get('log_level', "")
+
+        start = json_data['start']
+        length = json_data['length']
+        order_column = json_data['order'][0]['column']
+        order_dir = json_data['order'][0]['dir']
+        search_value = json_data['search']['value']
+        sortcolumn = 0
+
+        filt = []
+        filtered = []
+        fa = filt.append
+
+        log_directory = plexpy.CONFIG.RPCS3_DIR
+        filename = 'RPCS3.log'
+
+        with open(os.path.join(log_directory, filename), 'r', encoding='utf-8') as f:
+            first = True
+            for l in f.readlines():
+                levels = {
+                    # https://github.com/RPCS3/rpcs3/blob/c646476ca8076727a9f290b51b94cd1d8f74e1c4/rpcs3/util/logs.cpp#L630
+                    '·A': 'ALWAYS',
+                    '·F': 'FATAL',
+                    '·E': 'ERROR',
+                    '·U': 'TODO',
+                    '·S': 'SUCCESS',
+                    '·W': 'WARNING',
+                    '·!': 'NOTICE',
+                    '·T': 'TRACE',
+                }
+                if l.startswith('·'):  # new entry
+                    temp_timestamp = l.split(' ', 2)[-2].split(':')
+                    seconds = int(temp_timestamp[0]) * 3600 + int(temp_timestamp[1]) * 60 + round(
+                        float(temp_timestamp[2]), 0)
+                    timestamp = str(int(seconds))
+                    loglvl = levels[l.split(' ', 1)[0]]
+                    full_msg = helpers.sanitize(l.split(' ', 2)[-1].replace('\n', '')).split(':', 1)
+                    msg = full_msg[-1]
+                    msg_type = full_msg[0]
+                    fa([timestamp, loglvl, msg_type, msg])
+                    first = False
+                elif not first:  # continued entry
+                    tl = (len(filt) - 1)
+                    n = len(l) - len(l.lstrip(' '))
+                    ll = '&nbsp;' * (2 * n) + helpers.sanitize(l[n:])
+                    filt[tl][-1] += '<br>' + ll
+                    continue
+                if first:
+                    seconds = 0
+                    timestamp = str(seconds)
+                    loglvl = 'NOTICE'
+                    msg = helpers.sanitize(l.replace('\n', ''))
+                    msg_type = 'INIT'
+                    fa([timestamp, loglvl, msg_type, msg])
+                    first = False
+
+        log_levels = ['TRACE', 'NOTICE', 'WARNING', 'SUCCESS', 'TODO', 'ERROR', 'FATAL', 'ALWAYS']
+
+        if log_level in log_levels:
+            log_levels = log_levels[log_levels.index(log_level)::]
+            filtered = [row for row in filt if row[1] in log_levels]
+        else:
+            filtered = filt
+
+        if search_value:
+            filtered = [row for row in filtered for column in row if search_value.lower() in column.lower()]
+
+        if order_column == '1':
+            sortcolumn = 2
+        elif order_column == '2':
+            sortcolumn = 1
+
+        filtered.sort(key=lambda x: x[sortcolumn])
+
+        if order_dir == 'desc':
+            filtered = filtered[::-1]
+
+        rows = filtered[start:(start + length)]
+
+        return json.dumps({
+            'recordsFiltered': len(filtered),
+            'recordsTotal': len(filt),
+            'data': rows,
+        })
+
+    @cherrypy.expose
+    @requireAuth(member_of("admin"))
+    def get_cemu_log(self, **kwargs):
+        json_data = helpers.process_json_kwargs(json_kwargs=kwargs.get('json_data'))
+
+        start = json_data['start']
+        length = json_data['length']
+        order_column = json_data['order'][0]['column']
+        order_dir = json_data['order'][0]['dir']
+        search_value = json_data['search']['value']
+        sortcolumn = 0
+
+        filt = []
+        filtered = []
+        fa = filt.append
+
+        log_directory = plexpy.CONFIG.CEMU_DIR
+        log_files = ['3.txt', '2.txt', '1.txt', 'txt']
+        for log in log_files:
+            filename = f'log.{log}'
+
+            with open(os.path.join(log_directory, filename), 'r', encoding='utf-8') as f:
+                for l in f.readlines():
+                    if l.startswith('['):  # new entry
+                        timestamp = l.split('[', 1)[-1].split(']', 1)[0]
+                        msg = helpers.sanitize(l.split('] ', 1)[-1].replace('\n', ''))
+                        fa([timestamp, msg])
+                    else:  # continued entry
+                        tl = (len(filt) - 1)
+                        n = len(l) - len(l.lstrip(' '))
+                        ll = '&nbsp;' * (2 * n) + helpers.sanitize(l[n:])
+                        filt[tl][-1] += '<br>' + ll
+                        continue
+
+        filtered = filt
+
+        if search_value:
+            filtered = [row for row in filtered for column in row if search_value.lower() in column.lower()]
+
+        if order_column == '1':
+            sortcolumn = 2
+        elif order_column == '2':
+            sortcolumn = 1
+
+        filtered.sort(key=lambda x: x[sortcolumn])
+
+        if order_dir == 'desc':
+            filtered = filtered[::-1]
+
+        rows = filtered[start:(start + length)]
+
+        return json.dumps({
+            'recordsFiltered': len(filtered),
+            'recordsTotal': len(filt),
+            'data': rows,
+        })
+
+    @cherrypy.expose
     @cherrypy.tools.json_out()
     @requireAuth(member_of("admin"))
     @addtoapi()
@@ -4853,19 +5129,34 @@ class WebInterface(object):
         if logfile == "retroarcher_api":
             filename = logger.FILENAME_API
             log = logger.logger_api
+            filepath = os.path.join(plexpy.CONFIG.LOG_DIR, filename)
         elif logfile == "plex_websocket":
             filename = logger.FILENAME_PLEX_WEBSOCKET
             log = logger.logger_plex_websocket
-        else:
+            filepath = os.path.join(plexpy.CONFIG.LOG_DIR, filename)
+        elif logfile == 'retroarcher':
             filename = logger.FILENAME
             log = logger.logger
+            filepath = os.path.join(plexpy.CONFIG.LOG_DIR, filename)
+        elif logfile == 'retroarch':
+            filename = 'retroarch.log'
+            filepath = os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'logs', filename)
+        elif logfile == 'rpcs3':
+            filename = 'RPCS3.log'
+            filepath = os.path.join(plexpy.CONFIG.RPCS3_DIR, filename)
+        elif logfile == 'cemu':
+            filename = 'log.txt'
+            filepath = os.path.join(plexpy.CONFIG.CEMU_DIR, filename)
+        else:
+            filename = f'{logfile}.log'
+            filepath = os.path.join(plexpy.CONFIG.LOG_DIR, filename)
 
         try:
             log.flush()
         except:
             pass
 
-        return serve_download(os.path.join(plexpy.CONFIG.LOG_DIR, filename), name=filename)
+        return serve_download(filepath, name=filename)
 
     @cherrypy.expose
     @requireAuth(member_of("admin"))

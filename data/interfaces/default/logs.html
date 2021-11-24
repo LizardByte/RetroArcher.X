@@ -1,6 +1,7 @@
 <%inherit file="base.html"/>
 <%!
     from plexpy import helpers
+    from plexpy import common
 %>
 
 <%def name="headIncludes()">
@@ -45,6 +46,22 @@
                     </select>
                 </label>
             </div>
+            <div class="btn-group" id="rpcs3-log-levels" style="display: none;">
+                <label>
+                    <select name="rpcs3-log-level-filter" id="rpcs3-log-level-filter" class="btn" style="color: inherit;">
+                        <option value="">All log levels</option>
+                        <option disabled>&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</option>
+                        <option value="TRACE">Trace</option>
+                        <option value="NOTICE">Notice</option>
+                        <option value="WARNING">Warning</option>
+                        <option value="SUCCESS">Success</option>
+                        <option value="TODO">Todo</option>
+                        <option value="ERROR">Error</option>
+                        <option value="FATAL">Fatal</option>
+                        <option value="ALWAYS">Always</option>
+                    </select>
+                </label>
+            </div>
             <button class="btn btn-dark" id="download-retroarcherlog"><i class="fa fa-download"></i> Download logs</button>
             <button class="btn btn-dark" id="download-plexserverlog" style="display: none;"><i class="fa fa-download"></i> Download logs</button>
             <button class="btn btn-dark" id="download-plexscannerlog" style="display: none;"><i class="fa fa-download"></i> Download logs</button>
@@ -64,6 +81,12 @@
                 <li role="presentation"><a id="notification-logs-btn" href="#tabs-notification_log" aria-controls="tabs-notification_log" role="tab" data-toggle="tab">Notification Logs</a></li>
                 <li role="presentation"><a id="newsletter-logs-btn" href="#tabs-newsletter_log" aria-controls="tabs-newsletter_log" role="tab" data-toggle="tab">Newsletter Logs</a></li>
                 <li role="presentation"><a id="login-logs-btn" href="#tabs-login_log" aria-controls="tabs-login_log" role="tab" data-toggle="tab">Login Logs</a></li>
+                <li role="presentation"><a id="sunshine-logs-btn" href="#tabs-sunshine_log" aria-controls="tabs-sunshine_log" role="tab" data-toggle="tab">Sunshine Logs</a></li>
+                <li role="presentation"><a id="retroarch-logs-btn" href="#tabs-retroarch_log" aria-controls="tabs-retroarch_log" role="tab" data-toggle="tab">RetroArch Logs</a></li>
+                <li role="presentation"><a id="rpcs3-logs-btn" href="#tabs-rpcs3_log" aria-controls="tabs-rpcs3_log" role="tab" data-toggle="tab">RPCS3 Logs</a></li>
+                % if common.PLATFORM in ('Windows'):
+                    <li role="presentation"><a id="cemu-logs-btn" href="#tabs-cemu_log" aria-controls="tabs-cemu_log" role="tab" data-toggle="tab">Cemu Logs</a></li>
+                % endif
             </ul>
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane active" id="tabs-retroarcher_log" data-logfile="retroarcher">
@@ -179,6 +202,56 @@
                         <tbody></tbody>
                     </table>
                 </div>
+                <div role="tabpanel" class="tab-pane" id="tabs-sunshine_log" data-logfile="sunshine">
+                    <table class="display" id="sunshine_log_table" width="100%">
+                        <thead>
+                            <tr>
+                                <th align="left" id="sunshine_timestamp">Timestamp</th>
+                                <th align="left" id="sunshine_level">Level</th>
+                                <th align="left" id="sunshine_message">Message</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="tabs-retroarch_log" data-logfile="retroarch">
+                    <table class="display" id="retroarch_log_table" width="100%">
+                        <thead>
+                            <tr>
+                                <th align="left" id="retroarch_line">Line</th>
+                                <th align="left" id="retroarch_level">Level</th>
+                                <th align="left" id="retroarch_message">Message</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="tabs-rpcs3_log" data-logfile="rpcs3">
+                    <table class="display" id="rpcs3_log_table" width="100%">
+                        <thead>
+                            <tr>
+                                <th align="left" id="rpcs3_timestamp">Timestamp</th>
+                                <th align="left" id="rpcs3_level">Level</th>
+                                <th align="left" id="rpcs3_type">Type</th>
+                                <th align="left" id="rpcs3_message">Message</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                % if common.PLATFORM in ('Windows'):
+                <div role="tabpanel" class="tab-pane" id="tabs-cemu_log" data-logfile="cemu">
+                    <table class="display" id="cemu_log_table" width="100%">
+                        <thead>
+                            <tr>
+                                <th align="left" id="cemu_timestamp">Timestamp</th>
+                                <th align="left" id="cemu_message">Message</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                % endif
             </div>
         </div>
     </div>
@@ -213,6 +286,8 @@
 <script src="${http_root}js/tables/notification_logs.js${cache_param}"></script>
 <script src="${http_root}js/tables/newsletter_logs.js${cache_param}"></script>
 <script src="${http_root}js/tables/login_logs.js${cache_param}"></script>
+<script src="${http_root}js/tables/rpcs3_logs.js${cache_param}"></script>
+<script src="${http_root}js/tables/cemu_logs.js${cache_param}"></script>
 <script>
 
         $(document).ready(function() {
@@ -325,9 +400,81 @@
             login_log_table = $('#login_log_table').DataTable(login_log_table_options);
         }
 
+        function loadSunshineLogs(selected_log_level) {
+            log_table_options.ajax = {
+                url: 'get_sunshine_log',
+                type: 'POST',
+                data: function (d) {
+                    return {
+                        json_data: JSON.stringify(d),
+                        log_level: selected_log_level
+                    };
+                }
+            };
+            log_table = $('#sunshine_log_table').DataTable(log_table_options);
+
+            $('#retroarcher-log-level-filter').on('change', function () {
+                selected_log_level = $(this).val() || null;
+                log_table.draw();
+            });
+        }
+
+        function loadRetroArchLogs(selected_log_level) {
+            log_table_options.ajax = {
+                url: 'get_retroarch_log',
+                type: 'POST',
+                data: function (d) {
+                    return {
+                        json_data: JSON.stringify(d),
+                        log_level: selected_log_level
+                    };
+                }
+            };
+            log_table = $('#retroarch_log_table').DataTable(log_table_options);
+
+            $('#retroarcher-log-level-filter').on('change', function () {
+                selected_log_level = $(this).val() || null;
+                log_table.draw();
+            });
+        }
+
+        var selected_rpcs3_log_level = null;
+        function loadRPCS3Logs(selected_rpcs3_log_level) {
+            rpcs3_log_table_options.ajax = {
+                url: 'get_rpcs3_log',
+                type: 'POST',
+                data: function (d) {
+                    return {
+                        json_data: JSON.stringify(d),
+                        log_level: selected_rpcs3_log_level
+                    };
+                }
+            };
+            rpcs3_log_table = $('#rpcs3_log_table').DataTable(rpcs3_log_table_options);
+
+            $('#rpcs3-log-level-filter').on('change', function () {
+                selected_rpcs3_log_level = $(this).val() || null;
+                rpcs3_log_table.draw();
+            });
+        }
+
+        function loadCemuLogs() {
+            cemu_log_table_options.ajax = {
+                url: 'get_cemu_log',
+                type: 'POST',
+                data: function (d) {
+                    return {
+                        json_data: JSON.stringify(d)
+                    };
+                }
+            };
+            cemu_log_table = $('#cemu_log_table').DataTable(cemu_log_table_options);
+        }
+
         $("#retroarcher-logs-btn").click(function () {
             $("#retroarcher-log-levels").show();
             $("#plex-log-levels").hide();
+            $("#rpcs3-log-levels").hide();
             $("#clear-logs").show();
             $("#download-retroarcherlog").show();
             $("#download-plexserverlog").hide();
@@ -342,13 +489,14 @@
         $("#retroarcher-api-logs-btn").click(function () {
             $("#retroarcher-log-levels").show();
             $("#plex-log-levels").hide();
+            $("#rpcs3-log-levels").hide();
             $("#clear-logs").show();
             $("#download-retroarcherlog").show();
             $("#download-plexserverlog").hide();
             $("#download-plexscannerlog").hide();
             $("#clear-notify-logs").hide();
-             $("#clear-newsletter-logs").hide();
-           $("#clear-login-logs").hide();
+            $("#clear-newsletter-logs").hide();
+            $("#clear-login-logs").hide();
             loadretroarcherlogs('retroarcher_api', selected_log_level);
             clearSearchButton('retroarcher_api_log_table', log_table);
         });
@@ -356,6 +504,7 @@
         $("#plex-websocket-logs-btn").click(function () {
             $("#retroarcher-log-levels").show();
             $("#plex-log-levels").hide();
+            $("#rpcs3-log-levels").hide();
             $("#clear-logs").show();
             $("#download-retroarcherlog").show();
             $("#download-plexserverlog").hide();
@@ -370,6 +519,7 @@
         $("#plex-logs-btn").click(function () {
             $("#retroarcher-log-levels").hide();
             $("#plex-log-levels").show();
+            $("#rpcs3-log-levels").hide();
             $("#clear-logs").hide();
             $("#download-retroarcherlog").hide();
             $("#download-plexserverlog").show();
@@ -384,6 +534,7 @@
         $("#plex-scanner-logs-btn").click(function () {
             $("#retroarcher-log-levels").hide();
             $("#plex-log-levels").show();
+            $("#rpcs3-log-levels").hide();
             $("#clear-logs").hide();
             $("#download-retroarcherlog").hide();
             $("#download-plexserverlog").hide();
@@ -398,6 +549,7 @@
         $("#notification-logs-btn").click(function () {
             $("#retroarcher-log-levels").hide();
             $("#plex-log-levels").hide();
+            $("#rpcs3-log-levels").hide();
             $("#clear-logs").hide();
             $("#download-retroarcherlog").hide();
             $("#download-plexserverlog").hide();
@@ -412,6 +564,7 @@
         $("#newsletter-logs-btn").click(function () {
             $("#retroarcher-log-levels").hide();
             $("#plex-log-levels").hide();
+            $("#rpcs3-log-levels").hide();
             $("#clear-logs").hide();
             $("#download-retroarcherlog").hide();
             $("#download-plexserverlog").hide();
@@ -426,6 +579,7 @@
         $("#login-logs-btn").click(function () {
             $("#retroarcher-log-levels").hide();
             $("#plex-log-levels").hide();
+            $("#rpcs3-log-levels").hide();
             $("#clear-logs").hide();
             $("#download-retroarcherlog").hide();
             $("#download-plexserverlog").hide();
@@ -435,6 +589,66 @@
             $("#clear-login-logs").show();
             loadLoginLogs();
             clearSearchButton('login_log_table', notification_log_table);
+        });
+
+        $("#sunshine-logs-btn").click(function () {
+            $("#retroarcher-log-levels").show();
+            $("#plex-log-levels").hide();
+            $("#rpcs3-log-levels").hide();
+            $("#clear-logs").show();
+            $("#download-retroarcherlog").show();
+            $("#download-plexserverlog").hide();
+            $("#download-plexscannerlog").hide();
+            $("#clear-notify-logs").hide();
+            $("#clear-newsletter-logs").hide();
+            $("#clear-login-logs").hide();
+            loadSunshineLogs(selected_log_level);
+            clearSearchButton('sunshine_log_table', log_table);
+        });
+
+        $("#retroarch-logs-btn").click(function () {
+            $("#retroarcher-log-levels").show();
+            $("#plex-log-levels").hide();
+            $("#rpcs3-log-levels").hide();
+            $("#clear-logs").show();
+            $("#download-retroarcherlog").show();
+            $("#download-plexserverlog").hide();
+            $("#download-plexscannerlog").hide();
+            $("#clear-notify-logs").hide();
+            $("#clear-newsletter-logs").hide();
+            $("#clear-login-logs").hide();
+            loadRetroArchLogs(selected_log_level);
+            clearSearchButton('retroarch_log_table', log_table);
+        });
+
+        $("#rpcs3-logs-btn").click(function () {
+            $("#retroarcher-log-levels").hide();
+            $("#plex-log-levels").hide();
+            $("#rpcs3-log-levels").show();
+            $("#clear-logs").show();
+            $("#download-retroarcherlog").show();
+            $("#download-plexserverlog").hide();
+            $("#download-plexscannerlog").hide();
+            $("#clear-notify-logs").hide();
+            $("#clear-newsletter-logs").hide();
+            $("#clear-login-logs").hide();
+            loadRPCS3Logs(selected_rpcs3_log_level);
+            clearSearchButton('rpcs3_log_table', rpcs3_log_table);
+        });
+
+        $("#cemu-logs-btn").click(function () {
+            $("#retroarcher-log-levels").hide();
+            $("#plex-log-levels").hide();
+            $("#rpcs3-log-levels").hide();
+            $("#clear-logs").show();
+            $("#download-retroarcherlog").show();
+            $("#download-plexserverlog").hide();
+            $("#download-plexscannerlog").hide();
+            $("#clear-notify-logs").hide();
+            $("#clear-newsletter-logs").hide();
+            $("#clear-login-logs").hide();
+            loadCemuLogs();
+            clearSearchButton('cemu_log_table', cemu_log_table);
         });
 
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -555,7 +769,7 @@
                 if(refreshrate.value !== 0)
                 {
                     timer = setInterval(function() {
-                        if ($("#tabs-retroarcher_log").hasClass("active") || $("#tabs-retroarcher_api_log").hasClass("active") || $("#tabs-plex_websocket_log").hasClass("active")) {
+                        if ($("#tabs-retroarcher_log").hasClass("active") || $("#tabs-retroarcher_api_log").hasClass("active") || $("#tabs-plex_websocket_log").hasClass("active") || $("#tabs-sunshine_log").hasClass("active") || $("#tabs-retroarch_log").hasClass("active") || $("#tabs-rpcs3_log").hasClass("active") || $("#tabs-cemu_log").hasClass("active")) {
                             log_table.ajax.reload();
                         } else if ($("#tabs-plex_log").hasClass("active")) {
                             plex_log_table.ajax.reload();
