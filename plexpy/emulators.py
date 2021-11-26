@@ -357,7 +357,7 @@ class RetroArch:
         for extension in log_files:
             log_file_path = os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'logs', f'retroarch.{extension}')
             if os.path.isfile(log_file_path):
-                with open(log_file_path, 'r') as log_file:
+                with open(log_file_path, 'r', encoding='utf-8') as log_file:
                     combined_log.write(log_file.read())
 
         if combined_log != StringIO(''):
@@ -534,7 +534,7 @@ class RPCS3:
         for extension in log_files:
             log_file_path = os.path.join(plexpy.CONFIG.RPCS3_DIR, f'RPCS3.{extension}')
             if os.path.isfile(log_file_path):
-                with open(log_file_path, 'r') as log_file:
+                with open(log_file_path, 'r', encoding='utf-8') as log_file:
                     combined_log.write(log_file.read())
 
         if combined_log != StringIO(''):
@@ -689,7 +689,7 @@ class Cemu:
         for extension in log_files:
             log_file_path = os.path.join(plexpy.CONFIG.CEMU_DIR, f'log.{extension}')
             if os.path.isfile(log_file_path):
-                with open(log_file_path, 'r') as log_file:
+                with open(log_file_path, 'r', encoding='utf-8') as log_file:
                     combined_log.write(log_file.read())
 
         if combined_log != StringIO(''):
