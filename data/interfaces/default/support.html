@@ -1,5 +1,6 @@
 <%inherit file="base.html"/>
 <%!
+    from plexpy import CONFIG
     from plexpy.helpers import anon_url
 %>
 <%def name="headIncludes()">
@@ -15,6 +16,9 @@
             <span><i class="fa fa-comment"></i> Support</span>
         </div>
         <div class="button-bar">
+            % if CONFIG.GIT_TOKEN:
+                <button class="btn btn-dark" id="create-gist"><i class="fa fa-github"></i> Send logs to gists</button>
+            % endif
             <div class="btn-group">
                 <a class="btn btn-dark" href="${anon_url('https://retroarcher.com/discord')}" target="_blank" rel="noreferrer"><i class="fab fa-discord"></i>&nbsp; Join Discord</a>
             </div>
@@ -67,5 +71,32 @@
         iframe.attr('src', '').fadeOut();
         $('.iframe-overlay').fadeIn();
     });
+
+    $("#create-gist").click(function () {
+        $("#confirm-message").text("This will create a gist on github with all of your log files. Continue?");
+        $('#confirm-modal').modal();
+        $('#confirm-modal').one('click', '#confirm-button', function () {
+            $.ajax({
+                url: 'create_gist',
+                type: 'POST',
+                data: {},
+                complete: function (xhr, status) {
+                    result = $.parseJSON(xhr.responseText);
+                    msg = result.message;
+                    if (result.result === 'success') {
+                        var link = result.link;
+                        navigator.clipboard.writeText(link).then(function() {
+                            showMsg('<i class="fa fa-check"></i> The url has been copied to the clipboard. Provide this to support.', false, true, 20000)
+                        }, function() {
+                            showMsg('<i class="fa fa-check"></i> ' + msg, false, true, 20000)
+                        });
+                    } else {
+                        showMsg('<i class="fa fa-times"></i> ' + msg, false, true, 5000, true)
+                    }
+                }
+            });
+        });
+    });
+
 </script>
 </%def>

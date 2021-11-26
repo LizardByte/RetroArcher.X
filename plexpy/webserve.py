@@ -11,6 +11,7 @@ import base64
 import json
 import linecache
 import os
+import requests
 import shutil
 import subprocess
 import sys
@@ -3332,6 +3333,70 @@ class WebInterface(object):
             result = 'error'
             msg = 'Failed to clear the %s file.' % filename
             logger.exception('Failed to clear the %s file: %s.' % (filename, e))
+
+        return {'result': result, 'message': msg}
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    @requireAuth(member_of("admin"))
+    def create_gist(self, logfile='', **kwargs):
+        from plexpy import emulators
+
+        headers = {
+            'accept': 'application/vnd.github.v3+json',
+            'Authorization': f'token {plexpy.CONFIG.GIT_TOKEN}'
+        }
+
+        logfiles = {
+            'retroarcher.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, logger.FILENAME)),
+            'plex_websocket.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, logger.FILENAME_PLEX_WEBSOCKET)),
+            'retroarcher_api.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, logger.FILENAME_API)),
+            'sunshine.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, 'sunshine.log')),
+            'retroarch.log': emulators.RetroArch().get_log_file(),
+            'RPCS3.log': emulators.RPCS3().get_log_file(),
+            'cemu.log': emulators.Cemu().get_log_file()
+        }
+
+        data = {
+            'description': 'RetroArcher support',
+            "public": 'true',
+            'files': {}
+        }
+
+        for logfile_name, logfile in logfiles.items():
+            contents = None
+
+            try:
+                contents = logfile.getvalue()
+            except:
+                try:
+                    contents = logfile.read()
+                except:
+                    continue
+
+            if contents:
+                data['files'][logfile_name] = {
+                    'content': contents
+                }
+
+        url = 'https://api.github.com/gists'
+        response = requests.post(url, headers=headers, json=data)
+
+        try:
+            html_url = response.json()['html_url']
+            result = 'success'
+            msg = f'Successfully created the gist.<br>Provide this url to support:<br>{html_url}'
+            logger.info(msg)
+            return {'result': result, 'message': msg, 'link': html_url}
+        except KeyError:
+            html_msg = response.json()['message']
+            result = 'error'
+            msg = f'Failed to create the gist. {html_msg}'
+            logger.exception(msg)
+        except Exception as e:
+            result = 'error'
+            msg = f'Failed to create the gist. Exception: {e}'
+            logger.exception(msg)
 
         return {'result': result, 'message': msg}
 

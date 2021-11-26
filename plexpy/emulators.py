@@ -1,6 +1,7 @@
 import platform
 import os
 import re
+from io import StringIO
 
 from bs4 import BeautifulSoup
 import requests
@@ -348,6 +349,22 @@ class RetroArch:
                     except KeyError as e:
                         pass
 
+    def get_log_file(self):
+        """Combines all RetroArch log files and returns them as a file like object"""
+        log_files = ['log']
+        combined_log = StringIO('')
+
+        for extension in log_files:
+            log_file_path = os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'logs', f'retroarch.{extension}')
+            if os.path.isfile(log_file_path):
+                with open(log_file_path, 'r') as log_file:
+                    combined_log.write(log_file.read())
+
+        if combined_log != StringIO(''):
+            return combined_log
+        else:
+            return False
+
 
 class RPCS3:
     """functions related to rpcs3"""
@@ -509,6 +526,22 @@ class RPCS3:
             except KeyError:
                 continue
 
+    def get_log_file(self):
+        """Combines all RPCS3 log files and returns them as a file like object"""
+        log_files = ['log']
+        combined_log = StringIO('')
+
+        for extension in log_files:
+            log_file_path = os.path.join(plexpy.CONFIG.RPCS3_DIR, f'RPCS3.{extension}')
+            if os.path.isfile(log_file_path):
+                with open(log_file_path, 'r') as log_file:
+                    combined_log.write(log_file.read())
+
+        if combined_log != StringIO(''):
+            return combined_log
+        else:
+            return False
+
 
 class Cemu:
     """functions related to cemu"""
@@ -647,6 +680,22 @@ class Cemu:
 
             except KeyError:
                 continue
+
+    def get_log_file(self):
+        """Combines all Cemu log files and returns them as a file like object"""
+        log_files = ['3.txt', '2.txt', '1.txt', 'txt']
+        combined_log = StringIO('')
+
+        for extension in log_files:
+            log_file_path = os.path.join(plexpy.CONFIG.CEMU_DIR, f'log.{extension}')
+            if os.path.isfile(log_file_path):
+                with open(log_file_path, 'r') as log_file:
+                    combined_log.write(log_file.read())
+
+        if combined_log != StringIO(''):
+            return combined_log
+        else:
+            return False
 
 
 def update_emulators():
