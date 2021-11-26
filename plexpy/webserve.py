@@ -37,6 +37,7 @@ if plexpy.PYTHON2:
     import config
     import database
     import datafactory
+    import emulators
     import exporter
     import graphs
     import helpers
@@ -71,6 +72,7 @@ else:
     from plexpy import config
     from plexpy import database
     from plexpy import datafactory
+    from plexpy import emulators
     from plexpy import exporter
     from plexpy import graphs
     from plexpy import helpers
@@ -3045,24 +3047,22 @@ class WebInterface(object):
         filtered = []
         fa = filt.append
 
-        log_directory = plexpy.CONFIG.RETROARCH_DIR
-        filename = 'retroarch.log'
+        f = emulators.RetroArch().get_log_file()
 
-        with open(os.path.join(log_directory, 'logs', filename), 'r', encoding='utf-8') as f:
-            index = 0
-            for l in f.readlines():
-                if l.startswith('['):  # new entry
-                    timestamp = index
-                    loglvl = l.split('[', 1)[-1].split(']', 1)[0]
-                    msg = helpers.sanitize(l.split('] ', 1)[-1].replace('\n', ''))
-                    fa([timestamp, loglvl, msg])
-                    index += 1
-                else:  # continued entry
-                    tl = (len(filt) - 1)
-                    n = len(l) - len(l.lstrip(' '))
-                    ll = '&nbsp;' * (2 * n) + helpers.sanitize(l[n:])
-                    filt[tl][2] += '<br>' + ll
-                    continue
+        index = 0
+        for l in f.getvalue().splitlines():
+            if l.startswith('['):  # new entry
+                timestamp = index
+                loglvl = l.split('[', 1)[-1].split(']', 1)[0]
+                msg = helpers.sanitize(l.split('] ', 1)[-1].replace('\n', ''))
+                fa([timestamp, loglvl, msg])
+                index += 1
+            else:  # continued entry
+                tl = (len(filt) - 1)
+                n = len(l) - len(l.lstrip(' '))
+                ll = '&nbsp;' * (2 * n) + helpers.sanitize(l[n:])
+                filt[tl][2] += '<br>' + ll
+                continue
 
         log_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR']
         if log_level in log_levels:
@@ -3109,48 +3109,46 @@ class WebInterface(object):
         filtered = []
         fa = filt.append
 
-        log_directory = plexpy.CONFIG.RPCS3_DIR
-        filename = 'RPCS3.log'
+        f = emulators.RPCS3().get_log_file()
 
-        with open(os.path.join(log_directory, filename), 'r', encoding='utf-8') as f:
-            first = True
-            for l in f.readlines():
-                levels = {
-                    # https://github.com/RPCS3/rpcs3/blob/c646476ca8076727a9f290b51b94cd1d8f74e1c4/rpcs3/util/logs.cpp#L630
-                    '·A': 'ALWAYS',
-                    '·F': 'FATAL',
-                    '·E': 'ERROR',
-                    '·U': 'TODO',
-                    '·S': 'SUCCESS',
-                    '·W': 'WARNING',
-                    '·!': 'NOTICE',
-                    '·T': 'TRACE',
-                }
-                if l.startswith('·'):  # new entry
-                    temp_timestamp = l.split(' ', 2)[-2].split(':')
-                    seconds = int(temp_timestamp[0]) * 3600 + int(temp_timestamp[1]) * 60 + round(
-                        float(temp_timestamp[2]), 0)
-                    timestamp = str(int(seconds))
-                    loglvl = levels[l.split(' ', 1)[0]]
-                    full_msg = helpers.sanitize(l.split(' ', 2)[-1].replace('\n', '')).split(':', 1)
-                    msg = full_msg[-1]
-                    msg_type = full_msg[0]
-                    fa([timestamp, loglvl, msg_type, msg])
-                    first = False
-                elif not first:  # continued entry
-                    tl = (len(filt) - 1)
-                    n = len(l) - len(l.lstrip(' '))
-                    ll = '&nbsp;' * (2 * n) + helpers.sanitize(l[n:])
-                    filt[tl][-1] += '<br>' + ll
-                    continue
-                if first:
-                    seconds = 0
-                    timestamp = str(seconds)
-                    loglvl = 'NOTICE'
-                    msg = helpers.sanitize(l.replace('\n', ''))
-                    msg_type = 'INIT'
-                    fa([timestamp, loglvl, msg_type, msg])
-                    first = False
+        first = True
+        for l in f.getvalue().splitlines():
+            levels = {
+                # https://github.com/RPCS3/rpcs3/blob/c646476ca8076727a9f290b51b94cd1d8f74e1c4/rpcs3/util/logs.cpp#L630
+                '·A': 'ALWAYS',
+                '·F': 'FATAL',
+                '·E': 'ERROR',
+                '·U': 'TODO',
+                '·S': 'SUCCESS',
+                '·W': 'WARNING',
+                '·!': 'NOTICE',
+                '·T': 'TRACE',
+            }
+            if l.startswith('·'):  # new entry
+                temp_timestamp = l.split(' ', 2)[-2].split(':')
+                seconds = int(temp_timestamp[0]) * 3600 + int(temp_timestamp[1]) * 60 + round(
+                    float(temp_timestamp[2]), 0)
+                timestamp = str(int(seconds))
+                loglvl = levels[l.split(' ', 1)[0]]
+                full_msg = helpers.sanitize(l.split(' ', 2)[-1].replace('\n', '')).split(':', 1)
+                msg = full_msg[-1]
+                msg_type = full_msg[0]
+                fa([timestamp, loglvl, msg_type, msg])
+                first = False
+            elif not first:  # continued entry
+                tl = (len(filt) - 1)
+                n = len(l) - len(l.lstrip(' '))
+                ll = '&nbsp;' * (2 * n) + helpers.sanitize(l[n:])
+                filt[tl][-1] += '<br>' + ll
+                continue
+            if first:
+                seconds = 0
+                timestamp = str(seconds)
+                loglvl = 'NOTICE'
+                msg = helpers.sanitize(l.replace('\n', ''))
+                msg_type = 'INIT'
+                fa([timestamp, loglvl, msg_type, msg])
+                first = False
 
         log_levels = ['TRACE', 'NOTICE', 'WARNING', 'SUCCESS', 'TODO', 'ERROR', 'FATAL', 'ALWAYS']
 
@@ -3197,23 +3195,19 @@ class WebInterface(object):
         filtered = []
         fa = filt.append
 
-        log_directory = plexpy.CONFIG.CEMU_DIR
-        log_files = ['3.txt', '2.txt', '1.txt', 'txt']
-        for log in log_files:
-            filename = f'log.{log}'
+        f = emulators.Cemu().get_log_file()
 
-            with open(os.path.join(log_directory, filename), 'r', encoding='utf-8') as f:
-                for l in f.readlines():
-                    if l.startswith('['):  # new entry
-                        timestamp = l.split('[', 1)[-1].split(']', 1)[0]
-                        msg = helpers.sanitize(l.split('] ', 1)[-1].replace('\n', ''))
-                        fa([timestamp, msg])
-                    else:  # continued entry
-                        tl = (len(filt) - 1)
-                        n = len(l) - len(l.lstrip(' '))
-                        ll = '&nbsp;' * (2 * n) + helpers.sanitize(l[n:])
-                        filt[tl][-1] += '<br>' + ll
-                        continue
+        for l in f.getvalue().splitlines():
+            if l.startswith('['):  # new entry
+                timestamp = l.split('[', 1)[-1].split(']', 1)[0]
+                msg = helpers.sanitize(l.split('] ', 1)[-1].replace('\n', ''))
+                fa([timestamp, msg])
+            else:  # continued entry
+                tl = (len(filt) - 1)
+                n = len(l) - len(l.lstrip(' '))
+                ll = '&nbsp;' * (2 * n) + helpers.sanitize(l[n:])
+                filt[tl][-1] += '<br>' + ll
+                continue
 
         filtered = filt
 
@@ -3340,8 +3334,6 @@ class WebInterface(object):
     @cherrypy.tools.json_out()
     @requireAuth(member_of("admin"))
     def create_gist(self, logfile='', **kwargs):
-        from plexpy import emulators
-
         headers = {
             'accept': 'application/vnd.github.v3+json',
             'Authorization': f'token {plexpy.CONFIG.GIT_TOKEN}'
