@@ -494,121 +494,18 @@ class Config(object):
 
     def _upgrade(self):
         """
-        Upgrades config file from previous verisions and bumps up config version
+        Upgrades config file from previous versions and bumps up config version
         """
         if self.CONFIG_VERSION == 0:
-            self.CONFIG_VERSION = 1
+            pass
+            """use this to change default values"""
+            #example
+            # self.ANON_REDIRECT = self.ANON_REDIRECT.replace('http://www.nullrefer.com/?', 'https://www.nullrefer.com/?')
 
-        if self.CONFIG_VERSION == 1:
-            # Change home_stats_cards to list
-            if self.HOME_STATS_CARDS:
-                home_stats_cards = ''.join(self.HOME_STATS_CARDS).split(', ')
-                if 'watch_statistics' in home_stats_cards:
-                    home_stats_cards.remove('watch_statistics')
-                    self.HOME_STATS_CARDS = home_stats_cards
-            # Change home_library_cards to list
-            if self.HOME_LIBRARY_CARDS:
-                home_library_cards = ''.join(self.HOME_LIBRARY_CARDS).split(', ')
-                if 'library_statistics' in home_library_cards:
-                    home_library_cards.remove('library_statistics')
-                    self.HOME_LIBRARY_CARDS = home_library_cards
+            """uncomment once next config version"""
+            #self.CONFIG_VERSION = 1
 
-            self.CONFIG_VERSION = 2
-
-        if self.CONFIG_VERSION == 2:
-            self.CONFIG_VERSION = 3
-
-        if self.CONFIG_VERSION == 3:
-            if self.HTTP_ROOT == '/':
-                self.HTTP_ROOT = ''
-
-            self.CONFIG_VERSION = 4
-
-        if self.CONFIG_VERSION == 4:
-            if not len(self.HOME_STATS_CARDS) and 'watch_stats' in self.HOME_SECTIONS:
-                home_sections = self.HOME_SECTIONS
-                home_sections.remove('watch_stats')
-                self.HOME_SECTIONS = home_sections
-            if not len(self.HOME_LIBRARY_CARDS) and 'library_stats' in self.HOME_SECTIONS:
-                home_sections = self.HOME_SECTIONS
-                home_sections.remove('library_stats')
-                self.HOME_SECTIONS = home_sections
-
-            self.CONFIG_VERSION = 5
-
-        if self.CONFIG_VERSION == 5:
-            self.MONITOR_PMS_UPDATES = 0
-
-            self.CONFIG_VERSION = 6
-
-        if self.CONFIG_VERSION == 6:
-            if self.GIT_USER.lower() == 'drzoidberg33':
-                self.GIT_USER = 'JonnyWong16'
-
-            self.CONFIG_VERSION = 7
-
-        if self.CONFIG_VERSION == 7:
-            self.CONFIG_VERSION = 8
-
-        if self.CONFIG_VERSION == 8:
-            self.CONFIG_VERSION = 9
-
-        if self.CONFIG_VERSION == 9:
-            if self.PMS_UPDATE_CHANNEL == 'plexpass':
-                self.PMS_UPDATE_CHANNEL = 'beta'
-
-            self.CONFIG_VERSION = 10
-
-        if self.CONFIG_VERSION == 10:
-            self.GIT_USER = 'RetroArcher'
-            self.GIT_REPO = 'RetroArcher.x'
-
-            self.CONFIG_VERSION = 11
-
-        if self.CONFIG_VERSION == 11:
-            self.ANON_REDIRECT = self.ANON_REDIRECT.replace('http://www.nullrefer.com/?',
-                                                            'https://www.nullrefer.com/?')
-            self.CONFIG_VERSION = 12
-
-        if self.CONFIG_VERSION == 12:
-            self.BUFFER_THRESHOLD = max(self.BUFFER_THRESHOLD, 10)
-
-            self.CONFIG_VERSION = 13
-
-        if self.CONFIG_VERSION == 13:
-            self.CONFIG_VERSION = 14
-
-        if self.CONFIG_VERSION == 14:
-            if plexpy.DOCKER:
-                self.PLEXPY_AUTO_UPDATE = 0
-
-            self.CONFIG_VERSION = 15
-
-        if self.CONFIG_VERSION == 15:
-            if self.HTTP_ROOT and self.HTTP_ROOT != '/':
-                self.JWT_UPDATE_SECRET = True
-
-            self.CONFIG_VERSION = 16
-
-        if self.CONFIG_VERSION == 16:
-            if plexpy.SNAP:
-                self.PLEXPY_AUTO_UPDATE = 0
-
-            self.CONFIG_VERSION = 17
-
-        if self.CONFIG_VERSION == 17:
-            home_stats_cards = self.HOME_STATS_CARDS
-            if 'top_users' in home_stats_cards:
-                top_users_index = home_stats_cards.index('top_users')
-                home_stats_cards.insert(top_users_index, 'top_libraries')
-            else:
-                home_stats_cards.append('top_libraries')
-            self.HOME_STATS_CARDS = home_stats_cards
-
-            self.CONFIG_VERSION = 18
-
-        if self.CONFIG_VERSION == 18:
-            self.CHECK_GITHUB_INTERVAL = (
-                    int(self.CHECK_GITHUB_INTERVAL // 60)
-                    + (self.CHECK_GITHUB_INTERVAL % 60 > 0)
-            )
+        """another if statement for next version"""
+        #if self.CONFIG_VERSION == 1:
+            #do stuff
+            #self.CONFIG_VERSION = 2
