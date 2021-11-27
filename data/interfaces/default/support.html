@@ -85,10 +85,19 @@
                     msg = result.message;
                     if (result.result === 'success') {
                         var link = result.link;
-                        navigator.clipboard.writeText(link).then(function() {
-                            showMsg('<i class="fa fa-check"></i> The url has been copied to the clipboard. Provide this to support.', false, true, 20000)
-                        }, function() {
-                            showMsg('<i class="fa fa-check"></i> ' + msg, false, true, 20000)
+                        $("#confirm-message").text('You must provide this url to support. ' + link + ' Copy URL to clipboard?');
+                        $('#confirm-modal').modal();
+                        $('#confirm-modal').one('click', '#confirm-button', function () {
+                            navigator.clipboard.writeText(link).then(function() {
+                                showMsg('<i class="fa fa-check"></i> The url has been copied to the clipboard.', false, true, 20000)
+                            }, function() {
+                                showMsg('<i class="fa fa-check"></i> The url could not be copied to the clipboard; however ' + msg, false, true, 20000, true)
+                                window.open(link, "_blank", "toolbar=yes, top=100, left=100, width=600, height=800");
+                            });
+                        });
+                        $('#confirm-modal').one('click', '#cancel-button', function () {
+                            showMsg('<i class="fa fa-check"></i> The url was not be copied to the clipboard; however ' + msg, false, true, 20000, true)
+                            window.open(link, "_blank", "toolbar=yes, top=100, left=100, width=600, height=800");
                         });
                     } else {
                         showMsg('<i class="fa fa-times"></i> ' + msg, false, true, 5000, true)

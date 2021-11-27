@@ -3340,13 +3340,13 @@ class WebInterface(object):
         }
 
         logfiles = {
-            'retroarcher.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, logger.FILENAME)),
-            'plex_websocket.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, logger.FILENAME_PLEX_WEBSOCKET)),
-            'retroarcher_api.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, logger.FILENAME_API)),
-            'sunshine.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, 'sunshine.log')),
-            'retroarch.log': emulators.RetroArch().get_log_file(),
-            'RPCS3.log': emulators.RPCS3().get_log_file(),
-            'cemu.log': emulators.Cemu().get_log_file()
+            'retroarcher.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, logger.FILENAME)).read(),
+            'plex_websocket.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, logger.FILENAME_PLEX_WEBSOCKET)).read(),
+            'retroarcher_api.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, logger.FILENAME_API)).read(),
+            'sunshine.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, 'sunshine.log')).read(),
+            'retroarch.log': emulators.RetroArch().get_log_file().getvalue(),
+            'RPCS3.log': emulators.RPCS3().get_log_file().getvalue(),
+            'cemu.log': emulators.Cemu().get_log_file().getvalue()
         }
 
         data = {
@@ -3355,17 +3355,7 @@ class WebInterface(object):
             'files': {}
         }
 
-        for logfile_name, logfile in logfiles.items():
-            contents = None
-
-            try:
-                contents = logfile.getvalue()
-            except:
-                try:
-                    contents = logfile.read()
-                except:
-                    continue
-
+        for logfile_name, contents in logfiles.items():
             if contents:
                 data['files'][logfile_name] = {
                     'content': contents
