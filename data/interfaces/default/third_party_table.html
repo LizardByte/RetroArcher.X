@@ -25,24 +25,53 @@ DOCUMENTATION :: END
         </tr>
     </thead>
     <tbody>
-        % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'RetroArch')):
         <tr>
             <td>RetroArch Version:</td>
+            % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'RetroArch')):
             <td>${plexpy.emulators.RetroArch().get_current_version()}</td>
+            <td><input type="button" class="btn btn-dark retroarch-update-btn" value="Force Update"></td>
+            % else:
+            <td>Not Installed</td>
+            <td><input type="button" class="btn btn-danger retroarch-update-btn" value="Force Install"></td>
+            % endif
         </tr>
-        % endif
-        % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.RPCS3_DIR, 'rpcs3')):
         <tr>
             <td>RPCS3 Version:</td>
+            % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.RPCS3_DIR, 'rpcs3')):
             <td>${plexpy.emulators.RPCS3().get_current_version()}</td>
+            <td><input type="button" class="btn btn-dark rpcs3-update-btn" value="Force Update"></td>
+            % else:
+            <td>Not Installed</td>
+            <td><input type="button" class="btn btn-danger rpcs3-update-btn" value="Force Install"></td>
+            % endif
         </tr>
-        % endif
-        % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.CEMU_DIR, 'cemu')):
         <tr>
+            % if common.PLATFORM in ('Windows'):
             <td>Cemu Version:</td>
+            % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.CEMU_DIR, 'cemu')):
             <td>${plexpy.emulators.Cemu().get_current_version()}</td>
+            <td><input type="button" class="btn btn-dark cemu-update-btn" value="Force Update"></td>
+            % else:
+            <td>Not Installed</td>
+            <td><input type="button" class="btn btn-danger cemu-update-btn" value="Force Install"></td>
+            % endif
+            % endif
         </tr>
-        % endif
+        <tr>
+            <td>Sunshine Version:</td>
+            % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.SUNSHINE_DIR, 'sunshine')):
+            <td>Unknown</td>
+            <td><input type="button" class="btn btn-dark sunshine-update-btn" value="Force Update"></td>
+            % else:
+            <td>Not Installed</td>
+            <td><input type="button" class="btn btn-danger sunshine-update-btn" value="Force Install"></td>
+            % endif
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td><input type="button" class="btn btn-danger all-update-btn" value="Update All"></td>
+        </tr>
     </tbody>
 </table>
 
@@ -130,5 +159,56 @@ DOCUMENTATION :: END
             container: 'body'
         });
 
+    });
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+   }
+
+    var updating = false;
+    function updateApp(app) {
+        if (updating === true) {
+            showMsg('<i class="fa fa-exclamation-circle"></i> Failed to install ' + app + '. Installation already running', false, true, 5000, true)
+            return false;
+        } else {
+            updating = true;
+            $.ajax({
+                url: 'update_app',
+                type: 'POST',
+                data: { app: app },
+                complete: function (xhr, status) {
+                    updating = false;
+                    result = $.parseJSON(xhr.responseText);
+                    msg = result.message;
+                    if (result.result === 'success') {
+                        showMsg('<i class="fa fa-check"></i> ' + msg, false, true, 5000)
+                    } else {
+                        showMsg('<i class="fa fa-times"></i> ' + msg, false, true, 5000, true)
+                    }
+                    sleep(5000).then(() => {
+                        window.location.reload(true);
+                }
+            });
+        }
+    };
+
+    $(".sunshine-update-btn").click(function () {
+        updateApp('cemu');
+    });
+
+    $(".all-update-btn").click(function () {
+        updateApp('cemu');
+    });
+
+    $(".retroarch-update-btn").click(function () {
+        updateApp('retroarch');
+    });
+
+    $(".rpcs3-update-btn").click(function () {
+        updateApp('rpcs3');
+    });
+
+    $(".cemu-update-btn").click(function () {
+        updateApp('cemu');
     });
 </script>

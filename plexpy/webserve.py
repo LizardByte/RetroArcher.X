@@ -54,6 +54,7 @@ if plexpy.PYTHON2:
     import plexivity_import
     import plexwatch_import
     import pmsconnect
+    import streamer
     import users
     import versioncheck
     import web_socket
@@ -89,6 +90,7 @@ else:
     from plexpy import plexivity_import
     from plexpy import plexwatch_import
     from plexpy import pmsconnect
+    from plexpy import streamer
     from plexpy import users
     from plexpy import versioncheck
     from plexpy import web_socket
@@ -3333,7 +3335,7 @@ class WebInterface(object):
     @cherrypy.expose
     @cherrypy.tools.json_out()
     @requireAuth(member_of("admin"))
-    def create_gist(self, logfile='', **kwargs):
+    def create_gist(self, **kwargs):
         headers = {
             'accept': 'application/vnd.github.v3+json',
             'Authorization': f'token {plexpy.CONFIG.GIT_TOKEN}'
@@ -3378,6 +3380,80 @@ class WebInterface(object):
         except Exception as e:
             result = 'error'
             msg = f'Failed to create the gist. Exception: {e}'
+            logger.exception(msg)
+
+        return {'result': result, 'message': msg}
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    @requireAuth(member_of("admin"))
+    def update_app(self, app='', **kwargs):
+        application = False
+        if app == 'all':
+            application = [
+                streamer.Sunshine(),
+                emulators.RetroArch(),
+                emulators.RPCS3(),
+            ]
+            if common.PLATFORM in ('Windows'):
+                application.append(emulators.Cemu())
+        elif app == 'sunshine':
+            application = streamer.Sunshine()
+        elif app == 'retroarch':
+            application = emulators.RetroArch()
+        elif app == 'rpcs3':
+            application = emulators.RPCS3()
+        elif app == 'cemu':
+            application = emulators.Cemu()
+        else:
+            result = 'error'
+            msg = f'Emulator does not exist: {app}'
+            logger.exception(msg)
+
+        apps_true = []
+        apps_false = []
+
+        if app == 'all':
+            status = True
+            for x in application:
+                temp_status = x.update_base(force=True)
+                if not temp_status:
+                    apps_false.append(x)
+                    status = False
+                else:
+                    apps_true.append(x)
+        elif application:
+            status = application.update_base(force=True)
+            if status:
+                apps_true.append(app)
+            else:
+                apps_false.append(app)
+
+        if len(apps_true) > 1:
+            apps_true_text = 'apps'
+        else:
+            apps_true_text = 'app'
+
+        if len(apps_false) > 1:
+            apps_false_text = 'apps'
+        else:
+            apps_false_text = 'app'
+
+        if len(apps_true) > 0 and len(apps_false) > 0:  # some apps succeeded, and some failed
+            result = 'error'
+            msg = f'Failed updating {apps_false_text}: {apps_false}, Success updating {apps_true_text}: {apps_true}'
+            logger.exception(msg)
+        elif len(apps_true) > 0:  # all apps succeeded
+            result = 'success'
+            msg = f'Success updating {apps_true_text}: {apps_true}'
+            logger.info(msg)
+        elif len(apps_false) > 0:  # all apps failed
+            result = 'error'
+            msg = f'Failed updating {apps_false_text}: {apps_false}'
+            logger.exception(msg)
+        else:
+            result = 'error'
+            msg = f'Failed updating apps with argument: {app}'
             logger.exception(msg)
 
         return {'result': result, 'message': msg}

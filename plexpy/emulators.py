@@ -157,13 +157,13 @@ class RetroArch:
         else:
             return True
 
-    def update_base(self):
+    def update_base(self, force=False):
         """Function installs/updates retroarch"""
         current_version = self.get_current_version()
 
         latest_version = self.get_latest_version()
 
-        if current_version != latest_version:
+        if current_version != latest_version or force:
             os_platform, sub_platform, base_file, core_file = self.get_os_build()
 
             if not sub_platform:
@@ -459,7 +459,7 @@ class RPCS3:
         else:
             return True
 
-    def update_base(self):
+    def update_base(self, force=False):
         """Function installs/updates rpcs3"""
         current_version = self.get_current_version()
 
@@ -470,7 +470,7 @@ class RPCS3:
 
         latest_version, base_file = self.get_latest_version(sub_platform, base_file_ends_with)
 
-        if current_version != latest_version:
+        if current_version != latest_version or force:
 
             download_url = base_file
 
@@ -626,7 +626,7 @@ class Cemu:
         else:
             return True
 
-    def update_base(self):
+    def update_base(self, force=False):
         """Function installs/updates cemu"""
         current_version = self.get_current_version()
 
@@ -637,7 +637,7 @@ class Cemu:
 
         latest_version, base_file = self.get_latest_version()
 
-        if current_version != latest_version:
+        if current_version != latest_version or force:
 
             download_url = base_file
 

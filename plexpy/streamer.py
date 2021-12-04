@@ -77,7 +77,7 @@ class Sunshine:
         else:
             return True
 
-    def update_base(self):
+    def update_base(self, force=False):
         """Function installs/updates sunshine"""
         current_version = self.get_current_version()
 
@@ -88,7 +88,7 @@ class Sunshine:
 
         latest_version, base_file = self.get_latest_version(base_file_ends_with)
 
-        if current_version != latest_version:
+        if current_version != latest_version or force:
 
             download_url = base_file
 
