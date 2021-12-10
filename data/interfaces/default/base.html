@@ -104,47 +104,65 @@
                     <li><a href="home"><i class="fa fa-lg fa-home"></i></a></li>
                     % endif
                     % if title == "Libraries" or title == "Library" or title == "Info":
-                    <li class="active"><a href="libraries">Libraries</a></li>
+                    <li class="active"><a href="libraries"><i class="fas fa-fw fa-gamepad"></i> Libraries</a></li>
                     % else:
-                    <li><a href="libraries">Libraries</a></li>
+                    <li><a href="libraries"><i class="fas fa-fw fa-gamepad"></i> Libraries</a></li>
                     % endif
                     % if title == "Users" or title == "User":
-                    <li class="active"><a href="users">Users</a></li>
+                    <li class="active"><a href="users"><i class="fas fa-fw fa-users"></i> Users</a></li>
                     % else:
-                    <li><a href="users">Users</a></li>
+                    <li><a href="users"><i class="fas fa-fw fa-users"></i> Users</a></li>
                     % endif
                     % if title == "History":
-                    <li class="active"><a href="history">History</a></li>
+                    <li class="active"><a href="history"><i class="fas fa-fw fa-history"></i> History</a></li>
                     % else:
-                    <li><a href="history">History</a></li>
+                    <li><a href="history"><i class="fas fa-fw fa-history"></i> History</a></li>
                     % endif
                     % if title == "Graphs":
-                    <li class="active"><a href="graphs">Graphs</a></li>
+                    <li class="active"><a href="graphs"><i class="fas fa-fw fa-chart-area"></i> Graphs</a></li>
                     % else:
-                    <li><a href="graphs">Graphs</a></li>
+                    <li><a href="graphs"><i class="fas fa-fw fa-chart-area"></i> Graphs</a></li>
                     % endif
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown" data-href="#"><i class="fa fa-fw fa-donate"></i> Donate<span class="caret"></span></a>
+                        <ul class="dropdown-menu" id="donate-dropdown-menu">
+                            <li><a href="${anon_url('https://github.com/sponsors/ReenigneArcher')}" target="_blank" rel="noreferrer"><i class="fa fa-fw fa-github-alt"></i> Github</a></li>
+                            <li><a href="${anon_url('https://www.patreon.com/join/retroarcher')}" target="_blank" rel="noreferrer"><i class="fab fa-fw fa-patreon"></i> Patreon</a></li>
+                            <li><a href="${anon_url('https://paypal.me/ReenigneArcher')}" target="_blank" rel="noreferrer"><i class="fa fa-fw fa-paypal"></i> PayPal</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown" data-href="#"><i class="fa fa-fw fa-comment"></i> Social<span class="caret"></span></a>
+                        <ul class="dropdown-menu" id="social-dropdown-menu">
+                            <li><a href="${anon_url('https://www.facebook.com/RetroArcherFB')}" target="_blank" rel="noreferrer"><i class="fab fa-fw fa-facebook"></i> Facebook</a></li>
+                            <li><a href="${anon_url('https://twitter.com/RetroArcherTW')}" target="_blank" rel="noreferrer"><i class="fa fa-fw fa-twitter"></i> Twitter</a></li>
+                            <li><a href="${anon_url('https://www.youtube.com/channel/UCtSzs1U8B7yYX1uE58a6BxA')}" target="_blank" rel="noreferrer"><i class="fab fa-fw fa-youtube"></i> YouTube</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="${anon_url('https://retroarcher.github.io/discord_join')}" target="_blank" rel="noreferrer"><i class="fab fa-fw fa-discord"></i> Discord</a></li>
+                            <li><a href="${anon_url('https://www.facebook.com/groups/retroracher')}" target="_blank" rel="noreferrer"><i class="fab fa-fw fa-facebook-f"></i> Facebook Group</a></li>
+                            <li><a href="${anon_url('https://reddit.com/r/RetroArcher')}" target="_blank" rel="noreferrer"><i class="fa fa-fw fa-reddit-alien"></i> Reddit</a></li>
+                        </ul>
+                    </li>
                     % if title == "Settings":
                     <li class="dropdown active">
                     % else:
                     <li class="dropdown">
                     % endif
-                        <% href = 'settings' if _session['user_group'] == 'admin' else '#' %>
-                        <a href="#" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown" data-href="${href}"><i class="fa fa-lg fa-cogs"></i> <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown" data-href="#"><i class="fa fa-lg fa-user-circle"></i> <span class="caret"></span></a>
                         <ul class="dropdown-menu" id="settings-dropdown-menu">
                             % if _session['user_group'] == 'admin':
-                            <li><a href="settings"><i class="fa fa-fw fa-cogs"></i> Settings</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="logs"><i class="fa fa-fw fa-list-alt"></i> View Logs</a></li>
-                            <li><a href="${anon_url('https://github.com/%s/%s/wiki/Frequently-Asked-Questions' % (plexpy.CONFIG.GIT_USER, plexpy.CONFIG.GIT_REPO))}" target="_blank" rel="noreferrer"><i class="fa fa-fw fa-question-circle"></i> FAQ</a></li>
-                            <li><a href="support"><i class="fa fa-fw fa-comment"></i> Support</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#" data-target="#donate-modal" data-toggle="modal"><i class="fa fa-fw fa-heart"></i> Donate</a></li>
-                            <li role="separator" class="divider"></li>
                             % if plexpy.CONFIG.CHECK_GITHUB:
-                            <li><a href="#" id="nav-update"><i class="fa fa-fw fa-arrow-alt-circle-up"></i> Check for Updates</a></li>
+                            <li><a href="#" id="nav-update"><i class="fas fa-fw fa-chevron-circle-up"></i> Check for Updates</a></li>
                             % endif
-                            <li><a href="#" id="nav-restart"><i class="fa fa-fw fa-refresh"></i> Restart</a></li>
-                            <li><a href="#" id="nav-shutdown"><i class="fa fa-fw fa-power-off"></i> Quit</a></li>
+                            <li><a href="settings"><i class="fa fa-fw fa-cog"></i> Settings</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="${anon_url('https://github.com/%s/%s/wiki/Frequently-Asked-Questions' % (plexpy.CONFIG.GIT_USER, plexpy.CONFIG.GIT_REPO))}" target="_blank" rel="noreferrer"><i class="fa fa-fw fa-question-circle"></i> FAQ</a></li>
+                            <li><a href="logs"><i class="fa fa-fw fa-list-alt"></i> Logs</a></li>
+                            <li><a href="support"><i class="fa fa-fw fa-exclamation-triangle"></i> Support</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#" id="nav-restart"><i class="fa fa-fw fa-redo fa-flip-horizontal"></i> Restart</a></li>
+                            <li><a href="#" id="nav-shutdown"><i class="fa fa-fw fa-times"></i> Quit</a></li>
+                            <li role="separator" class="divider"></li>
                             % else:
                             <li><a href="#" data-target="#admin-login-modal" data-toggle="modal"><i class="fa fa-fw fa-lock"></i> Admin Login</a></li>
                             <li role="separator" class="divider"></li>
@@ -206,63 +224,6 @@ ${next.modalIncludes()}
                 </div>
                 <input type="hidden" id="admin_login" name="admin_login" value="1" />
             </form>
-        </div>
-    </div>
-</div>
-% else:
-<div id="donate-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="donate-modal">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-remove"></i></button>
-                <h4 class="modal-title">RetroArcher Donation</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12" style="text-align: center;">
-                        <h4>
-                            <strong>Thank you for supporting RetroArcher!</strong>
-                        </h4>
-                        <p>
-                            Please select a donation method.
-                        </p>
-                    </div>
-                </div>
-                <ul id="donation_type" class="nav nav-pills" role="tablist" style="display: flex; justify-content: center; margin: 10px 0;">
-                    <li class="active"><a href="#github-donation" role="tab" data-toggle="tab">GitHub</a></li>
-                    <li><a href="#patreon-donation" role="tab" data-toggle="tab">Patreon</a></li>
-                    <li><a href="#paypal-donation" role="tab" data-toggle="tab">PayPal</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="github-donation" style="text-align: center">
-                        <p>
-                            Click the button below to continue to GitHub.
-                        </p>
-                        <a href="${anon_url('https://github.com/sponsors/ReenigneArcher')}" target="_blank" rel="noreferrer" class="btn btn-sm btn-default" style="font-weight: 600;">
-                            <i class="fa fa-heart fa-sm" style="color: #ea4aaa;"></i>&nbsp; Sponsor
-                        </a>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="patreon-donation" style="text-align: center">
-                        <p>
-                            Click the button below to continue to Patreon.
-                        </p>
-                        <a href="${anon_url('https://www.patreon.com/join/retroarcher')}" target="_blank" rel="noreferrer">
-                            <img src="images/become_a_patron_button.png" alt="Become a Patron" width="170" height="40">
-                        </a>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="paypal-donation" style="text-align: center">
-                        <p>
-                            Click the button below to continue to PayPal.
-                        </p>
-                        <a href="${anon_url('https://paypal.me/ReenigneArcher')}" target="_blank" rel="noreferrer">
-                            <img src="images/gold-rect-paypal-34px.png" alt="PayPal">
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <input type="button" class="btn btn-bright" data-dismiss="modal" value="Close">
-            </div>
         </div>
     </div>
 </div>
@@ -369,8 +330,8 @@ ${next.modalIncludes()}
     });
 
     $('#nav-update').click(function () {
-        $(this).html('<i class="fa fa-fw fa-spin fa-refresh"></i> Checking');
-        checkUpdate(function () { $('#nav-update').html('<i class="fa fa-fw fa-arrow-alt-circle-up"></i> Check for Updates'); });
+        $(this).html('<i class="fa fa-fw fa-spin fa-spinner"></i> Checking');
+        checkUpdate(function () { $('#nav-update').html('<i class="fa fa-fw fa-chevron-circle-up"></i> Check for Updates'); });
     });
 
     % endif
@@ -439,7 +400,7 @@ ${next.modalIncludes()}
 
     $('#login-form').submit(function(event) {
         event.preventDefault();
-        $('#sign-in').prop('disabled', true).html('<i class="fa fa-refresh fa-spin"></i>&nbsp; Sign In');
+        $('#sign-in').prop('disabled', true).html('<i class="fa fa-spin fa-spinner"></i>&nbsp; Sign In');
         $.ajax({
             url: '${http_root}auth/signin',
             type: 'POST',
