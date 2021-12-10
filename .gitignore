@@ -100,3 +100,13 @@ snap/.snapcraft
 
 # Include 7zip
 !resources/7zip/*
+
+# Extra FontAwesome files
+/data/interfaces/default/fonts/fontawesome-free-web/css/*.css
+!/data/interfaces/default/fonts/fontawesome-free-web/css/*min.css
+/data/interfaces/default/fonts/fontawesome-free-web/js/
+/data/interfaces/default/fonts/fontawesome-free-web/less/
+/data/interfaces/default/fonts/fontawesome-free-web/metadata/
+/data/interfaces/default/fonts/fontawesome-free-web/scss/
+/data/interfaces/default/fonts/fontawesome-free-web/sprites/
+/data/interfaces/default/fonts/fontawesome-free-web/svgs/
