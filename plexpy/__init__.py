@@ -253,20 +253,16 @@ def initialize(config_file):
             CONFIG.EXPORT_DIR, os.path.join(DATA_DIR, 'exports'), 'exports')
         CONFIG.NEWSLETTER_DIR, _ = check_folder_writable(
             CONFIG.NEWSLETTER_DIR, os.path.join(DATA_DIR, 'newsletters'), 'newsletters')
-        CONFIG.EMULATOR_DIR, _ = check_folder_writable(
-            CONFIG.EMULATOR_DIR, os.path.join(DATA_DIR, 'emulators'), 'emulators')
+
+        CONFIG.EMULATOR_DIR, _ = check_folder_writable(None, os.path.join(DATA_DIR, 'emulators'), 'emulators')
         CONFIG.RETROARCH_DIR, _ = check_folder_writable(
-            CONFIG.RETROARCH_DIR, os.path.join(DATA_DIR, 'emulators', 'retroarch'), 'retroarch')
-        CONFIG.RPCS3_DIR, _ = check_folder_writable(
-            CONFIG.RPCS3_DIR, os.path.join(DATA_DIR, 'emulators', 'rpcs3'), 'rpcs3')
-        CONFIG.CEMU_DIR, _ = check_folder_writable(
-            CONFIG.CEMU_DIR, os.path.join(DATA_DIR, 'emulators', 'cemu'), 'cemu')
-        CONFIG.RESOURCE_DIR, _ = check_folder_writable(
-            CONFIG.RESOURCE_DIR, os.path.join(DATA_DIR, 'resources'), 'resources')
-        CONFIG.SUNSHINE_DIR, _ = check_folder_writable(
-            CONFIG.SUNSHINE_DIR, os.path.join(DATA_DIR, 'sunshine'), 'sunshine')
-        CONFIG.TEMP_DIR, _ = check_folder_writable(
-            CONFIG.TEMP_DIR, os.path.join(DATA_DIR, 'temp'), 'temp')
+            None, os.path.join(DATA_DIR, 'emulators', 'retroarch'), 'retroarch')
+        CONFIG.RPCS3_DIR, _ = check_folder_writable(None, os.path.join(DATA_DIR, 'emulators', 'rpcs3'), 'rpcs3')
+        CONFIG.CEMU_DIR, _ = check_folder_writable(None, os.path.join(DATA_DIR, 'emulators', 'cemu'), 'cemu')
+        CONFIG.RESOURCE_DIR, _ = check_folder_writable(None, os.path.join(DATA_DIR, 'resources'), 'resources')
+        CONFIG.SUNSHINE_DIR, _ = check_folder_writable(None, os.path.join(DATA_DIR, 'sunshine'), 'sunshine')
+        CONFIG.TEMP_DIR, _ = check_folder_writable(None, os.path.join(DATA_DIR, 'temp'), 'temp')
+        CONFIG.PLUGIN_DIR, _ = check_folder_writable(None, os.path.join(DATA_DIR, 'data', 'interfaces', 'plugins'), 'plugins')
 
         # Initialize the database
         logger.info("Checking if the database upgrades are required...")
@@ -2685,6 +2681,12 @@ def analytics_event(category, action, label=None, value=None, **kwargs):
 
 
 def check_folder_writable(folder, fallback, name):
+    """
+    Checks if folder or fallback folder is writeable.
+
+    Returns True if writeable.
+    Returns False is not writeable
+    """
     if not folder:
         folder = fallback
 

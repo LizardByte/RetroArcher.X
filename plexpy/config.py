@@ -185,15 +185,8 @@ _CONFIG_DEFINITIONS = {
     'SYSTEM_ANALYTICS': (int, 'Advanced', 1),
     'SYS_TRAY_ICON': (int, 'General', 1),
     'ROM_DIR':  (str, 'Games', ''),
-    'EMULATOR_DIR': (str, 'Emulators', ''),
-    'RETROARCH_DIR':  (str, 'Emulators', ''),
     'RETROARCH_NIGHTLY_ASSETS':  (int, 'Emulators', 0),
     'RETROARCH_STRICT_CORE_MATCHING':  (int, 'Emulators', 1),
-    'CEMU_DIR':  (str, 'Emulators', ''),
-    'RPCS3_DIR':  (str, 'Emulators', ''),
-    'TEMP_DIR':  (str, 'Emulators', ''),
-    'RESOURCE_DIR':  (str, 'Resources', ''),
-    'SUNSHINE_DIR':  (str, 'Resources', ''),
     'SUNSHINE_EXTERNAL_IP_METHOD':  (int, 'Sunshine', 1),
     'SUNSHINE_EXTERNAL_IP':  (str, 'Sunshine', ''),
     'SUNSHINE_PORT':  (int, 'Sunshine', 47989),
@@ -236,6 +229,14 @@ _CONFIG_DEFINITIONS = {
     'SUNSHINE_FFMPEG_ENCODER_AMD_CODER':  (str, 'Sunshine', 'auto'),
     'SUNSHINE_VAAPI_DEVICE':  (str, 'Sunshine', ''),
     'LOCK_SETTINGS':  (bool_int, 'Admin', 0),
+    'EMULATOR_DIR': (str, 'ReadOnly', ''),
+    'RETROARCH_DIR': (str, 'ReadOnly', ''),
+    'CEMU_DIR': (str, 'ReadOnly', ''),
+    'RPCS3_DIR': (str, 'ReadOnly', ''),
+    'TEMP_DIR': (str, 'ReadOnly', ''),
+    'RESOURCE_DIR': (str, 'ReadOnly', ''),
+    'SUNSHINE_DIR': (str, 'ReadOnly', ''),
+    'PLUGIN_DIR': (str, 'ReadOnly', '')
 }
 
 _BLACKLIST_KEYS = ['_APITOKEN', '_TOKEN', '_KEY', '_SECRET', '_PASSWORD', '_APIKEY', '_ID', '_HOOK']
@@ -248,7 +249,7 @@ _DO_NOT_IMPORT_KEYS = [
     'HTTP_USERNAME', 'HTTP_PASSWORD', 'HTTP_HASH_PASSWORD', 'HTTP_HASHED_PASSWORD',
     'ENABLE_HTTPS', 'HTTPS_CREATE_CERT', 'HTTPS_CERT', 'HTTPS_CERT_CHAIN', 'HTTPS_KEY',
     'ROM_DIR', 'EMULATOR_DIR', 'RETROARCH_DIR', 'CEMU_DIR', 'RPCS3_DIR',
-    'TEMP_DIR', 'RESOURCE_DIR', 'SUNSHINE_DIR'
+    'TEMP_DIR', 'RESOURCE_DIR', 'SUNSHINE_DIR', 'PLUGIN_DIR'
 ]
 _DO_NOT_IMPORT_KEYS_DOCKER = [
     'PLEXPY_AUTO_UPDATE', 'GIT_REMOTE', 'GIT_BRANCH'
