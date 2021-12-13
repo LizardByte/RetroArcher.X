@@ -110,3 +110,6 @@ snap/.snapcraft
 /data/interfaces/default/fonts/fontawesome-free-web/scss/
 /data/interfaces/default/fonts/fontawesome-free-web/sprites/
 /data/interfaces/default/fonts/fontawesome-free-web/svgs/
+
+# Plugins
+/plugins/

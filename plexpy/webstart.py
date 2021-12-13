@@ -231,6 +231,9 @@ def initialize(options):
             'tools.expires.secs': 60 * 60 * 24 * 30,  # 30 days
             'tools.sessions.on': False,
             'tools.auth.on': False
+        },
+        '/plugins': {
+            'tools.auth_basic.on': False
         }
     }
 

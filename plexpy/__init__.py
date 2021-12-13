@@ -262,7 +262,7 @@ def initialize(config_file):
         CONFIG.RESOURCE_DIR, _ = check_folder_writable(None, os.path.join(DATA_DIR, 'resources'), 'resources')
         CONFIG.SUNSHINE_DIR, _ = check_folder_writable(None, os.path.join(DATA_DIR, 'sunshine'), 'sunshine')
         CONFIG.TEMP_DIR, _ = check_folder_writable(None, os.path.join(DATA_DIR, 'temp'), 'temp')
-        CONFIG.PLUGIN_DIR, _ = check_folder_writable(None, os.path.join(DATA_DIR, 'data', 'interfaces', 'plugins'), 'plugins')
+        CONFIG.PLUGIN_DIR, _ = check_folder_writable(None, os.path.join(DATA_DIR, 'plugins'), 'plugins')
 
         # Initialize the database
         logger.info("Checking if the database upgrades are required...")

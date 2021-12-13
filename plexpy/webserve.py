@@ -127,6 +127,31 @@ def serve_template(templatename, **kwargs):
         return mako.exceptions.html_error_template().render()
 
 
+def serve_plugin(templatename, plugin_name, **kwargs):
+    plugin_dir = os.path.join(str(plexpy.PROG_DIR), 'plugins', plugin_name,)
+    template_dir = os.path.join(str(plugin_dir), 'html')
+
+    interface_dir = os.path.join(str(plexpy.PROG_DIR), 'data/interfaces/')
+    default_dir = os.path.join(str(interface_dir), plexpy.CONFIG.INTERFACE)
+
+    _hplookup = TemplateLookup(directories=[template_dir, default_dir], default_filters=['unicode', 'h'],
+                               error_handler=mako_error_handler)
+
+    http_root = plexpy.HTTP_ROOT
+    server_name = plexpy.CONFIG.PMS_NAME
+    cache_param = '?' + (plexpy.CURRENT_VERSION or common.RELEASE)  # need to change to use plugin version number
+
+    _session = get_session_info()
+
+    try:
+        template = _hplookup.get_template(templatename)
+        return template.render(http_root=http_root, server_name=server_name, cache_param=cache_param,
+                               _session=_session, **kwargs)
+    except Exception as e:
+        logger.exception("WebUI :: Mako template render error: %s" % e)
+        return mako.exceptions.html_error_template().render()
+
+
 def mako_error_handler(context, error):
     """Decorate tracebacks when Mako errors happen.
     Evil hack: walk the traceback frames, find compiled Mako templates,
@@ -7471,3 +7496,61 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     def exporter_docs(self, **kwargs):
         return '<pre>' + exporter.build_export_docs() + '</pre>'
+
+    ##### Plugins #####
+    @cherrypy.expose
+    @requireAuth(member_of("admin"))
+    def plugin(self, *args, **kwargs):
+        """ Serve the requested plugin template.
+
+            ```
+            Required parameters:
+                name (str):             The name of the plugin
+
+            Optional parameters:
+                template (str):         index, config, example, example.html (default 'index')
+                                        Default value = 'index'
+                                        '.html' will be appended automatically if not included.
+                                        Only html templates are supported.
+                                        Template should follow mako template syntax.
+
+            Returns:
+                html
+            ```
+        """
+        try:
+            plugin_name = kwargs['name']
+        except KeyError:
+            cherrypy.response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+            return json.dumps(API2()._api_responds(result_type='error',
+                                                   msg='Parameter name is required.')).encode('utf-8')
+
+        try:
+            template_name = kwargs['template']
+        except KeyError:
+            template_name = 'index.html'
+
+        if not template_name.endswith('.html'):
+            template_name += '.html'
+
+        # test that required files exist for plugin
+        files = [
+            os.path.join(plexpy.CONFIG.PLUGIN_DIR, plugin_name, 'manifest.xml'),
+            os.path.join(plexpy.CONFIG.PLUGIN_DIR, plugin_name, '__init__.py'),
+            os.path.join(plexpy.CONFIG.PLUGIN_DIR, plugin_name, 'html', template_name),
+        ]
+
+        missing_files = []
+        for file in files:
+            if not os.path.isfile(file):
+                missing_files.append(file)
+
+        if not missing_files:
+            try:
+                return serve_plugin(templatename=template_name, plugin_name=plugin_name, title=plugin_name)
+            except NotFound:
+                return
+        else:
+            cherrypy.response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+            return json.dumps(API2()._api_responds(result_type='error',
+                                                   msg=f'Files missing: {missing_files}.')).encode('utf-8')
