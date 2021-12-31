@@ -6327,6 +6327,12 @@ class WebInterface(object):
             result = pms_connect.get_current_activity()
 
             if result:
+                for session in result['sessions']:
+                    if str(session['section_id']) not in plexpy.CONFIG.HOME_LIBRARY_CARDS:
+                        result['sessions'].remove(session)
+                        result['stream_count'] = str(int(result["stream_count"])-1)
+
+            if result:
                 if session_key:
                     return next((s for s in result['sessions'] if s['session_key'] == session_key), {})
                 if session_id:
