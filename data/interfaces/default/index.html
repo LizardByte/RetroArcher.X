@@ -103,9 +103,15 @@
                         <label class="btn btn-dark" id="recently-added-label-all">
                             <input type="radio" name="recently-added-toggle" id="recently-added-toggle-all" value="all" autocomplete="off"> All
                         </label>
-                        <label class="btn btn-dark" id="recently-added-label-movies">
-                            <input type="radio" name="recently-added-toggle" id="recently-added-toggle-movie" value="movie" autocomplete="off"> Games
+                        <% import plexpy %>
+                        <% from plexpy import libraries %>
+                        % for library in libraries.Libraries().get_sections():
+                        % if str(library['section_id']) in plexpy.CONFIG.HOME_LIBRARY_CARDS:
+                        <label class="btn btn-dark" id="recently-added-label-${library['section_id']}">
+                            <input type="radio" name="recently-added-toggle" id="recently-added-toggle-${library['section_id']}" value="${library['section_id']}" autocomplete="off"> ${library['section_name']}
                         </label>
+                        % endif
+                        % endfor
                     </div>
                     <div class="input-group pull-left" style="width: 1px;" id="recently-added-count-selection">
                         <input type="number" class="form-control number-input" name="recently-added-count" id="recently-added-count" value="50" min="1" max="50" data-default="50" data-toggle="tooltip" title="Min: 1 item<br>Max: 50 items" />
@@ -925,7 +931,7 @@
 % endif
 % if 'recently_added' in config['home_sections']:
 <script>
-    function recentlyAdded(recently_added_count, recently_added_type) {
+    function recentlyAdded(recently_added_count, recently_added_library) {
         showMsg("Loading recently added items...", true, false, 0);
 
         $.ajax({
@@ -934,7 +940,7 @@
             async: true,
             data: {
                 count: recently_added_count,
-                media_type: recently_added_type
+                section_id: recently_added_library
             },
             complete: function (xhr, status) {
                 $("#recentlyAdded").html(xhr.responseText);
@@ -945,14 +951,14 @@
     }
 
     var recently_added_count = getLocalStorage('home_stats_recently_added_count', 50);
-    var recently_added_type = getLocalStorage('home_stats_recently_added_type', 'all');;
+    var recently_added_library = getLocalStorage('home_stats_recently_added_library', 'all');;
 
-    $('#recently-added-toggle-' + recently_added_type).prop('checked', true);
-    $('#recently-added-toggle-' + recently_added_type).closest('label').addClass('active');
+    $('#recently-added-toggle-' + recently_added_library).prop('checked', true);
+    $('#recently-added-toggle-' + recently_added_library).closest('label').addClass('active');
     $('#recently-added-count').val(recently_added_count);
 
     function recentlyAddedConnected() {
-        recentlyAdded(recently_added_count, recently_added_type);
+        recentlyAdded(recently_added_count, recently_added_library);
     }
 
     function highlightAddedScrollerButton() {
@@ -1004,10 +1010,10 @@
         $('#recently-added-toggles > label').removeClass('active');
         selected_filter = $('input[name=recently-added-toggle]:checked', '#recently-added-toggles');
         $(selected_filter).closest('label').addClass('active');
-        recently_added_type = $(selected_filter).val();
+        recently_added_library = $(selected_filter).val();
         resetScroller();
-        setLocalStorage('home_stats_recently_added_type', recently_added_type);
-        recentlyAdded(recently_added_count, recently_added_type);
+        setLocalStorage('home_stats_recently_added_library', recently_added_library);
+        recentlyAdded(recently_added_count, recently_added_library);
     });
 
     $('#recently-added-count').change(function () {
@@ -1015,7 +1021,7 @@
         recently_added_count = $(this).val();
         resetScroller();
         setLocalStorage('home_stats_recently_added_count', recently_added_count);
-        recentlyAdded(recently_added_count, recently_added_type);
+        recentlyAdded(recently_added_count, recently_added_library);
     });
 
     $('#recently-added-count').tooltip({ container: 'body', placement: 'top', html: true });

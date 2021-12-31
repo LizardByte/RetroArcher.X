@@ -429,11 +429,18 @@ class WebInterface(object):
 
     @cherrypy.expose
     @requireAuth()
-    def get_recently_added(self, count='0', media_type='', **kwargs):
+    def get_recently_added(self, count='0', section_id='', **kwargs):
+        if section_id == 'all':
+            sections = plexpy.CONFIG.HOME_LIBRARY_CARDS
+        else:
+            sections = [section_id]
 
         try:
             pms_connect = pmsconnect.PmsConnect()
-            result = pms_connect.get_recently_added_details(count=count, media_type=media_type)
+            result = {'recently_added': []}
+            for section in sections:
+                result['recently_added'] += pms_connect.get_recently_added_details(section_id=int(section), count=count)['recently_added']
+
         except IOError as e:
             return serve_template(templatename="recently_added.html", data=None)
 
