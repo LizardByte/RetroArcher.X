@@ -162,7 +162,7 @@ DOCUMENTATION :: END
     });
 
     function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+      return new Promise((resolve) => setTimeout(resolve, ms));
    }
 
     var updating = false;
@@ -186,17 +186,18 @@ DOCUMENTATION :: END
                         showMsg('<i class="fa fa-times"></i> ' + msg, false, true, 5000, true)
                     }
                     sleep(5000).then(() => {
-                        window.location.reload(true);
+                        location.reload();
+                    })
                 }
             });
-        }
-    };
-
-    $(".sunshine-update-btn").click(function () {
-        updateApp('cemu');
-    });
+        };
+    }
 
     $(".all-update-btn").click(function () {
+        updateApp('all');
+    });
+
+    $(".cemu-update-btn").click(function () {
         updateApp('cemu');
     });
 
@@ -208,7 +209,8 @@ DOCUMENTATION :: END
         updateApp('rpcs3');
     });
 
-    $(".cemu-update-btn").click(function () {
-        updateApp('cemu');
+    $(".sunshine-update-btn").click(function () {
+        updateApp('sunshine');
     });
+
 </script>
