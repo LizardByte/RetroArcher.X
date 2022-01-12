@@ -1,20 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
 
-# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import unicode_literals
 from future.builtins import str
 from future.builtins import next
@@ -50,11 +35,11 @@ else:
 
 
 def refresh_libraries():
-    logger.info("Tautulli Libraries :: Requesting libraries list refresh...")
+    logger.info("RetroArcher Libraries :: Requesting libraries list refresh...")
 
     server_id = plexpy.CONFIG.PMS_IDENTIFIER
     if not server_id:
-        logger.error("Tautulli Libraries :: No PMS identifier, cannot refresh libraries. Verify server in settings.")
+        logger.error("RetroArcher Libraries :: No PMS identifier, cannot refresh libraries. Verify server in settings.")
         return
 
     library_sections = pmsconnect.PmsConnect().get_library_details()
@@ -66,34 +51,34 @@ def refresh_libraries():
         new_keys = []
 
         # Keep track of section_id to update is_active status
-        section_ids = [common.LIVE_TV_SECTION_ID]  # Live TV library always considered active
+        section_ids = []  # Remove Live TV section
 
         for section in library_sections:
-            section_ids.append(helpers.cast_to_int(section['section_id']))
+            
+            if section['section_type'] == 'movie' and section['agent'] == 'com.github.agents.retroarcher.retroarcher':
+                section_ids.append(helpers.cast_to_int(section['section_id']))
 
-            section_keys = {'server_id': server_id,
-                            'section_id': section['section_id']}
-            section_values = {'server_id': server_id,
-                              'section_id': section['section_id'],
-                              'section_name': section['section_name'],
-                              'section_type': section['section_type'],
-                              'agent': section['agent'],
-                              'thumb': section['thumb'],
-                              'art': section['art'],
-                              'count': section['count'],
-                              'parent_count': section.get('parent_count', None),
-                              'child_count': section.get('child_count', None),
-                              'is_active': section['is_active']
-                              }
+                section_keys = {'server_id': server_id,
+                                'section_id': section['section_id']}
+                section_values = {'server_id': server_id,
+                                  'section_id': section['section_id'],
+                                  'section_name': section['section_name'],
+                                  'section_type': section['section_type'],
+                                  'agent': section['agent'],
+                                  'thumb': section['thumb'],
+                                  'art': section['art'],
+                                  'count': section['count'],
+                                  'parent_count': section.get('parent_count', None),
+                                  'child_count': section.get('child_count', None),
+                                  'is_active': section['is_active']
+                                  }
 
-            result = monitor_db.upsert('library_sections', key_dict=section_keys, value_dict=section_values)
+                result = monitor_db.upsert('library_sections', key_dict=section_keys, value_dict=section_values)
 
-            library_keys.append(section['section_id'])
+                library_keys.append(section['section_id'])
 
-            if result == 'insert':
-                new_keys.append(section['section_id'])
-
-        add_live_tv_library(refresh=True)
+                if result == 'insert':
+                    new_keys.append(section['section_id'])
 
         query = 'UPDATE library_sections SET is_active = 0 WHERE server_id != ? OR ' \
                 'section_id NOT IN ({})'.format(', '.join(['?'] * len(section_ids)))
@@ -107,37 +92,11 @@ def refresh_libraries():
             plexpy.CONFIG.__setattr__('HOME_LIBRARY_CARDS', new_keys)
             plexpy.CONFIG.write()
 
-        logger.info("Tautulli Libraries :: Libraries list refreshed.")
+        logger.info("RetroArcher Libraries :: Libraries list refreshed.")
         return True
     else:
-        logger.warn("Tautulli Libraries :: Unable to refresh libraries list.")
+        logger.warn("RetroArcher Libraries :: Unable to refresh libraries list.")
         return False
-
-
-def add_live_tv_library(refresh=False):
-    monitor_db = database.MonitorDatabase()
-    result = monitor_db.select_single('SELECT * FROM library_sections '
-                                      'WHERE section_id = ? and server_id = ?',
-                                      [common.LIVE_TV_SECTION_ID, plexpy.CONFIG.PMS_IDENTIFIER])
-
-    if result and not refresh or not result and refresh:
-        return
-
-    if not refresh:
-        logger.info("Tautulli Libraries :: Adding Live TV library to the database.")
-
-    section_keys = {'server_id': plexpy.CONFIG.PMS_IDENTIFIER,
-                    'section_id': common.LIVE_TV_SECTION_ID}
-    section_values = {'server_id': plexpy.CONFIG.PMS_IDENTIFIER,
-                      'section_id': common.LIVE_TV_SECTION_ID,
-                      'section_name': common.LIVE_TV_SECTION_NAME,
-                      'section_type': 'live',
-                      'thumb': common.DEFAULT_LIVE_TV_THUMB,
-                      'art': common.DEFAULT_LIVE_TV_ART_FULL,
-                      'is_active': 1
-                      }
-
-    result = monitor_db.upsert('library_sections', key_dict=section_keys, value_dict=section_values)
 
 
 def has_library_type(section_type):
@@ -383,7 +342,7 @@ class Libraries(object):
                                                       ['session_history.id', 'session_history_media_info.id']],
                                           kwargs=kwargs)
         except Exception as e:
-            logger.warn("Tautulli Libraries :: Unable to execute database query for get_list: %s." % e)
+            logger.warn("RetroArcher Libraries :: Unable to execute database query for get_list: %s." % e)
             return default_return
 
         result = query['result']
@@ -464,19 +423,19 @@ class Libraries(object):
             return default_return
 
         if section_id and not str(section_id).isdigit():
-            logger.warn("Tautulli Libraries :: Datatable media info called but invalid section_id provided.")
+            logger.warn("RetroArcher Libraries :: Datatable media info called but invalid section_id provided.")
             return default_return
         elif rating_key and not str(rating_key).isdigit():
-            logger.warn("Tautulli Libraries :: Datatable media info called but invalid rating_key provided.")
+            logger.warn("RetroArcher Libraries :: Datatable media info called but invalid rating_key provided.")
             return default_return
         elif not section_id and not rating_key:
-            logger.warn("Tautulli Libraries :: Datatable media info called but no input provided.")
+            logger.warn("RetroArcher Libraries :: Datatable media info called but no input provided.")
             return default_return
 
         # Get the library details
         library_details = self.get_details(section_id=section_id)
         if library_details['section_id'] == None:
-            logger.debug("Tautulli Libraries :: Library section_id %s not found." % section_id)
+            logger.debug("RetroArcher Libraries :: Library section_id %s not found." % section_id)
             return default_return
 
         if not section_type:
@@ -505,7 +464,7 @@ class Libraries(object):
                     'GROUP BY %s ' % (count_by, group_by)
             result = monitor_db.select(query, args=[section_id])
         except Exception as e:
-            logger.warn("Tautulli Libraries :: Unable to execute database query for get_datatables_media_info2: %s." % e)
+            logger.warn("RetroArcher Libraries :: Unable to execute database query for get_datatables_media_info2: %s." % e)
             return default_return
 
         watched_list = {}
@@ -522,8 +481,8 @@ class Libraries(object):
                     rows = json.load(inFile)
                     library_count = len(rows)
             except IOError as e:
-                #logger.debug("Tautulli Libraries :: No JSON file for rating_key %s." % rating_key)
-                #logger.debug("Tautulli Libraries :: Refreshing data and creating new JSON file for rating_key %s." % rating_key)
+                #logger.debug("RetroArcher Libraries :: No JSON file for rating_key %s." % rating_key)
+                #logger.debug("RetroArcher Libraries :: Refreshing data and creating new JSON file for rating_key %s." % rating_key)
                 pass
         elif section_id:
             try:
@@ -532,8 +491,8 @@ class Libraries(object):
                     rows = json.load(inFile)
                     library_count = len(rows)
             except IOError as e:
-                #logger.debug("Tautulli Libraries :: No JSON file for library section_id %s." % section_id)
-                #logger.debug("Tautulli Libraries :: Refreshing data and creating new JSON file for section_id %s." % section_id)
+                #logger.debug("RetroArcher Libraries :: No JSON file for library section_id %s." % section_id)
+                #logger.debug("RetroArcher Libraries :: Refreshing data and creating new JSON file for section_id %s." % section_id)
                 pass
 
         # If no cache was imported, get all library children items
@@ -553,7 +512,7 @@ class Libraries(object):
                 library_count = library_children['library_count']
                 children_list = library_children['children_list']
             else:
-                logger.warn("Tautulli Libraries :: Unable to get a list of library items.")
+                logger.warn("RetroArcher Libraries :: Unable to get a list of library items.")
                 return default_return
 
             new_rows = []
@@ -598,14 +557,14 @@ class Libraries(object):
                     with open(outFilePath, 'w') as outFile:
                         json.dump(rows, outFile)
                 except IOError as e:
-                    logger.debug("Tautulli Libraries :: Unable to create cache file for rating_key %s." % rating_key)
+                    logger.debug("RetroArcher Libraries :: Unable to create cache file for rating_key %s." % rating_key)
             elif section_id:
                 try:
                     outFilePath = os.path.join(plexpy.CONFIG.CACHE_DIR,'media_info_%s.json' % section_id)
                     with open(outFilePath, 'w') as outFile:
                         json.dump(rows, outFile)
                 except IOError as e:
-                    logger.debug("Tautulli Libraries :: Unable to create cache file for section_id %s." % section_id)
+                    logger.debug("RetroArcher Libraries :: Unable to create cache file for section_id %s." % section_id)
 
         # Update the last_played and play_count
         for item in rows:
@@ -675,16 +634,16 @@ class Libraries(object):
             return False
 
         if section_id and not str(section_id).isdigit():
-            logger.warn("Tautulli Libraries :: Datatable media info file size called but invalid section_id provided.")
+            logger.warn("RetroArcher Libraries :: Datatable media info file size called but invalid section_id provided.")
             return False
         elif rating_key and not str(rating_key).isdigit():
-            logger.warn("Tautulli Libraries :: Datatable media info file size called but invalid rating_key provided.")
+            logger.warn("RetroArcher Libraries :: Datatable media info file size called but invalid rating_key provided.")
             return False
 
         # Get the library details
         library_details = self.get_details(section_id=section_id)
         if library_details['section_id'] == None:
-            logger.debug("Tautulli Libraries :: Library section_id %s not found." % section_id)
+            logger.debug("RetroArcher Libraries :: Library section_id %s not found." % section_id)
             return False
         if library_details['section_type'] == 'photo':
             return False
@@ -692,24 +651,24 @@ class Libraries(object):
         rows = []
         # Import media info cache from json file
         if rating_key:
-            #logger.debug("Tautulli Libraries :: Getting file sizes for rating_key %s." % rating_key)
+            #logger.debug("RetroArcher Libraries :: Getting file sizes for rating_key %s." % rating_key)
             try:
                 inFilePath = os.path.join(plexpy.CONFIG.CACHE_DIR,'media_info_%s-%s.json' % (section_id, rating_key))
                 with open(inFilePath, 'r') as inFile:
                     rows = json.load(inFile)
             except IOError as e:
-                #logger.debug("Tautulli Libraries :: No JSON file for rating_key %s." % rating_key)
-                #logger.debug("Tautulli Libraries :: Refreshing data and creating new JSON file for rating_key %s." % rating_key)
+                #logger.debug("RetroArcher Libraries :: No JSON file for rating_key %s." % rating_key)
+                #logger.debug("RetroArcher Libraries :: Refreshing data and creating new JSON file for rating_key %s." % rating_key)
                 pass
         elif section_id:
-            logger.debug("Tautulli Libraries :: Getting file sizes for section_id %s." % section_id)
+            logger.debug("RetroArcher Libraries :: Getting file sizes for section_id %s." % section_id)
             try:
                 inFilePath = os.path.join(plexpy.CONFIG.CACHE_DIR,'media_info_%s.json' % section_id)
                 with open(inFilePath, 'r') as inFile:
                     rows = json.load(inFile)
             except IOError as e:
-                #logger.debug("Tautulli Libraries :: No JSON file for library section_id %s." % section_id)
-                #logger.debug("Tautulli Libraries :: Refreshing data and creating new JSON file for section_id %s." % section_id)
+                #logger.debug("RetroArcher Libraries :: No JSON file for library section_id %s." % section_id)
+                #logger.debug("RetroArcher Libraries :: Refreshing data and creating new JSON file for section_id %s." % section_id)
                 pass
 
         # Get the total file size for each item
@@ -742,20 +701,20 @@ class Libraries(object):
                 with open(outFilePath, 'w') as outFile:
                     json.dump(rows, outFile)
             except IOError as e:
-                logger.debug("Tautulli Libraries :: Unable to create cache file with file sizes for rating_key %s." % rating_key)
+                logger.debug("RetroArcher Libraries :: Unable to create cache file with file sizes for rating_key %s." % rating_key)
         elif section_id:
             try:
                 outFilePath = os.path.join(plexpy.CONFIG.CACHE_DIR,'media_info_%s.json' % section_id)
                 with open(outFilePath, 'w') as outFile:
                     json.dump(rows, outFile)
             except IOError as e:
-                logger.debug("Tautulli Libraries :: Unable to create cache file with file sizes for section_id %s." % section_id)
+                logger.debug("RetroArcher Libraries :: Unable to create cache file with file sizes for section_id %s." % section_id)
 
         if rating_key:
-            #logger.debug("Tautulli Libraries :: File sizes updated for rating_key %s." % rating_key)
+            #logger.debug("RetroArcher Libraries :: File sizes updated for rating_key %s." % rating_key)
             pass
         elif section_id:
-            logger.debug("Tautulli Libraries :: File sizes updated for section_id %s." % section_id)
+            logger.debug("RetroArcher Libraries :: File sizes updated for section_id %s." % section_id)
 
         return True
     def set_config(self, section_id=None, custom_thumb='', custom_art='',
@@ -772,7 +731,7 @@ class Libraries(object):
             try:
                 monitor_db.upsert('library_sections', value_dict, key_dict)
             except Exception as e:
-                logger.warn("Tautulli Libraries :: Unable to execute database query for set_config: %s." % e)
+                logger.warn("RetroArcher Libraries :: Unable to execute database query for set_config: %s." % e)
 
     def get_details(self, section_id=None, server_id=None, include_last_accessed=False):
         default_return = {'row_id': 0,
@@ -806,7 +765,7 @@ class Libraries(object):
             return library_details
 
         else:
-            logger.warn("Tautulli Libraries :: Unable to retrieve library %s from database. Requesting library list refresh."
+            logger.warn("RetroArcher Libraries :: Unable to retrieve library %s from database. Requesting library list refresh."
                         % section_id)
             # Let's first refresh the libraries list to make sure the library isn't newly added and not in the db yet
             refresh_libraries()
@@ -818,7 +777,7 @@ class Libraries(object):
                 return library_details
 
             else:
-                logger.warn("Tautulli Users :: Unable to retrieve library %s from database. Returning 'Local' library."
+                logger.warn("RetroArcher Users :: Unable to retrieve library %s from database. Returning 'Local' library."
                             % section_id)
                 # If there is no library data we must return something
                 return default_return
@@ -853,7 +812,7 @@ class Libraries(object):
                     'WHERE %s AND server_id = ? ' % (last_accessed, join, where)
             result = monitor_db.select(query, args=args + [server_id])
         except Exception as e:
-            logger.warn("Tautulli Libraries :: Unable to execute database query for get_library_details: %s." % e)
+            logger.warn("RetroArcher Libraries :: Unable to execute database query for get_library_details: %s." % e)
             result = []
 
         library_details = {}
@@ -936,7 +895,7 @@ class Libraries(object):
                     else:
                         result = []
             except Exception as e:
-                logger.warn("Tautulli Libraries :: Unable to execute database query for get_watch_time_stats: %s." % e)
+                logger.warn("RetroArcher Libraries :: Unable to execute database query for get_watch_time_stats: %s." % e)
                 result = []
 
             for item in result:
@@ -985,7 +944,7 @@ class Libraries(object):
             else:
                 result = []
         except Exception as e:
-            logger.warn("Tautulli Libraries :: Unable to execute database query for get_user_stats: %s." % e)
+            logger.warn("RetroArcher Libraries :: Unable to execute database query for get_user_stats: %s." % e)
             result = []
 
         for item in result:
@@ -1032,7 +991,7 @@ class Libraries(object):
             else:
                 result = []
         except Exception as e:
-            logger.warn("Tautulli Libraries :: Unable to execute database query for get_recently_watched: %s." % e)
+            logger.warn("RetroArcher Libraries :: Unable to execute database query for get_recently_watched: %s." % e)
             result = []
 
         for row in result:
@@ -1077,7 +1036,7 @@ class Libraries(object):
                     'FROM library_sections WHERE deleted_section = 0'
             result = monitor_db.select(query=query)
         except Exception as e:
-            logger.warn("Tautulli Libraries :: Unable to execute database query for get_sections: %s." % e)
+            logger.warn("RetroArcher Libraries :: Unable to execute database query for get_sections: %s." % e)
             return None
 
         libraries = []
@@ -1112,7 +1071,7 @@ class Libraries(object):
             if server_id == plexpy.CONFIG.PMS_IDENTIFIER:
                 delete_success = database.delete_library_history(section_id=section_id)
             else:
-                logger.warn("Tautulli Libraries :: Library history not deleted for library section_id %s "
+                logger.warn("RetroArcher Libraries :: Library history not deleted for library section_id %s "
                             "because library server_id %s does not match Plex server identifier %s."
                             % (section_id, server_id, plexpy.CONFIG.PMS_IDENTIFIER))
                 delete_success = True
@@ -1120,7 +1079,7 @@ class Libraries(object):
             if purge_only:
                 return delete_success
             else:
-                logger.info("Tautulli Libraries :: Deleting library with server_id %s and section_id %s from database."
+                logger.info("RetroArcher Libraries :: Deleting library with server_id %s and section_id %s from database."
                             % (server_id, section_id))
                 try:
                     monitor_db.action('UPDATE library_sections '
@@ -1128,7 +1087,7 @@ class Libraries(object):
                                       'WHERE server_id = ? AND section_id = ?', [server_id, section_id])
                     return delete_success
                 except Exception as e:
-                    logger.warn("Tautulli Libraries :: Unable to execute database query for delete: %s." % e)
+                    logger.warn("RetroArcher Libraries :: Unable to execute database query for delete: %s." % e)
 
         else:
             return False
@@ -1141,7 +1100,7 @@ class Libraries(object):
                 query = 'SELECT * FROM library_sections WHERE section_id = ?'
                 result = monitor_db.select(query=query, args=[section_id])
                 if result:
-                    logger.info("Tautulli Libraries :: Re-adding library with id %s to database." % section_id)
+                    logger.info("RetroArcher Libraries :: Re-adding library with id %s to database." % section_id)
                     monitor_db.action('UPDATE library_sections '
                                       'SET deleted_section = 0, keep_history = 1, do_notify = 1, do_notify_created = 1 '
                                       'WHERE section_id = ?',
@@ -1154,7 +1113,7 @@ class Libraries(object):
                 query = 'SELECT * FROM library_sections WHERE section_name = ?'
                 result = monitor_db.select(query=query, args=[section_name])
                 if result:
-                    logger.info("Tautulli Libraries :: Re-adding library with name %s to database." % section_name)
+                    logger.info("RetroArcher Libraries :: Re-adding library with name %s to database." % section_name)
                     monitor_db.action('UPDATE library_sections '
                                       'SET deleted_section = 0, keep_history = 1, do_notify = 1, do_notify_created = 1 '
                                       'WHERE section_name = ?',
@@ -1164,7 +1123,7 @@ class Libraries(object):
                     return False
 
         except Exception as e:
-            logger.warn("Tautulli Libraries :: Unable to execute database query for undelete: %s." % e)
+            logger.warn("RetroArcher Libraries :: Unable to execute database query for undelete: %s." % e)
 
     def delete_media_info_cache(self, section_id=None):
         import os
@@ -1174,12 +1133,12 @@ class Libraries(object):
                 [os.remove(os.path.join(plexpy.CONFIG.CACHE_DIR, f)) for f in os.listdir(plexpy.CONFIG.CACHE_DIR)
                  if f.startswith('media_info_%s' % section_id) and f.endswith('.json')]
 
-                logger.debug("Tautulli Libraries :: Deleted media info table cache for section_id %s." % section_id)
+                logger.debug("RetroArcher Libraries :: Deleted media info table cache for section_id %s." % section_id)
                 return 'Deleted media info table cache for library with id %s.' % section_id
             else:
                 return 'Unable to delete media info table cache, section_id not valid.'
         except Exception as e:
-            logger.warn("Tautulli Libraries :: Unable to delete media info table cache: %s." % e)
+            logger.warn("RetroArcher Libraries :: Unable to delete media info table cache: %s." % e)
 
     def delete_duplicate_libraries(self):
         monitor_db = database.MonitorDatabase()
@@ -1190,9 +1149,9 @@ class Libraries(object):
         server_id = plexpy.CONFIG.PMS_IDENTIFIER
 
         try:
-            logger.debug("Tautulli Libraries :: Deleting libraries where server_id does not match %s." % server_id)
+            logger.debug("RetroArcher Libraries :: Deleting libraries where server_id does not match %s." % server_id)
             monitor_db.action('DELETE FROM library_sections WHERE server_id != ?', [server_id])
 
             return 'Deleted duplicate libraries from the database.'
         except Exception as e:
-            logger.warn("Tautulli Libraries :: Unable to delete duplicate libraries: %s." % e)
+            logger.warn("RetroArcher Libraries :: Unable to delete duplicate libraries: %s." % e)

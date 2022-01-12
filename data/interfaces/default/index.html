@@ -28,9 +28,9 @@
                 % elif config['pms_is_cloud']:
                 <div id="dashboard-no-activity" class="text-muted">Plex Cloud server is sleeping.</div>
                 % elif not config['first_run_complete']:
-                <div id="dashboard-no-activity" class="text-muted">The Tautulli setup wizard has not been completed. Please click <a href="welcome">here</a> to go to the setup wizard.</div>
+                <div id="dashboard-no-activity" class="text-muted">The RetroArcher setup wizard has not been completed. Please click <a href="welcome">here</a> to go to the setup wizard.</div>
                 % else:
-                <div class="text-muted" id="dashboard-checking-activity"><i class="fa fa-refresh fa-spin"></i>&nbsp; Tautulli is connecting to the Plex server...</div>
+                <div class="text-muted" id="dashboard-checking-activity"><i class="fa fa-refresh fa-spin"></i>&nbsp; RetroArcher is connecting to the Plex server...</div>
                 % endif
             </div>
         </div>
@@ -39,7 +39,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="home-padded-header padded-header">
-                <h3 class="pull-left">Watch Statistics</h3>
+                <h3 class="pull-left">Play Statistics</h3>
                 <div class="button-bar">
                     <div class="btn-group pull-left" data-toggle="buttons" id="watch-stats-toggles" style="margin-right: 3px">
                         <label class="btn btn-dark">
@@ -103,18 +103,15 @@
                         <label class="btn btn-dark" id="recently-added-label-all">
                             <input type="radio" name="recently-added-toggle" id="recently-added-toggle-all" value="all" autocomplete="off"> All
                         </label>
-                        <label class="btn btn-dark" id="recently-added-label-movies">
-                            <input type="radio" name="recently-added-toggle" id="recently-added-toggle-movie" value="movie" autocomplete="off"> Movies
+                        <% import plexpy %>
+                        <% from plexpy import libraries %>
+                        % for library in libraries.Libraries().get_sections():
+                        % if str(library['section_id']) in plexpy.CONFIG.HOME_LIBRARY_CARDS:
+                        <label class="btn btn-dark" id="recently-added-label-${library['section_id']}">
+                            <input type="radio" name="recently-added-toggle" id="recently-added-toggle-${library['section_id']}" value="${library['section_id']}" autocomplete="off"> ${library['section_name']}
                         </label>
-                        <label class="btn btn-dark" id="recently-added-label-tv">
-                            <input type="radio" name="recently-added-toggle" id="recently-added-toggle-show" value="show" autocomplete="off"> TV Shows
-                        </label>
-                        <label class="btn btn-dark" id="recently-added-label-music">
-                            <input type="radio" name="recently-added-toggle" id="recently-added-toggle-artist" value="artist" autocomplete="off"> Music
-                        </label>
-                        <label class="btn btn-dark" id="recently-added-label-other_video">
-                            <input type="radio" name="recently-added-toggle" id="recently-added-toggle-other_video" value="other_video" autocomplete="off"> Videos
-                        </label>
+                        % endif
+                        % endfor
                     </div>
                     <div class="input-group pull-left" style="width: 1px;" id="recently-added-count-selection">
                         <input type="number" class="form-control number-input" name="recently-added-count" id="recently-added-count" value="50" min="1" max="50" data-default="50" data-toggle="tooltip" title="Min: 1 item<br>Max: 50 items" />
@@ -132,7 +129,7 @@
                 % elif config['pms_is_cloud']:
                 <div class="text-muted">Plex Cloud server is sleeping.</div>
                 % else:
-                <div id="dashboard-no-recently-added" class="text-muted"><i class="fa fa-refresh fa-spin"></i>&nbsp; Tautulli is connecting to your Plex server...</div>
+                <div id="dashboard-no-recently-added" class="text-muted"><i class="fa fa-refresh fa-spin"></i>&nbsp; RetroArcher is connecting to your Plex server...</div>
                 % endif
             </div>
         </div>
@@ -151,7 +148,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-remove"></i></button>
-                <h4 class="modal-title">Tautulli Updated to <strong>${RELEASE}</strong></h4>
+                <h4 class="modal-title">RetroArcher Updated to <strong>${RELEASE}</strong></h4>
             </div>
             <div class="modal-body">
             </div>
@@ -221,12 +218,8 @@
                 <h4 class="modal-title">Unable to Update</h4>
             </div>
             <div class="modal-body" style="text-align: center;">
-                <p>Tautulli is still running using Python 2 and cannot be updated past v2.6.3.</p>
-                <p>Python 3 is required to continue receiving updates.</p>
-                <p>
-                    <strong>Please see the <a href="${anon_url('https://github.com/Tautulli/Tautulli/wiki/Upgrading-to-Python-3-%28Tautulli-v2.5%29')}" target="_blank" rel="noreferrer">wiki</a>
-                    for instructions on how to upgrade to Python 3.</strong>
-                </p>
+                <p>Host is running Python 2.</p>
+                <p>RetroArcher requires Python 3 to function properly.</p>
             </div>
             <div class="modal-footer">
                 <input type="button" class="btn btn-bright" data-dismiss="modal" value="Close">
@@ -874,7 +867,7 @@
 % if 'watch_stats' in config['home_sections']:
 <script>
     function getHomeStats(time_range, stats_type) {
-        showMsg("Loading watch statistics...", true, false, 0);
+        showMsg("Loading play statistics...", true, false, 0);
 
         $.ajax({
             url: 'home_stats',
@@ -938,7 +931,7 @@
 % endif
 % if 'recently_added' in config['home_sections']:
 <script>
-    function recentlyAdded(recently_added_count, recently_added_type) {
+    function recentlyAdded(recently_added_count, recently_added_library) {
         showMsg("Loading recently added items...", true, false, 0);
 
         $.ajax({
@@ -947,7 +940,7 @@
             async: true,
             data: {
                 count: recently_added_count,
-                media_type: recently_added_type
+                section_id: recently_added_library
             },
             complete: function (xhr, status) {
                 $("#recentlyAdded").html(xhr.responseText);
@@ -958,14 +951,14 @@
     }
 
     var recently_added_count = getLocalStorage('home_stats_recently_added_count', 50);
-    var recently_added_type = getLocalStorage('home_stats_recently_added_type', 'all');;
+    var recently_added_library = getLocalStorage('home_stats_recently_added_library', 'all');;
 
-    $('#recently-added-toggle-' + recently_added_type).prop('checked', true);
-    $('#recently-added-toggle-' + recently_added_type).closest('label').addClass('active');
+    $('#recently-added-toggle-' + recently_added_library).prop('checked', true);
+    $('#recently-added-toggle-' + recently_added_library).closest('label').addClass('active');
     $('#recently-added-count').val(recently_added_count);
 
     function recentlyAddedConnected() {
-        recentlyAdded(recently_added_count, recently_added_type);
+        recentlyAdded(recently_added_count, recently_added_library);
     }
 
     function highlightAddedScrollerButton() {
@@ -1017,10 +1010,10 @@
         $('#recently-added-toggles > label').removeClass('active');
         selected_filter = $('input[name=recently-added-toggle]:checked', '#recently-added-toggles');
         $(selected_filter).closest('label').addClass('active');
-        recently_added_type = $(selected_filter).val();
+        recently_added_library = $(selected_filter).val();
         resetScroller();
-        setLocalStorage('home_stats_recently_added_type', recently_added_type);
-        recentlyAdded(recently_added_count, recently_added_type);
+        setLocalStorage('home_stats_recently_added_library', recently_added_library);
+        recentlyAdded(recently_added_count, recently_added_library);
     });
 
     $('#recently-added-count').change(function () {
@@ -1028,7 +1021,7 @@
         recently_added_count = $(this).val();
         resetScroller();
         setLocalStorage('home_stats_recently_added_count', recently_added_count);
-        recentlyAdded(recently_added_count, recently_added_type);
+        recentlyAdded(recently_added_count, recently_added_library);
     });
 
     $('#recently-added-count').tooltip({ container: 'body', placement: 'top', html: true });

@@ -9,7 +9,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Tautulli - ${title} | ${server_name}</title>
+    <title>RetroArcher - ${title} | ${server_name}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -17,10 +17,10 @@
     <link href="${http_root}css/pnotify.custom.min.css" rel="stylesheet" />
     <link href="${http_root}css/selectize.bootstrap3.css" rel="stylesheet" />
     <link href="${http_root}css/selectize.min.css" rel="stylesheet" />
-    <link href="${http_root}css/tautulli.css${cache_param}" rel="stylesheet">
+    <link href="${http_root}css/retroarcher.css${cache_param}" rel="stylesheet">
     <link href="${http_root}css/opensans.min.css" rel="stylesheet">
-    <link href="${http_root}css/font-awesome.all.min.css" rel="stylesheet">
-    <link href="${http_root}css/font-awesome.v4-shims.min.css" rel="stylesheet">
+    <link href="${http_root}fonts/fontawesome-free-web/css/all.min.css" rel="stylesheet">
+    <link href="${http_root}fonts/fontawesome-free-web/css/v4-shims.min.css" rel="stylesheet">
     ${next.headIncludes()}
 
     <!-- Favicons -->
@@ -35,9 +35,9 @@
     <!-- Apple -->
     <link rel="apple-touch-icon" sizes="180x180" href="${http_root}images/favicon/apple-touch-icon.png?v=2.6.0">
     <link rel="mask-icon" href="${http_root}images/favicon/safari-pinned-tab.svg?v=2.6.0" color="#282a2d">
-    <meta name="apple-mobile-web-app-title" content="Tautulli">
+    <meta name="apple-mobile-web-app-title" content="RetroArcher">
     <!-- Microsoft -->
-    <meta name="application-name" content="Tautulli">
+    <meta name="application-name" content="RetroArcher">
     <meta name="msapplication-config" content="${http_root}images/favicon/browserconfig.xml?v=2.6.0">
 </head>
 
@@ -48,13 +48,13 @@
     % if plexpy.CONFIG.CHECK_GITHUB and plexpy.UPDATE_AVAILABLE is not False:
     <div id="updatebar" style="display: none;">
         % if plexpy.UPDATE_AVAILABLE is None:
-        You are running an unknown version of Tautulli.<br />
+        You are running an unknown version of RetroArcher.<br />
         % elif plexpy.UPDATE_AVAILABLE == 'release':
         A <a href="${anon_url('https://github.com/%s/%s/releases/tag/%s' % (plexpy.CONFIG.GIT_USER, plexpy.CONFIG.GIT_REPO, plexpy.LATEST_RELEASE))}" target="_blank" rel="noreferrer">
-        new release (${plexpy.LATEST_RELEASE})</a> of Tautulli is available!<br />
+        new release (${plexpy.LATEST_RELEASE})</a> of RetroArcher is available!<br />
         % elif plexpy.UPDATE_AVAILABLE == 'commit':
         A <a href="${anon_url('https://github.com/%s/%s/compare/%s...%s' % (plexpy.CONFIG.GIT_USER, plexpy.CONFIG.GIT_REPO, plexpy.CURRENT_VERSION, plexpy.LATEST_VERSION))}" target="_blank" rel="noreferrer">
-        newer version</a> of Tautulli is available!<br />
+        newer version</a> of RetroArcher is available!<br />
         You are ${plexpy.COMMITS_BEHIND} commit${'s' if plexpy.COMMITS_BEHIND > 1 else ''} behind.<br />
         % endif
         % if plexpy.INSTALL_TYPE == 'docker':
@@ -64,7 +64,7 @@
         % elif plexpy.INSTALL_TYPE in ('windows', 'macos'):
         <a href="${anon_url('https://github.com/%s/%s/releases/tag/%s' % (plexpy.CONFIG.GIT_USER, plexpy.CONFIG.GIT_REPO, plexpy.LATEST_RELEASE))}" target="_blank" rel="noreferrer">Download</a> and install the latest version or <a href="#" id="updateDismiss">Dismiss</a>
         % else:
-        <a href="update">Update</a> or <a href="#" id="updateDismiss">Dismiss</a>
+        <a href="${http_root}update">Update</a> or <a href="#" id="updateDismiss">Dismiss</a>
         % endif
     </div>
     % else:
@@ -80,8 +80,8 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="home" title="Tautulli">
-                    <img src="${http_root}images/logo-tautulli-45.png" height="45" alt="Tautulli">
+                <a class="navbar-brand" href="${http_root}home" title="RetroArcher">
+                    <img src="${http_root}images/logo-retroarcher-45.png" height="45" alt="RetroArcher">
                 </a>
             </div>
             <div class="collapse navbar-collapse navbar-right" id="navbar-collapse-1">
@@ -99,57 +99,75 @@
                         </form>
                     </li>
                     % if title == "Home":
-                    <li class="active"><a href="home"><i class="fa fa-lg fa-home"></i></a></li>
+                    <li class="active"><a href="${http_root}home"><i class="fa fa-lg fa-home"></i></a></li>
                     % else:
-                    <li><a href="home"><i class="fa fa-lg fa-home"></i></a></li>
+                    <li><a href="${http_root}home"><i class="fa fa-lg fa-home"></i></a></li>
                     % endif
                     % if title == "Libraries" or title == "Library" or title == "Info":
-                    <li class="active"><a href="libraries">Libraries</a></li>
+                    <li class="active"><a href="${http_root}libraries"><i class="fas fa-fw fa-gamepad"></i> Libraries</a></li>
                     % else:
-                    <li><a href="libraries">Libraries</a></li>
+                    <li><a href="${http_root}libraries"><i class="fas fa-fw fa-gamepad"></i> Libraries</a></li>
                     % endif
                     % if title == "Users" or title == "User":
-                    <li class="active"><a href="users">Users</a></li>
+                    <li class="active"><a href="${http_root}users"><i class="fas fa-fw fa-users"></i> Users</a></li>
                     % else:
-                    <li><a href="users">Users</a></li>
+                    <li><a href="${http_root}users"><i class="fas fa-fw fa-users"></i> Users</a></li>
                     % endif
                     % if title == "History":
-                    <li class="active"><a href="history">History</a></li>
+                    <li class="active"><a href="${http_root}history"><i class="fas fa-fw fa-history"></i> History</a></li>
                     % else:
-                    <li><a href="history">History</a></li>
+                    <li><a href="${http_root}history"><i class="fas fa-fw fa-history"></i> History</a></li>
                     % endif
                     % if title == "Graphs":
-                    <li class="active"><a href="graphs">Graphs</a></li>
+                    <li class="active"><a href="${http_root}graphs"><i class="fas fa-fw fa-chart-area"></i> Graphs</a></li>
                     % else:
-                    <li><a href="graphs">Graphs</a></li>
+                    <li><a href="${http_root}graphs"><i class="fas fa-fw fa-chart-area"></i> Graphs</a></li>
                     % endif
-                    % if title == "Synced Items":
-                    <li class="active"><a href="sync">Synced Items</a></li>
+                    % if title == "Plugins":
+                    <li class="active"><a href="${http_root}plugins"><i class="fas fa-fw fa-project-diagram"></i> Plugins</a></li>
                     % else:
-                    <li><a href="sync">Synced Items</a></li>
+                    <li><a href="${http_root}plugins"><i class="fas fa-fw fa-project-diagram"></i> Plugins</a></li>
                     % endif
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown" data-href="#"><i class="fa fa-fw fa-donate"></i> Donate<span class="caret"></span></a>
+                        <ul class="dropdown-menu" id="donate-dropdown-menu">
+                            <li><a href="${anon_url('https://github.com/sponsors/ReenigneArcher')}" target="_blank" rel="noreferrer"><i class="fa fa-fw fa-github-alt"></i> Github</a></li>
+                            <li><a href="${anon_url('https://www.patreon.com/join/retroarcher')}" target="_blank" rel="noreferrer"><i class="fab fa-fw fa-patreon"></i> Patreon</a></li>
+                            <li><a href="${anon_url('https://paypal.me/ReenigneArcher')}" target="_blank" rel="noreferrer"><i class="fa fa-fw fa-paypal"></i> PayPal</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown" data-href="#"><i class="fa fa-fw fa-comment"></i> Social<span class="caret"></span></a>
+                        <ul class="dropdown-menu" id="social-dropdown-menu">
+                            <li><a href="${anon_url('https://www.facebook.com/RetroArcherFB')}" target="_blank" rel="noreferrer"><i class="fab fa-fw fa-facebook"></i> Facebook</a></li>
+                            <li><a href="${anon_url('https://twitter.com/RetroArcherTW')}" target="_blank" rel="noreferrer"><i class="fa fa-fw fa-twitter"></i> Twitter</a></li>
+                            <li><a href="${anon_url('https://www.youtube.com/channel/UCtSzs1U8B7yYX1uE58a6BxA')}" target="_blank" rel="noreferrer"><i class="fab fa-fw fa-youtube"></i> YouTube</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="${anon_url('https://retroarcher.github.io/discord_join')}" target="_blank" rel="noreferrer"><i class="fab fa-fw fa-discord"></i> Discord</a></li>
+                            <li><a href="${anon_url('https://www.facebook.com/groups/retroracher')}" target="_blank" rel="noreferrer"><i class="fab fa-fw fa-facebook-f"></i> Facebook Group</a></li>
+                            <li><a href="${anon_url('https://reddit.com/r/RetroArcher')}" target="_blank" rel="noreferrer"><i class="fa fa-fw fa-reddit-alien"></i> Reddit</a></li>
+                        </ul>
+                    </li>
                     % if title == "Settings":
                     <li class="dropdown active">
                     % else:
                     <li class="dropdown">
                     % endif
-                        <% href = 'settings' if _session['user_group'] == 'admin' else '#' %>
-                        <a href="#" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown" data-href="${href}"><i class="fa fa-lg fa-cogs"></i> <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown" data-href="#"><i class="fa fa-lg fa-user-circle"></i> <span class="caret"></span></a>
                         <ul class="dropdown-menu" id="settings-dropdown-menu">
                             % if _session['user_group'] == 'admin':
-                            <li><a href="settings"><i class="fa fa-fw fa-cogs"></i> Settings</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="logs"><i class="fa fa-fw fa-list-alt"></i> View Logs</a></li>
-                            <li><a href="${anon_url('https://github.com/%s/%s/wiki/Frequently-Asked-Questions' % (plexpy.CONFIG.GIT_USER, plexpy.CONFIG.GIT_REPO))}" target="_blank" rel="noreferrer"><i class="fa fa-fw fa-question-circle"></i> FAQ</a></li>
-                            <li><a href="support"><i class="fa fa-fw fa-comment"></i> Support</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#" data-target="#donate-modal" data-toggle="modal"><i class="fa fa-fw fa-heart"></i> Donate</a></li>
-                            <li role="separator" class="divider"></li>
                             % if plexpy.CONFIG.CHECK_GITHUB:
-                            <li><a href="#" id="nav-update"><i class="fa fa-fw fa-arrow-alt-circle-up"></i> Check for Updates</a></li>
+                            <li><a href="#" id="nav-update"><i class="fas fa-fw fa-chevron-circle-up"></i> Check for Updates</a></li>
                             % endif
-                            <li><a href="#" id="nav-restart"><i class="fa fa-fw fa-refresh"></i> Restart</a></li>
-                            <li><a href="#" id="nav-shutdown"><i class="fa fa-fw fa-power-off"></i> Shutdown</a></li>
+                            <li><a href="${http_root}settings"><i class="fa fa-fw fa-cog"></i> Settings</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="${anon_url('https://github.com/%s/%s/wiki/Frequently-Asked-Questions' % (plexpy.CONFIG.GIT_USER, plexpy.CONFIG.GIT_REPO))}" target="_blank" rel="noreferrer"><i class="fa fa-fw fa-question-circle"></i> FAQ</a></li>
+                            <li><a href="${http_root}logs"><i class="fa fa-fw fa-list-alt"></i> Logs</a></li>
+                            <li><a href="${http_root}support"><i class="fa fa-fw fa-exclamation-triangle"></i> Support</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#" id="nav-restart"><i class="fa fa-fw fa-redo fa-flip-horizontal"></i> Restart</a></li>
+                            <li><a href="#" id="nav-shutdown"><i class="fa fa-fw fa-times"></i> Quit</a></li>
+                            <li role="separator" class="divider"></li>
                             % else:
                             <li><a href="#" data-target="#admin-login-modal" data-toggle="modal"><i class="fa fa-fw fa-lock"></i> Admin Login</a></li>
                             <li role="separator" class="divider"></li>
@@ -214,72 +232,6 @@ ${next.modalIncludes()}
         </div>
     </div>
 </div>
-% else:
-<div id="donate-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="donate-modal">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-remove"></i></button>
-                <h4 class="modal-title">Tautulli Donation</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12" style="text-align: center;">
-                        <h4>
-                            <strong>Thank you for supporting Tautulli!</strong>
-                        </h4>
-                        <p>
-                            Please select a donation method.
-                        </p>
-                    </div>
-                </div>
-                <ul id="donation_type" class="nav nav-pills" role="tablist" style="display: flex; justify-content: center; margin: 10px 0;">
-                    <li class="active"><a href="#github-donation" role="tab" data-toggle="tab">GitHub</a></li>
-                    <li><a href="#patreon-donation" role="tab" data-toggle="tab">Patreon</a></li>
-                    <li><a href="#paypal-donation" role="tab" data-toggle="tab">PayPal</a></li>
-                    <li><a href="#crypto-donation" role="tab" data-toggle="tab">Crypto</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="github-donation" style="text-align: center">
-                        <p>
-                            Click the button below to continue to GitHub.
-                        </p>
-                        <a href="${anon_url('https://github.com/sponsors/JonnyWong16')}" target="_blank" rel="noreferrer" class="btn btn-sm btn-default" style="font-weight: 600;">
-                            <i class="fa fa-heart fa-sm" style="color: #ea4aaa;"></i>&nbsp; Sponsor
-                        </a>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="patreon-donation" style="text-align: center">
-                        <p>
-                            Click the button below to continue to Patreon.
-                        </p>
-                        <a href="${anon_url('https://www.patreon.com/join/tautulli')}" target="_blank" rel="noreferrer">
-                            <img src="images/become_a_patron_button.png" alt="Become a Patron" width="170" height="40">
-                        </a>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="paypal-donation" style="text-align: center">
-                        <p>
-                            Click the button below to continue to PayPal.
-                        </p>
-                        <a href="${anon_url('https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6XPPKTDSX9QFL&lc=US&item_name=Tautulli&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted')}" target="_blank" rel="noreferrer">
-                            <img src="images/gold-rect-paypal-34px.png" alt="PayPal">
-                        </a>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="crypto-donation" style="text-align: center">
-                        <p>
-                            Click the button below to continue to Coinbase.
-                        </p>
-                        <a href="https://blankrefer.com/?https://commerce.coinbase.com/checkout/8a9fa08c-8a38-409e-9220-868124c4ba0c" target="_blank" rel="noreferrer" class="donate-with-crypto">
-                            <span>Donate with Crypto</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <input type="button" class="btn btn-bright" data-dismiss="modal" value="Close">
-            </div>
-        </div>
-    </div>
-</div>
 % endif
 
 <div id="confirm-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirm-modal">
@@ -294,7 +246,7 @@ ${next.modalIncludes()}
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-dark" data-dismiss="modal" id="cancel-button">Cancel</button>
                 <button type="button" class="btn btn-danger btn-ok" data-dismiss="modal" id="confirm-button">Confirm</button>
             </div>
         </div>
@@ -340,11 +292,11 @@ ${next.modalIncludes()}
                     showMsg('<i class="fa fa-check"></i> ' + result.message, false, true, 2000);
                 } else {
                     if (result.update === null) {
-                        msg = 'You are running an unknown version of Tautulli.<br />';
+                        msg = 'You are running an unknown version of RetroArcher.<br />';
                     } else if (result.update === true && result.release === true) {
-                        msg = 'A <a href="' + result.release_url + '" target="_blank" rel="noreferrer">new release (' + result.latest_release + ')</a> of Tautulli is available!<br />';
+                        msg = 'A <a href="' + result.release_url + '" target="_blank" rel="noreferrer">new release (' + result.latest_release + ')</a> of RetroArcher is available!<br />';
                     } else if (result.update === true && result.release === false) {
-                        msg = 'A <a href="' + result.compare_url + '" target="_blank" rel="noreferrer">newer version</a> of Tautulli is available!<br />' +
+                        msg = 'A <a href="' + result.compare_url + '" target="_blank" rel="noreferrer">newer version</a> of RetroArcher is available!<br />' +
                             'You are '+ result.commits_behind + ' commit' + (result.commits_behind > 1 ? 's' : '') + ' behind.<br />';
                     }
                     if (result.install_type === 'docker') {
@@ -354,7 +306,7 @@ ${next.modalIncludes()}
                     } else if (result.install_type === 'windows' || result.install_type === 'macos') {
                         msg += '<a href="' + result.release_url + '" target="_blank" rel="noreferrer">Download</a> and install the latest version or <a href="#" id="updateDismiss">Dismiss</a>'
                     } else {
-                        msg += '<a href="update">Update</a> or <a href="#" id="updateDismiss">Dismiss</a>';
+                        msg += '<a href="${http_root}update">Update</a> or <a href="#" id="updateDismiss">Dismiss</a>';
                     }
                     $('#updatebar').html(msg).fadeIn();
                 }
@@ -367,7 +319,7 @@ ${next.modalIncludes()}
     }
 
     $("#nav-shutdown").click(function() {
-        $("#confirm-message").text("Are you sure you want to shutdown Tautulli?");
+        $("#confirm-message").text("Are you sure you want to quit RetroArcher?");
         $('#confirm-modal').modal();
         $('#confirm-modal').one('click', '#confirm-button', function () {
             window.location.href = "shutdown";
@@ -375,7 +327,7 @@ ${next.modalIncludes()}
     });
 
     $("#nav-restart").click(function() {
-        $("#confirm-message").text("Are you sure you want to restart Tautulli?");
+        $("#confirm-message").text("Are you sure you want to restart RetroArcher?");
         $('#confirm-modal').modal();
         $('#confirm-modal').one('click', '#confirm-button', function () {
             window.location.href = "restart";
@@ -383,8 +335,8 @@ ${next.modalIncludes()}
     });
 
     $('#nav-update').click(function () {
-        $(this).html('<i class="fa fa-fw fa-spin fa-refresh"></i> Checking');
-        checkUpdate(function () { $('#nav-update').html('<i class="fa fa-fw fa-arrow-alt-circle-up"></i> Check for Updates'); });
+        $(this).html('<i class="fa fa-fw fa-spin fa-spinner"></i> Checking');
+        checkUpdate(function () { $('#nav-update').html('<i class="fa fa-fw fa-chevron-circle-up"></i> Check for Updates'); });
     });
 
     % endif
@@ -453,7 +405,7 @@ ${next.modalIncludes()}
 
     $('#login-form').submit(function(event) {
         event.preventDefault();
-        $('#sign-in').prop('disabled', true).html('<i class="fa fa-refresh fa-spin"></i>&nbsp; Sign In');
+        $('#sign-in').prop('disabled', true).html('<i class="fa fa-spin fa-spinner"></i>&nbsp; Sign In');
         $.ajax({
             url: '${http_root}auth/signin',
             type: 'POST',

@@ -12,6 +12,12 @@
 
     available_notification_agents = sorted(notifiers.available_notification_agents(), key=lambda k: k['label'].lower())
     available_newsletter_agents = sorted(newsletters.available_newsletter_agents(), key=lambda k: k['label'].lower())
+
+    audio_device_dict = plexpy.devices.get_sound_devices()
+    monitor_device_dict = plexpy.devices.get_monitor_devices()
+    vaapi_device_dict = plexpy.devices.get_vaapi_devices()
+    display_resolution_list = plexpy.devices.get_display_resolutions()
+    fps_mode_list = plexpy.devices.get_fps_modes()
 %>
 <%def name="headIncludes()">
 </%def>
@@ -37,7 +43,7 @@
                     <button id="menu_link_update_check" class="btn btn-dark"><i class="fa fa-arrow-alt-circle-up"></i> Check for Updates</button>
                     % endif
                     <button id="menu_link_restart" class="btn btn-dark"><i class="fa fa-refresh"></i> Restart</button>
-                    <button id="menu_link_shutdown" class="btn btn-dark"><i class="fa fa-power-off"></i> Shutdown</button>
+                    <button id="menu_link_shutdown" class="btn btn-dark"><i class="fa fa-power-off"></i> Quit</button>
                 </div>
             </div>
         </div>
@@ -50,6 +56,9 @@
                 <li role="presentation"><a id="nav-tabs-general" href="#tabs-general" aria-controls="tabs-general" role="tab" data-toggle="tab">General</a></li>
                 <li role="presentation"><a id="nav-tabs-homepage" href="#tabs-homepage" aria-controls="tabs-homepage" role="tab" data-toggle="tab">Homepage</a></li>
                 <li role="presentation"><a id="nav-tabs-web_interface" href="#tabs-web_interface" aria-controls="tabs-web_interface" role="tab" data-toggle="tab">Web Interface</a></li>
+                <li role="presentation"><a id="nav-tabs-games" href="#tabs-games" aria-controls="tabs-games" role="tab" data-toggle="tab">Games</a></li>
+                <li role="presentation"><a id="nav-tabs-emulators" href="#tabs-emulators" aria-controls="tabs-emulators" role="tab" data-toggle="tab">Emulators</a></li>
+                <li role="presentation"><a id="nav-tabs-streaming" href="#tabs-streaming" aria-controls="tabs-streaming" role="tab" data-toggle="tab">Streaming</a></li>
                 <li role="presentation"><a id="nav-tabs-plex_media_server" href="#tabs-plex_media_server" aria-controls="tabs-plex_media_server" role="tab" data-toggle="tab">Plex Media Server</a></li>
                 <li role="presentation"><a id="nav-tabs-notifications" href="#tabs-notifications" aria-controls="tabs-notifications" role="tab" data-toggle="tab">Notifications & Newsletters</a></li>
                 <li role="presentation"><a id="nav-tabs-notification_agents" href="#tabs-notification_agents" aria-controls="tabs-notification_agents" role="tab" data-toggle="tab">Notification Agents</a></li>
@@ -70,21 +79,28 @@
                         </div>
                         % endif
                         <div class="padded-header">
-                            <h3>Tautulli News</h3>
+                            <h3>RetroArcher News</h3>
                         </div>
-                        <div id="tautulli-news">
+                        <div id="retroarcher-news">
                             <div class='text-muted'><i class="fa fa-refresh fa-spin"></i> Loading news...</div>
                             <br>
                         </div>
                         <div class="padded-header">
-                            <h3>Tautulli Configuration</h3>
+                            <h3>RetroArcher Configuration</h3>
                         </div>
                         <div id="plexpy-configuration-table">
                             <div class='text-muted'><i class="fa fa-refresh fa-spin"></i> Loading configuration table...</div>
                             <br>
                         </div>
                         <div class="padded-header">
-                            <h3>Tautulli Scheduled Tasks</h3>
+                            <h3>Third Party</h3>
+                        </div>
+                        <div id="plexpy-third_party-table">
+                            <div class='text-muted'><i class="fa fa-refresh fa-spin"></i> Loading third party table...</div>
+                            <br>
+                        </div>
+                        <div class="padded-header">
+                            <h3>RetroArcher Scheduled Tasks</h3>
                         </div>
                         <div id="plexpy-scheduler-table">
                             <div class='text-muted'><i class="fa fa-refresh fa-spin"></i> Loading scheduler table...</div>
@@ -138,7 +154,7 @@
                             <label>
                                 <input type="checkbox" id="get_file_sizes" name="get_file_sizes" value="1" ${config['get_file_sizes']}> Calculate Total File Sizes
                             </label>
-                            <p class="help-block">Enable if you want Tautulli to calculate the total file size for TV Shows/Seasons and Artists/Albums on the media info tables.</p>
+                            <p class="help-block">Enable if you want RetroArcher to calculate the total file size for TV Shows/Seasons and Artists/Albums on the media info tables.</p>
                         </div>
                         <div class="checkbox advanced-setting">
                             <label>
@@ -215,9 +231,9 @@
 
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="check_github" name="check_github" value="1" ${config['check_github']}> Check for Tautulli Updates
+                                <input type="checkbox" id="check_github" name="check_github" value="1" ${config['check_github']}> Check for RetroArcher Updates
                             </label>
-                            <p class="help-block">Enable to check for Tautulli updates.</p>
+                            <p class="help-block">Enable to check for RetroArcher updates.</p>
                         </div>
                         <div id="git_update_options">
                             <div class="form-group">
@@ -229,7 +245,7 @@
                                     <div id="check_github_interval_error" class="alert alert-danger settings-alert" role="alert"></div>
                                 </div>
                                 <p class="help-block">
-                                    The interval (in hours) Tautulli will check for a new update. Minimum 1, default 6.
+                                    The interval (in hours) RetroArcher will check for a new update. Minimum 1, default 6.
                                 </p>
                             </div>
                             % if not plexpy.SNAP and not plexpy.FROZEN:
@@ -237,19 +253,19 @@
                                 <label>
                                     <input type="checkbox" id="plexpy_auto_update" name="plexpy_auto_update" value="1" ${config['plexpy_auto_update']} ${docker_setting}> Update Automatically ${docker_msg | n}
                                 </label>
-                                <p class="help-block">Update Tautulli automatically if an update is available.</p>
+                                <p class="help-block">Update RetroArcher automatically if an update is available.</p>
                             </div>
                             % endif
                             <div class="checkbox advanced-setting">
                                 <label>
-                                    <input type="checkbox" name="notify_plexpy_update_repeat" id="notify_plexpy_update_repeat" value="1" ${config['notify_plexpy_update_repeat']}> Repeat Tautulli Update Notifications
+                                    <input type="checkbox" name="notify_plexpy_update_repeat" id="notify_plexpy_update_repeat" value="1" ${config['notify_plexpy_update_repeat']}> Repeat RetroArcher Update Notifications
                                 </label>
                                 <p class="help-block">
-                                    Enable to allow Tautulli to send repeat update notifications everytime it checks for updates.
-                                    Disable to only send one notifications for each Tautulli version.
+                                    Enable to allow RetroArcher to send repeat update notifications everytime it checks for updates.
+                                    Disable to only send one notifications for each RetroArcher version.
                                 </p>
                             </div>
-                            <div class="form-group advanced-setting">
+                            <div class="form-group">
                                 <label for="git_token">GitHub API Token</label>
                                 <div class="row">
                                     <div class="col-md-6">
@@ -261,7 +277,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                <p class="help-block">Optional: Use your own GitHub API token when checking for updates.
+                                <p class="help-block">
+                                    Required to have  RetroArcher create a gist automatically when you need support.<br>
+                                    The token will also be used when checking for updates.<br>
+                                    Visit <a href="${anon_url('https://github.com/settings/tokens')}" target="_blank" rel="noreferrer">github.com/settings/tokens</a> to create a token.<br>
+                                    The token requires the "gist" and "public_repo" scope.
+                                </p>
                             </div>
                         </div>
 
@@ -301,7 +322,7 @@
                         <div class="form-group advanced-setting">
                             <label>Repair Git Install</label>
                             <p class="help-block">
-                                Attempt to fix updating by resetting your Tautulli installation back to <strong>${common.RELEASE}</strong>.<br />
+                                Attempt to fix updating by resetting your RetroArcher installation back to <strong>${common.RELEASE}</strong>.<br />
                                 Note: This will not affect any saved history or settings.
                             </p>
                             <div class="row">
@@ -376,12 +397,12 @@
                         </div>
 
                         <div class="padded-header">
-                            <h3>Watch Statistics</h3>
+                            <h3>Play Statistics</h3>
                         </div>
 
                         <div class="form-group">
                             <p class="help-block">
-                                Select the cards to show in the watch statistics on the home page.
+                                Select the cards to show in the play statistics on the home page.
                                 Drag the items below to reorder your homepage content.
                             </p>
                             <div class="row">
@@ -390,43 +411,19 @@
                                         <li class="card card-sortable">
                                             <div class="card-handle"><i class="fa fa-bars"></i></div>
                                             <label>
-                                                <input type="checkbox" id="hscard-top_movies" name="hscard-top_movies" value="top_movies"> Most Watched Movie
+                                                <input type="checkbox" id="hscard-top_movies" name="hscard-top_movies" value="top_movies"> Most Played Game
                                             </label>
                                         </li>
                                         <li class="card card-sortable">
                                             <div class="card-handle"><i class="fa fa-bars"></i></div>
                                             <label>
-                                                <input type="checkbox" id="hscard-popular_movies" name="hscard-popular_movies" value="popular_movies"> Most Popular Movie
+                                                <input type="checkbox" id="hscard-popular_movies" name="hscard-popular_movies" value="popular_movies"> Most Popular Game
                                             </label>
                                         </li>
                                         <li class="card card-sortable">
                                             <div class="card-handle"><i class="fa fa-bars"></i></div>
                                             <label>
-                                                <input type="checkbox" id="hscard-top_tv" name="hscard-top_tv" value="top_tv"> Most Watched TV
-                                            </label>
-                                        </li>
-                                        <li class="card card-sortable">
-                                            <div class="card-handle"><i class="fa fa-bars"></i></div>
-                                            <label>
-                                                <input type="checkbox" id="hscard-popular_tv" name="hscard-popular_tv" value="popular_tv"> Most Popular TV
-                                            </label>
-                                        </li>
-                                        <li class="card card-sortable">
-                                            <div class="card-handle"><i class="fa fa-bars"></i></div>
-                                            <label>
-                                                <input type="checkbox" id="hscard-top_music" name="hscard-top_music" value="top_music"> Most Listened to Artist
-                                            </label>
-                                        </li>
-                                        <li class="card card-sortable">
-                                            <div class="card-handle"><i class="fa fa-bars"></i></div>
-                                            <label>
-                                                <input type="checkbox" id="hscard-popular_music" name="hscard-popular_music" value="popular_music"> Most Popular Artist
-                                            </label>
-                                        </li>
-                                        <li class="card card-sortable">
-                                            <div class="card-handle"><i class="fa fa-bars"></i></div>
-                                            <label>
-                                                <input type="checkbox" id="hscard-last_watched" name="hscard-last_watched" value="last_watched"> Last Watched
+                                                <input type="checkbox" id="hscard-last_watched" name="hscard-last_watched" value="last_watched"> Last Watched Game
                                             </label>
                                         </li>
                                         <li class="card card-sortable">
@@ -460,12 +457,12 @@
                         </div>
 
                         <div class="padded-header">
-                            <h3>Library Statistics</h3>
+                            <h3>Game Libraries</h3>
                         </div>
 
                         <div class="form-group">
                             <p class="help-block">
-                                Select the cards to show in the library statistics on the home page.
+                                Select the "movie" libraries which correspond to game libraries.
                                 Drag the items below to reorder your homepage content.
                             </p>
                             <div class="row">
@@ -501,20 +498,20 @@
                             <label>
                                 <input type="checkbox" class="http-settings" name="sys_tray_icon" id="sys_tray_icon" value="1" ${config['sys_tray_icon']} ${tray_disabled}> Enable ${tray[common.PLATFORM]} Icon ${tray_disabled_msg | n}
                             </label>
-                            <p class="help-block">Show Tautulli shortcut in the ${tray[common.PLATFORM].lower()}.</p>
+                            <p class="help-block">Show RetroArcher shortcut in the ${tray[common.PLATFORM].lower()}.</p>
                         </div>
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" name="launch_startup" id="launch_startup" value="1" ${config['launch_startup']}> Launch at System Startup
                             </label>
-                            <p class="help-block">Start Tautulli automatically after Login.</p>
+                            <p class="help-block">Start RetroArcher automatically after Login.</p>
                         </div>
                         % endif
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" name="launch_browser" id="launch_browser" value="1" ${config['launch_browser']}> Launch Browser on Startup
                             </label>
-                            <p class="help-block">Launch browser pointed to Tautulli on startup.</p>
+                            <p class="help-block">Launch browser pointed to RetroArcher on startup.</p>
                         </div>
                         <div class="form-group">
                             <label for="http_port">HTTP Port</label> ${docker_msg | n}
@@ -527,7 +524,7 @@
                             <p class="help-block">Port to bind web server to. Note that ports below 1024 may require root.</p>
                         </div>
                         <div class="form-group advanced-setting">
-                            <label for="http_base_url">Public Tautulli Domain</label>
+                            <label for="http_base_url">Public RetroArcher Domain</label>
                             <div class="row">
                                 <div class="col-md-8">
                                     <input type="text" class="form-control" id="http_base_url" name="http_base_url" value="${config['http_base_url']}" placeholder="http://mydomain.com" data-parsley-trigger="change" data-parsley-pattern="^https?:\/\/\S+$" data-parsley-errors-container="#http_base_url_error"  data-parsley-error-message="Invalid URL">
@@ -535,7 +532,7 @@
                                 <div id="http_base_url_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
                             <p class="help-block">
-                                Set your public Tautulli domain for self-hosted notification images and newsletters. (e.g. http://mydomain.com)
+                                Set your public RetroArcher domain for self-hosted notification images and newsletters. (e.g. http://mydomain.com)
                             </p>
                         </div>
                         <div class="form-group advanced-setting">
@@ -564,7 +561,7 @@
                                 <label>
                                     <input type="checkbox" class="http-settings" name="https_create_cert" id="https_create_cert" value="1" ${config['https_create_cert']} /> Create Self-signed Certificate
                                 </label>
-                                <p class="help-block">Check to have Tautulli create a self-signed SSL certificate. Uncheck if you want to use your own certificate.</p>
+                                <p class="help-block">Check to have RetroArcher create a self-signed SSL certificate. Uncheck if you want to use your own certificate.</p>
                             </div>
                             <div id="https_options_self-signed">
                                 <div class="form-group advanced-setting">
@@ -574,7 +571,7 @@
                                             <input type="text" class="form-control http-settings" id="https_domain" name="https_domain" value="${config['https_domain']}">
                                         </div>
                                     </div>
-                                    <p class="help-block">The domain names used to access Tautulli, separated by commas (,).</p>
+                                    <p class="help-block">The domain names used to access RetroArcher, separated by commas (,).</p>
                                 </div>
                                 <div class="form-group advanced-setting">
                                     <label for="https_ip">HTTPS IPs</label>
@@ -583,7 +580,7 @@
                                             <input type="text" class="form-control http-settings" id="https_ip" name="https_ip" value="${config['https_ip']}">
                                         </div>
                                     </div>
-                                    <p class="help-block">The IP addresses used to access Tautulli, separated by commas (,).</p>
+                                    <p class="help-block">The IP addresses used to access RetroArcher, separated by commas (,).</p>
                                 </div>
                             </div>
                             <div class="form-group advanced-setting">
@@ -688,14 +685,14 @@
                                 <input type="checkbox" class="auth-settings" name="http_plex_admin" id="http_plex_admin" value="1" ${config['http_plex_admin']} data-parsley-trigger="change"> Allow Plex Admin
                             </label>
                             <span id="allowPlexCheck" class="settings-warning"></span>
-                            <p class="help-block">Allow the Plex server admin to login as a Tautulli admin using their Plex.tv account.</p>
+                            <p class="help-block">Allow the Plex server admin to login as a RetroArcher admin using their Plex.tv account.</p>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="allow_guest_access" name="allow_guest_access" value="1" ${config['allow_guest_access']}> Allow Guest Access to Tautulli
+                                <input type="checkbox" id="allow_guest_access" name="allow_guest_access" value="1" ${config['allow_guest_access']}> Allow Guest Access to RetroArcher
                             </label>
                             <span id="allowGuestCheck" class="settings-warning"></span>
-                            <p class="help-block">Allow shared users to login to Tautulli using their Plex.tv account. Individual user access needs to be enabled from Users > Edit Mode.</p>
+                            <p class="help-block">Allow shared users to login to RetroArcher using their Plex.tv account. Individual user access needs to be enabled from Users > Edit Mode.</p>
                         </div>
 
                         <div class="padded-header">
@@ -706,7 +703,7 @@
                             <label>
                                 <input type="checkbox" id="api_enabled" name="api_enabled" value="1" ${config['api_enabled']}> Enable API
                             </label>
-                            <p class="help-block">Allow remote applications to interface with Tautulli.</p>
+                            <p class="help-block">Allow remote applications to interface with RetroArcher.</p>
                         </div>
                         <div id="apioptions">
                             <div class="form-group">
@@ -724,8 +721,627 @@
                                         </div>
                                     </div>
                                 </div>
-                                <p class="help-block">API key used to access the Tautulli API.</p>
+                                <p class="help-block">API key used to access the RetroArcher API.</p>
                             </div>
+                        </div>
+
+                        <p><input type="button" class="btn btn-bright save-button" value="Save" data-success="Changes saved successfully"></p>
+
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="tabs-games">
+
+                        <div class="padded-header">
+                            <h3>ROMS</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rom_dir">ROM Directory</label>
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="rom_dir" name="rom_dir" value="${config['rom_dir']}" size="30" data-parsley-trigger="change" data-parsley-pattern="^[^\~\%]" data-parsley-errors-container="#rom_dir_error"  data-parsley-error-message="Shortcuts are not recognized.">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-form" type="button" id="rom_dir_browse" data-toggle="browse" data-filter=".folderonly" data-target="#rom_dir">Browse</button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div id="rom_dir_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Required: Set your ROM directory. The ROM directory is required for RetroArcher to function properly.
+                                A complete folder path is required, shortcuts are not recognized, and the path must be accessible from the machine where RetroArcher is installed.
+                            </p>
+                        </div>
+                        
+                        <div class="padded-header">
+                            <h3>Platforms</h3>
+                        </div>
+                        
+                        <div class="padded-header">
+                            <h3>FFMPEG</h3>
+                        </div>
+                        
+                        <p><input type="button" class="btn btn-bright save-button" value="Save" data-success="Changes saved successfully"></p>
+
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="tabs-emulators">
+                    
+                        <div class="padded-header">
+                            <h3>RetroArch [Platform: Multiple]</h3>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="retroarch_nightly_assets_checkbox" class="checkbox-toggle emulator-settings" data-id="retroarch_nightly_assets" value="1" ${checked(config['retroarch_nightly_assets'])}> Update RetroArch assets daily
+                                <input type="hidden" id="retroarch_nightly_assets" name="retroarch_nightly_assets" value="${config['retroarch_nightly_assets']}">
+                            </label>
+                            <p class="help-block">
+                                Enable to update RetroArch assets on a daily schedule.
+                                Warning: This may cause significant internet data usage.
+                            </p>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="retroarch_strict_core_matching_checkbox" class="checkbox-toggle emulator-settings" data-id="retroarch_strict_core_matching" value="1" ${checked(config['retroarch_strict_core_matching'])}> Use strict core matching
+                                <input type="hidden" id="retroarch_strict_core_matching" name="retroarch_strict_core_matching" value="${config['retroarch_strict_core_matching']}">
+                            </label>
+                            <p class="help-block">
+                                Enable to force matching database and systemid from core info file.
+                                Disable to only use database. Fallback to systemid if database is not found in core info file.
+                            </p>
+                        </div>
+
+                        % if common.PLATFORM in ('Windows'):
+                        <div class="padded-header">
+                            <h3>Cemu [Platform: Nintendo Wii U]</h3>
+                        </div>
+                        % endif
+                        
+                        <div class="padded-header">
+                            <h3>RPCS3 [Platform: Sony PlayStation 3]</h3>
+                        </div>
+                        
+                        <p><input type="button" class="btn btn-bright save-button" value="Save" data-success="Changes saved successfully"></p>
+
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="tabs-streaming">
+
+                        <div class="padded-header">
+                            <h3>Network</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sunshine_moonlight_name">Moonlight Name</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control sunshine-settings" type="text" id="sunshine_moonlight_name" name="sunshine_moonlight_name" value="${config['sunshine_moonlight_name']}" size="30" data-parsley-trigger="change" data-parsley-errors-container="sunshine_moonlight_name" required>
+                                </div>
+                                <div id="sunshine_moonlight_name_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">Name that is advertised to Moonlight clients.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sunshine_external_ip_method">External IP Address detection method</label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <select class="form-control" id="sunshine_external_ip_method" name="sunshine_external_ip_method">
+                                        <option value="0" ${'selected' if config['sunshine_external_ip_method'] == 0 else ''}>manual input</option>
+                                        <option value="1" ${'selected' if config['sunshine_external_ip_method'] == 1 else ''}>https://api.ipify.org</option>
+                                        <option value="2" ${'selected' if config['sunshine_external_ip_method'] == 2 else ''}>https://ident.me</option>
+                                        <option value="3" ${'selected' if config['sunshine_external_ip_method'] == 3 else ''}>https://ipinfo.io/ip</option>
+                                        <option value="4" ${'selected' if config['sunshine_external_ip_method'] == 4 else ''}>https://ipv4bot.whatismyipaddress.com/</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help-block">Select method for detection of external IP address.</p>
+                        </div>
+
+                        <div id="manual_input_options" style="overflow: hidden; display: ${'none' if config['sunshine_external_ip_method'] != 0 else 'block'}">
+                            <div class="form-group">
+                                <label for="sunshine_external_ip">External IP Address</label>
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" id="sunshine_external_ip" name="sunshine_external_ip" value="${config['sunshine_external_ip']}" size="30" readonly>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    The server URL that Sunshine will use to setup remote game streaming. Note that RetroArcher cannot yet connect to remote clients.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_port">Sunshine Port</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_port" name="sunshine_port" value="${config['sunshine_port']}" size="30" data-parsley-range="[21,65535]" data-parsley-trigger="change" data-parsley-errors-container="sunshine_port_error" required>
+                                </div>
+                                <div id="sunshine_port_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Port that Sunshine is listening on.<br>
+                                Range 21-65535, default 47989.
+                            </p>
+                        </div>
+
+                        <div class="checkbox advanced-setting">
+                            <label>
+                                <input type="checkbox" id="sunshine_upnp_checkbox" class="checkbox-toggle sunshine-settings"data-id="sunshine_upnp" value="1" ${checked(config['sunshine_upnp'])}> Enable UPnP
+                                <input type="hidden" id="sunshine_upnp" name="sunshine_upnp" value="${config['sunshine_upnp']}">
+                            </label>
+                            <p class="help-block">
+                                Check this to have Sunshine automatically configure ports for remote streaming.<br>
+                                Note that RetroArcher cannot yet connect to remote clients.
+                            </p>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_ping_timeout">Ping Timeout</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_ping_timeout" name="sunshine_ping_timeout" value="${config['sunshine_ping_timeout']}" size="30" data-parsley-min="1" data-parsley-trigger="change" data-parsley-errors-container="sunshine_ping_timeout_error" required>
+                                </div>
+                                <div id="sunshine_ping_timeout_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                How long to wait in milliseconds for data from moonlight before shutting down the stream.<br>
+                                Minimum 1, default 10000.
+                            </p>
+                        </div>
+
+                        <div class="padded-header">
+                            <h3>Devices</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sunshine_audio_sink">Sound Device</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <select class="form-control" id="sunshine_audio_sink" name="sunshine_audio_sink">
+                                        % for key, device in audio_device_dict.items():
+                                        <option value="${device['id']}" ${'selected' if config['sunshine_audio_sink'] == device['id'] else ''}>${device['description']}</option>
+                                        % endfor
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help-block">Sound device to use when streaming. If selected device is not available at time of stream initialization, default device will be used.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sunshine_output_name">Output</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <select class="form-control" id="sunshine_output_name" name="sunshine_output_name">
+                                        % for key, device in monitor_device_dict.items():
+                                        <option value="${device['output_name']}" ${'selected' if config['sunshine_output_name'] == device['output_name'] else ''}>${device['monitor_name']} (${device['output_name']})</option>
+                                        % endfor
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help-block">Monitor to stream. If selected device is not available at time of stream initialization, default device will be used.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>FPS Modes Allowed</label>
+                            <p class="help-block">Checked FPS modes will be advertised to Moonlight clients.</p>
+
+                            % for fps in fps_mode_list:
+                            <div class="checkbox">
+                                <label>
+                                    <label>
+                                        <input type="checkbox" id=${fps} class="fps-checkbox-toggle sunshine-settings" data-id=${fps} value="1" ${plexpy.devices.get_checked_fps(fps)}> ${fps}
+                                    </label>
+                                </label>
+                            </div>
+                            % endfor
+                            <input type="hidden" id="sunshine_allowed_fps" name="sunshine_allowed_fps" value="${config['sunshine_allowed_fps']}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Display Resolutions Allowed</label>
+                            <p class="help-block">Checked display resolutions will be advertised to Moonlight clients.</p>
+
+                            % for resolution in display_resolution_list:
+                            <div class="checkbox">
+                                <label>
+                                    <label>
+                                        <input type="checkbox" id=${resolution} class="resolution-checkbox-toggle sunshine-settings" data-id=${resolution} value="1" ${plexpy.devices.get_checked_resolution(resolution)}> ${resolution}
+                                    </label>
+                                </label>
+                            </div>
+                            % endfor
+                            <input type="hidden" id="sunshine_allowed_resolutions" name="sunshine_allowed_resolutions" value="${config['sunshine_allowed_resolutions']}">
+                        </div>
+
+                        <div class="padded-header">
+                            <h3>Gamepad</h3>
+                        </div>
+
+                        % if common.PLATFORM in ('Windows'):
+                        <div class="form-group">
+                            <label for="sunshine_gamepad">Emulated Gamepad</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <select class="form-control" id="sunshine_gamepad" name="sunshine_gamepad">
+                                        <option value="x360" ${'selected' if config['sunshine_gamepad'] == 'x360' else ''}>Xbox 360</option>
+                                        <option value="ds4" ${'selected' if config['sunshine_gamepad'] == 'ds4' else ''}>Dualshock 4</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help-block">The controller type to emulate.</p>
+                        </div>
+                        % endif
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="sunshine_emulate_guide_button" name="sunshine_emulate_guide_button" value="1" ${checked(config['sunshine_emulate_guide_button'])}> Emulate Guide Button
+                            </label>
+                            <p class="help-block">Check this to emulate the Home/Guide button by holding the back/select button.</p>
+                        </div>
+                        <div id="sunshine_emulate_guide_button_options" style="overflow: hidden; display: ${'block' if config['sunshine_emulate_guide_button'] == 'checked' else 'none'}">
+                            <div class="form-group advanced-setting">
+                                <label for="sunshine_back_button_timeout">Back Button Timeout</label>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_back_button_timeout" name="sunshine_back_button_timeout" value="${config['sunshine_back_button_timeout']}" size="30" data-parsley-min="1" data-parsley-trigger="change" data-parsley-errors-container="sunshine_back_button_timeout_error" required>
+                                    </div>
+                                    <div id="sunshine_back_button_timeout_error" class="alert alert-danger settings-alert" role="alert"></div>
+                                </div>
+                                <p class="help-block">
+                                    Amount of time in milliseconds to hold back button before emulating Home/Guide button.<br>
+                                    Minimum 1, default 2000.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_key_repeat_delay">Key Repeat Delay</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_key_repeat_delay" name="sunshine_key_repeat_delay" value="${config['sunshine_key_repeat_delay']}" size="30" data-parsley-min="1" data-parsley-trigger="change" data-parsley-errors-container="sunshine_key_repeat_delay_error" required>
+                                </div>
+                                <div id="sunshine_key_repeat_delay_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                The initial delay in milliseconds before repeating keys.<br>
+                                Minimum 1, default 500.
+                            </p>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_key_repeat_frequency">Key Repeat Frequency</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_key_repeat_frequency" name="sunshine_key_repeat_frequency" value="${config['sunshine_key_repeat_frequency']}" size="30" data-parsley-min="1" data-parsley-trigger="change" data-parsley-errors-container="sunshine_key_repeat_frequency_error" required>
+                                </div>
+                                <div id="sunshine_key_repeat_frequency_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                How often keys repeat every second.<br>
+                                Minimum 1, default 25.
+                            </p>
+                        </div>
+
+                        <div class="padded-header">
+                            <h3>Encoding</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sunshine_ffmpeg_hevc_mode">HEVC Mode</label>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <select class="form-control" id="sunshine_ffmpeg_hevc_mode" name="sunshine_ffmpeg_hevc_mode">
+                                        <option value="0" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == '0' else ''}>Automatic Profile</option>
+                                        <option value="1" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == '1' else ''}>No HEVC Profile</option>
+                                        <option value="2" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == '2' else ''}>HEVC Main Profile</option>
+                                        <option value="3" ${'selected' if config['sunshine_ffmpeg_hevc_mode'] == '3' else ''}>HEVC Main and Main 10 (HDR) Profiles</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help-block">
+                                When an HEVC profile is enabled the client is able to request HEVC Main or HEVC Main10 video streams.<br>
+                                HEVC is more CPU-intensive to encode, so enabling this may reduce performance when using software encoding.
+                            </p>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_ffmpeg_encoder">Encoder</label>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <select class="form-control" id="sunshine_ffmpeg_encoder" name="sunshine_ffmpeg_encoder">
+                                        <option value="0" ${'selected' if config['sunshine_ffmpeg_encoder'] == '0' else ''}>Autodetect</option>
+                                        <option value="nvenc" ${'selected' if config['sunshine_ffmpeg_encoder'] == 'nvenc' else ''}>nVidia NVENC</option>
+                                        <option value="amdvce" ${'selected' if config['sunshine_ffmpeg_encoder'] == 'amdvce' else ''}>AMD AMF/VCE</option>
+                                        % if common.PLATFORM in ('Linux'):
+                                            <option value="vaapi" ${'selected' if config['sunshine_ffmpeg_encoder'] == 'vaapi' else ''}>VA-API</option>
+                                        % endif
+                                        <option value="software" ${'selected' if config['sunshine_ffmpeg_encoder'] == 'software' else ''}>Software</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help-block">Select the encoder to utilize.</p>
+                            <div id="ffmpeg_encoder_automatic" style="overflow: hidden; display: ${'none' if config['sunshine_ffmpeg_encoder'] != '0' else 'block'}">
+                                <div class="form-group">
+                                    <p class="help-block">
+                                        Sunshine will use the first encoder that is available.<br>
+                                        Select a specific encoder to change options related to that encoder.
+                                    </p>
+                                </div>
+                            </div>
+                            <div id="ffmpeg_encoder_nvenc" style="overflow: hidden; display: ${'none' if config['sunshine_ffmpeg_encoder'] != 'nvenc' else 'block'}">
+                                <div class="form-group">
+                                    <p class="help-block">Sunshine will use the nVidia encoder.</p>
+                                </div>
+                                <label for="sunshine_ffmpeg_encoder_nv_preset">NVENC Encoder Preset</label>
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_nv_preset" name="sunshine_ffmpeg_encoder_nv_preset">
+                                            <option value="ll" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'll' else ''}>low latency default</option>
+                                            <option value="llhp" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'llhp' else ''}>low latency high performance</option>
+                                            <option value="llhq" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'llhq' else ''}>low latency high quality</option>
+                                            <option value="hp" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'hp' else ''}>high performance default</option>
+                                            <option value="fast" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'fast' else ''}>high performance 1 pass</option>
+                                            <option value="hq" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'hq' else ''}>high quality default</option>
+                                            <option value="medium" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'medium' else ''}>high quality 1 pass</option>
+                                            <option value="slow" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'slow' else ''}>high quality 2 passes</option>
+                                            <option value="bd" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'bd' else ''}>Blu-ray compatible</option>
+                                            <option value="lossless" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'lossless' else ''}>lossless default</option>
+                                            <option value="losslesshp" ${'selected' if config['sunshine_ffmpeg_encoder_nv_preset'] == 'losslesshp' else ''}>lossless high performance</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    Preset to use when using NVENC encoding. Recommended using a low latency preset.<br>
+                                    Default: low latency high quality
+                                </p>
+                                <label for="sunshine_ffmpeg_encoder_nv_rate_control">NVENC Encoder Rate Control</label>
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_nv_rate_control" name="sunshine_ffmpeg_encoder_nv_rate_control">
+                                            <option value="auto" ${'selected' if config['sunshine_ffmpeg_encoder_nv_rate_control'] == 'auto' else ''}>automatic</option>
+                                            <option value="constqp" ${'selected' if config['sunshine_ffmpeg_encoder_nv_rate_control'] == 'constqp' else ''}>constant QP mode</option>
+                                            <option value="cbr" ${'selected' if config['sunshine_ffmpeg_encoder_nv_rate_control'] == 'cbr' else ''}>constant bitrate</option>
+                                            <option value="cbr_hq" ${'selected' if config['sunshine_ffmpeg_encoder_nv_rate_control'] == 'cbr_hq' else ''}>constant bitrate high quality</option>
+                                            <option value="cbr_ld_hq" ${'selected' if config['sunshine_ffmpeg_encoder_nv_rate_control'] == 'cbr_ld_hq' else ''}>constant bitrate low delay high quality</option>
+                                            <option value="vbr" ${'selected' if config['sunshine_ffmpeg_encoder_nv_rate_control'] == 'vbr' else ''}>variable bitrate</option>
+                                            <option value="vbr_hq" ${'selected' if config['sunshine_ffmpeg_encoder_nv_rate_control'] == 'vbr_hq' else ''}>variable bitrate high quality</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    The algorithm that ffmpeg will utilize for NVENC rate control.<br>
+                                    Default: automatic
+                                </p>
+                                <label for="sunshine_ffmpeg_encoder_nv_coder">NVENC Encoder Entropy Coding</label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_nv_coder" name="sunshine_ffmpeg_encoder_nv_coder">
+                                            <option value="auto" ${'selected' if config['sunshine_ffmpeg_encoder_nv_coder'] == 'auto' else ''}>automatic</option>
+                                            <option value="cabac" ${'selected' if config['sunshine_ffmpeg_encoder_nv_coder'] == 'cabac' else ''}>Context-adaptive binary arithmetic coding (CABAC)</option>
+                                            <option value="cavlc" ${'selected' if config['sunshine_ffmpeg_encoder_nv_coder'] == 'cavlc' else ''}>Contect-adaptive variable-length coding (CAVLC)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    The method that ffmpeg will utilize for NVENC H264 entropy coding.<br>
+                                    CABAC requires more processing power to decode, but compression is much better.<br>
+                                    CAVLC requires less processing power to decode, but does not compress the data as effectively.<br>
+                                    Default: automatic
+                                </p>
+                            </div>
+                            <div id="ffmpeg_encoder_amdvce" style="overflow: hidden; display: ${'none' if config['sunshine_ffmpeg_encoder'] != 'amdvce' else 'block'}">
+                                <div class="form-group">
+                                    <p class="help-block">Sunshine will use the AMD encoder. This encoder is in alpha stage and the cursor will not be displayed.</p>
+                                </div>
+                                <label for="sunshine_ffmpeg_encoder_amd_preset">AMD Encoder Preset</label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_amd_preset" name="sunshine_ffmpeg_encoder_amd_preset">
+                                            <option value="balanced" ${'selected' if config['sunshine_ffmpeg_encoder_amd_preset'] == 'balanced' else ''}>balanced</option>
+                                            <option value="speed" ${'selected' if config['sunshine_ffmpeg_encoder_amd_preset'] == 'speed' else ''}>speed</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    Preset to use when using AMD encoding.<br>
+                                    Default: balanced
+                                </p>
+                                <label for="sunshine_ffmpeg_encoder_amd_rate_control">AMD Encoder Rate Control</label>
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_amd_rate_control" name="sunshine_ffmpeg_encoder_amd_rate_control">
+                                            <option value="auto" ${'selected' if config['sunshine_ffmpeg_encoder_amd_rate_control'] == 'auto' else ''}>automatic</option>
+                                            <option value="constqp" ${'selected' if config['sunshine_ffmpeg_encoder_amd_rate_control'] == 'constqp' else ''}>constant QP mode</option>
+                                            <option value="cbr" ${'selected' if config['sunshine_ffmpeg_encoder_amd_rate_control'] == 'cbr' else ''}>constant bitrate</option>
+                                            <option value="vbr_latency" ${'selected' if config['sunshine_ffmpeg_encoder_amd_rate_control'] == 'vbr_latency' else ''}>variable bitrate latency constrained</option>
+                                            <option value="vbr_peak" ${'selected' if config['sunshine_ffmpeg_encoder_amd_rate_control'] == 'vbr_peak' else ''}>variable bitrate peak constrained</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    The algorithm that ffmpeg will utilize for AMD rate control.<br>
+                                    Default: automatic
+                                </p>
+                                <label for="sunshine_ffmpeg_encoder_amd_coder">AMD Encoder Entropy Coding</label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_amd_coder" name="sunshine_ffmpeg_encoder_amd_coder">
+                                            <option value="auto" ${'selected' if config['sunshine_ffmpeg_encoder_amd_coder'] == 'auto' else ''}>automatic</option>
+                                            <option value="cabac" ${'selected' if config['sunshine_ffmpeg_encoder_amd_coder'] == 'cabac' else ''}>Context-adaptive binary arithmetic coding (CABAC)</option>
+                                            <option value="cavlc" ${'selected' if config['sunshine_ffmpeg_encoder_amd_coder'] == 'cavlc' else ''}>Contect-adaptive variable-length coding (CAVLC)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    The method that ffmpeg will utilize for AMD H264 entropy coding.<br>
+                                    CABAC requires more processing power to decode, but compression is much better.<br>
+                                    CAVLC requires less processing power to decode, but does not compress the data as effectively.<br>
+                                    Default: automatic
+                                </p>
+                            </div>
+                            <div id="ffmpeg_encoder_vaapi" style="overflow: hidden; display: ${'none' if config['sunshine_ffmpeg_encoder'] != 'vaapi' else 'block'}">
+                                <div class="form-group">
+                                    <p class="help-block">Sunshine will use the VA-API encoder. This encoder is only available for Linux.</p>
+                                </div>
+
+                                % if vaapi_device_dict == False:
+                                <div id="install_vainfo_group" style="overflow: hidden; display: ${'none' if vaapi_device_dict != False else 'block'}">
+                                    <div class="form-group">
+                                        <label for="install_vainfo">Sudo Password</label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-form reveal-token" type="button"><i class="fa fa-eye-slash"></i></button>
+                                                    </span>
+                                                    <input type="password" class="form-control" name="install_vainfo" id="install_vainfo" value="" size="20">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-form" type="button" id="sudo_install_vainfo">Install VAINFO</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="help-block">
+                                            VAINFO is not installed. This is required in order to use VA-API.<br>
+                                            Enter Sudo password and click install to begin installation of VAINFO.<br>
+                                            RetroArcher will never save your Sudo password.
+                                        </p>
+                                    </div>
+                                </div>
+                                % else:
+                                % if vaapi_device_dict['error'] != None:
+                                <p class="help-block settings-warning vaapi_device_warning">
+                                    % for line in vaapi_device_dict['error'].splitlines():
+                                        ${line}<br>
+                                    % endfor
+                                </p>
+                                % else:
+                                <div class="form-group">
+                                    <label for="sunshine_vaapi_device">VA-API Adapter</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <select class="form-control" id="sunshine_vaapi_device" name="sunshine_vaapi_device">
+                                                % for key, device in vaapi_device_dict['devices'].items():
+                                                <option value="${device['output_name']}" ${'selected' if config['sunshine_vaapi_device'] == device['output_name'] else ''}>${device['description']} (${device['output_name']})</option>
+                                                % endfor
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <p class="help-block">Unlike with AMDVCE and NVENC, VA-API allows the video encoding to be done on a different GPU.</p>
+                                </div>
+                                % endif
+                                % endif
+                            </div>
+                            <div id="ffmpeg_encoder_software" style="overflow: hidden; display: ${'none' if config['sunshine_ffmpeg_encoder'] != 'software' else 'block'}">
+                                <div class="form-group">
+                                    <p class="help-block">Sunshine will use CPU encoding.</p>
+                                </div>
+                                <label for="sunshine_ffmpeg_encoder_sw_preset">Software Encoder Preset</label>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_sw_preset" name="sunshine_ffmpeg_encoder_sw_preset">
+                                            <option value="ultrafast" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'ultrafast' else ''}>ultrafast</option>
+                                            <option value="superfast" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'superfast' else ''}>superfast</option>
+                                            <option value="veryfast" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'veryfast' else ''}>veryfast</option>
+                                            <option value="faster" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'faster' else ''}>faster</option>
+                                            <option value="fast" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'fast' else ''}>fast</option>
+                                            <option value="medium" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'medium' else ''}>medium</option>
+                                            <option value="slow" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'slow' else ''}>slow</option>
+                                            <option value="slower" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'slower' else ''}>slower</option>
+                                            <option value="veryslow" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'veryslow' else ''}>veryslow</option>
+                                            <option value="placebo" ${'selected' if config['sunshine_ffmpeg_encoder_sw_preset'] == 'placebo' else ''}>placebo</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    Preset to use when using software encoding. Faster encoding results in less compression.<br>
+                                    Default: superfast
+                                </p>
+                                <label for="sunshine_ffmpeg_encoder_sw_tune">Software Encoder Tune</label>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <select class="form-control" id="sunshine_ffmpeg_encoder_sw_tune" name="sunshine_ffmpeg_encoder_sw_tune">
+                                            <option value="zerolatency" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'zerolatency' else ''}>zerolatency</option>
+                                            <option value="fastdecode" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'fastdecode' else ''}>fastdecode</option>
+                                            <option value="ssim" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'ssim' else ''}>ssim</option>
+                                            <option value="psnr" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'psnr' else ''}>psnr</option>
+                                            <option value="stillimage" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'stillimage' else ''}>stillimage</option>
+                                            <option value="grain" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'grain' else ''}>grain</option>
+                                            <option value="animation" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'animation' else ''}>animation</option>
+                                            <option value="film" ${'selected' if config['sunshine_ffmpeg_encoder_sw_tune'] == 'film' else ''}>film</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help-block">
+                                    Tune options to use when using software encoding. This further optimizes the preset options.<br>
+                                    Default: zerolatency
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_ffmpeg_quantitization_parameter">Quantitization Parameter</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_ffmpeg_quantitization_parameter" name="sunshine_ffmpeg_quantitization_parameter" value="${config['sunshine_ffmpeg_quantitization_parameter']}" size="30" data-parsley-min="1" data-parsley-trigger="change" data-parsley-errors-container="sunshine_ffmpeg_quantitization_parameter_error" required>
+                                </div>
+                                <div id="sunshine_ffmpeg_quantitization_parameter_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Some devices don't support Constant Bit Rate. For those devices, QP is used instead.<br>
+                                Higher value means more compression, but less quality.<br>
+                                Minimum 1, default 28.
+                            </p>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_error_correction_factor">Error Correction Factor</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_error_correction_factor" name="sunshine_error_correction_factor" value="${config['sunshine_error_correction_factor']}" size="30" data-parsley-range="[1,255]" data-parsley-trigger="change" data-parsley-errors-container="sunshine_error_correction_factor_error" required>
+                                </div>
+                                <div id="sunshine_error_correction_factor_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Percentage of error correcting packets per data packet in each video frame.<br>
+                                Higher values can correct for more network packet loss, but at the cost of increasing bandwidth usage.<br>
+                                Range 1-255, default 20.
+                            </p>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_ffmpeg_minimum_threads">Minimum Threads</label>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_ffmpeg_minimum_threads" name="sunshine_ffmpeg_minimum_threads" value="${config['sunshine_ffmpeg_minimum_threads']}" size="30" data-parsley-range="[1,${os.cpu_count()}]" data-parsley-trigger="change" data-parsley-errors-container="sunshine_ffmpeg_minimum_threads_error" required>
+                                </div>
+                                <div id="sunshine_ffmpeg_minimum_threads_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Minimum number of threads used by ffmpeg to encode the video. Increasing the value slightly reduces encoding efficiency, but the tradeoff is usually worth it to gain the use of more CPU cores for encoding. The ideal value is the lowest value that can reliably encode at your desired streaming settings on your hardware.<br>
+                                Range 1-${os.cpu_count()}, default 1.
+                            </p>
+                        </div>
+
+                        <div class="form-group advanced-setting">
+                            <label for="sunshine_multicasting_channels">Multicasting Channels</label>
+                            <div class="row">
+                                <div class="col-md-1">
+                                    <input data-parsley-type="integer" class="form-control sunshine-settings" type="text" id="sunshine_multicasting_channels" name="sunshine_multicasting_channels" value="${config['sunshine_multicasting_channels']}" size="30" data-parsley-range="[1,4]" data-parsley-trigger="change" data-parsley-errors-container="sunshine_multicasting_channels_error" required>
+                                </div>
+                                <div id="sunshine_multicasting_channels_error" class="alert alert-danger settings-alert" role="alert"></div>
+                            </div>
+                            <p class="help-block">
+                                Increase to have different configurations for each connected Client.<br>
+                                Unlike simply broadcasting to multiple Client, this will generate distinct video streams.<br>
+                                CPU usage increases for each distinct video stream generated.<br>
+                                Range 1-4, default 1.<br>
+                                !!!Beta, may be able to allow multiple users to connect to same gaming session. May be able to use Plex's "Watch Together" feature.
+                            </p>
                         </div>
 
                         <p><input type="button" class="btn btn-bright save-button" value="Save" data-success="Changes saved successfully"></p>
@@ -786,7 +1402,7 @@
                                 <input type="checkbox" id="pms_is_remote_checkbox" class="checkbox-toggle pms-settings" data-id="pms_is_remote" value="1" ${checked(config['pms_is_remote'])}> Remote Server
                                 <input type="hidden" id="pms_is_remote" name="pms_is_remote" value="${config['pms_is_remote']}">
                             </label>
-                            <p class="help-block">Check this if your Plex Server is not on the same local network as Tautulli.</p>
+                            <p class="help-block">Check this if your Plex Server is not on the same local network as RetroArcher.</p>
                         </div>
                         <div class="form-group">
                             <label for="pms_url">Plex Server URL</label>
@@ -796,7 +1412,7 @@
                                 </div>
                             </div>
                             <p class="help-block">
-                                The server URL that Tautulli will use to connect to your Plex server. Retrieved automatically.
+                                The server URL that RetroArcher will use to connect to your Plex server. Retrieved automatically.
                             </p>
                         </div>
                         <div class="form-group advanced-setting">
@@ -857,8 +1473,8 @@
                                 <div id="pms_logs_folder_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
                             <p class="help-block">
-                                Optional: Set your Plex logs folder to use Tautulli as a log viewer. Plex logs are not needed for Tautulli to function.
-                                A complete folder path is required, shortcuts are not recognized, and the logs must be accessible from the machine where Tautulli is installed.
+                                Optional: Set your Plex logs folder to use RetroArcher as a log viewer. Plex logs are not needed for RetroArcher to function.
+                                A complete folder path is required, shortcuts are not recognized, and the logs must be accessible from the machine where RetroArcher is installed.
                                 <a href="${anon_url('https://support.plex.tv/hc/en-us/articles/200250417-Plex-Media-Server-Log-Files')}" target="_blank" rel="noreferrer">Click here</a> for help.
                             </p>
                         </div>
@@ -880,7 +1496,7 @@
                             <label>
                                 <input type="checkbox" id="monitor_pms_updates" name="monitor_pms_updates" value="1" ${config['monitor_pms_updates']}> Monitor Plex Updates
                             </label>
-                            <p class="help-block">Enable to have Tautulli check if updates are available for the Plex Media Server.</p>
+                            <p class="help-block">Enable to have RetroArcher check if updates are available for the Plex Media Server.</p>
                         </div>
                         <div id="pms_update_options">
                             <div class="form-group">
@@ -909,7 +1525,7 @@
                                     <div id="pms_update_check_interval_error" class="alert alert-danger settings-alert" role="alert"></div>
                                 </div>
                                 <p class="help-block">
-                                    The interval (in hours) Tautulli will check for a new Plex Media Server update. Minimum 1, default 24.
+                                    The interval (in hours) RetroArcher will check for a new Plex Media Server update. Minimum 1, default 24.
                                 </p>
                             </div>
                             <div class="checkbox advanced-setting">
@@ -917,7 +1533,7 @@
                                     <input type="checkbox" name="notify_server_update_repeat" id="notify_server_update_repeat" value="1" ${config['notify_server_update_repeat']}> Repeat Plex Server Update Notifications
                                 </label>
                                 <p class="help-block">
-                                    Enable to allow Tautulli to send repeat Plex server update notifications everytime it checks for updates.
+                                    Enable to allow RetroArcher to send repeat Plex server update notifications everytime it checks for updates.
                                     Disable to only send one notifications for each Plex server version.
                                 </p>
                             </div>
@@ -931,13 +1547,13 @@
                                 </div>
                                 <div id="refresh_users_interval_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
-                            <p class="help-block">The interval (in hours) Tautulli will request an updated friends list from Plex.tv. Minimum 1, maximum 24, default 12.</p>
+                            <p class="help-block">The interval (in hours) RetroArcher will request an updated friends list from Plex.tv. Minimum 1, maximum 24, default 12.</p>
                         </div>
                         <div class="checkbox advanced-setting">
                             <label>
                                 <input type="checkbox" id="refresh_users_on_startup" name="refresh_users_on_startup" value="1" ${config['refresh_users_on_startup']}> Refresh Users List on Startup
                             </label>
-                            <p class="help-block">Refresh the users list when Tautulli starts.</p>
+                            <p class="help-block">Refresh the users list when RetroArcher starts.</p>
                         </div>
 
                         <div class="form-group advanced-setting">
@@ -948,13 +1564,13 @@
                                 </div>
                                 <div id="refresh_libraries_interval_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
-                            <p class="help-block">The interval (in hours) Tautulli will request an updated libraries list from your Plex Media Server. Minimum 1, maximum 24, default 12.</p>
+                            <p class="help-block">The interval (in hours) RetroArcher will request an updated libraries list from your Plex Media Server. Minimum 1, maximum 24, default 12.</p>
                         </div>
                         <div class="checkbox advanced-setting">
                             <label>
                                 <input type="checkbox" id="refresh_libraries_on_startup" name="refresh_libraries_on_startup" value="1" ${config['refresh_libraries_on_startup']}> Refresh Libraries List on Startup
                             </label>
-                            <p class="help-block">Refresh the libraries list when Tautulli starts.</p>
+                            <p class="help-block">Refresh the libraries list when RetroArcher starts.</p>
                         </div>
 
                         <div class="padded-header">
@@ -1016,7 +1632,7 @@
                                 </div>
                                 <div id="buffer_wait_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
-                            <p class="help-block">The value (in seconds) Tautulli should wait before triggering the next buffer warning. Set to 0 to always trigger.</p>
+                            <p class="help-block">The value (in seconds) RetroArcher should wait before triggering the next buffer warning. Set to 0 to always trigger.</p>
                         </div>
                         <div class="checkbox advanced-setting">
                             <label>
@@ -1044,7 +1660,7 @@
                                 </div>
                                 <div id="notify_concurrent_threshold_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
-                            <p class="help-block">The number of concurrent streams by a single user for Tautulli to trigger a notification. Minimum 2.</p>
+                            <p class="help-block">The number of concurrent streams by a single user for RetroArcher to trigger a notification. Minimum 2.</p>
                         </div>
                         <div class="checkbox advanced-setting">
                             <label>
@@ -1122,7 +1738,7 @@
                             </label>
                             <p class="help-block">
                                 Enable to send another recently added notification when adding a new version of existing media.<br />
-                                Note: If multiple versions are available, Tautulli will assume the higher quality one is newer.
+                                Note: If multiple versions are available, RetroArcher will assume the higher quality one is newer.
                             </p>
                         </div>-->
 
@@ -1166,7 +1782,7 @@
                                 <p class="help-block" id="self_host_newsletter_message">
                                     Note: The <span class="inline-pre">${http_root}newsletter</span> endpoint on your domain must be publicly accessible from the internet.
                                 </p>
-                                <p class="help-block settings-warning base-url-warning">Warning: Public Tautulli domain not set under <a data-tab-destination="web_interface" data-target="http_base_url">Web Interface</a>.</p>
+                                <p class="help-block settings-warning base-url-warning">Warning: Public RetroArcher domain not set under <a data-tab-destination="web_interface" data-target="http_base_url">Web Interface</a>.</p>
                             </div>
                             <div class="form-group">
                                 <label for="newsletter_auth">Newsletter Authentication</label>
@@ -1175,7 +1791,7 @@
                                         <select class="form-control" id="newsletter_auth" name="newsletter_auth">
                                             <option value="0" ${'selected' if config['newsletter_auth'] == 0 else ''}>Disabled</option>
                                             <option value="1" ${'selected' if config['newsletter_auth'] == 1 else ''}>Password</option>
-                                            <option value="2" ${'selected' if config['newsletter_auth'] == 2 else ''}>Tautulli Guest Access</option>
+                                            <option value="2" ${'selected' if config['newsletter_auth'] == 2 else ''}>RetroArcher Guest Access</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1334,7 +1950,7 @@
                         <div id="self_host_image_options" style="overflow: hidden; display: ${'none' if config['notify_upload_posters'] != 2 else 'block'}">
                             <div class="form-group">
                                 <p class="help-block" id="self_host_image_message">Note: The <span class="inline-pre">${http_root}image</span> endpoint on your domain must be publicly accessible from the internet.</p>
-                                <p class="help-block settings-warning base-url-warning">Warning: Public Tautulli domain not set under <a data-tab-destination="web_interface" data-target="http_base_url">Web Interface</a>.</p>
+                                <p class="help-block settings-warning base-url-warning">Warning: Public RetroArcher domain not set under <a data-tab-destination="web_interface" data-target="http_base_url">Web Interface</a>.</p>
                             </div>
                         </div>
                         <div id="cloudinary_upload_options" style="overflow: hidden; display: ${'none' if config['notify_upload_posters'] != 3 else 'block'}">
@@ -1419,7 +2035,7 @@
                         </div>
                         <div class="form-group">
                             <label for="delete_lookup_info">Delete Lookup Info</label>
-                            <p class="help-block">Delete all cached metadata lookup info in Tautulli.</p>
+                            <p class="help-block">Delete all cached metadata lookup info in RetroArcher.</p>
                             <div class="row">
                                 <div class="col-md-9">
                                     <div class="btn-group">
@@ -1443,24 +2059,22 @@
 
                         <div class="form-group">
                             <label for="database_import">Database Import</label>
-                            <p class="help-block">Click a button below to import an existing database from the selected app.</p>
+                            <p class="help-block">Click the button below to import a previous RetroArcher database.</p>
                             <div class="row">
                                 <div class="col-md-9">
                                     <div class="btn-group">
-                                        <button class="btn btn-form toggle-app-import-modal" type="button" data-target="#app-import-modal" data-toggle="modal" data-app="tautulli">Tautulli</button>
-                                        <button class="btn btn-form toggle-app-import-modal" type="button" data-target="#app-import-modal" data-toggle="modal" data-app="plexwatch">PlexWatch</button>
-                                        <button class="btn btn-form toggle-app-import-modal" type="button" data-target="#app-import-modal" data-toggle="modal" data-app="plexivity">Plexivity</button>
+                                        <button class="btn btn-form toggle-app-import-modal" type="button" data-target="#app-import-modal" data-toggle="modal" data-app="retroarcher">Import Database</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="config_import">Configuration Import</label>
-                            <p class="help-block">Click the button below to import a previous Tautulli configuration.</p>
+                            <p class="help-block">Click the button below to import a previous RetroArcher configuration.</p>
                             <div class="row">
                                 <div class="col-md-9">
                                     <div class="btn-group">
-                                        <button class="btn btn-form toggle-config-import-modal" type="button" data-target="#config-import-modal" data-toggle="modal">Tautulli</button>
+                                        <button class="btn btn-form toggle-config-import-modal" type="button" data-target="#config-import-modal" data-toggle="modal">Import Config</button>
                                     </div>
                                 </div>
                             </div>
@@ -1478,7 +2092,7 @@
                                 </div>
                                 <div id="backup_interval_error" class="alert alert-danger settings-alert" role="alert"></div>
                             </div>
-                            <p class="help-block">The interval (in hours) Tautulli will backup the database and configuration file. Minimum 1, maximum 24, default 6.</p>
+                            <p class="help-block">The interval (in hours) RetroArcher will backup the database and configuration file. Minimum 1, maximum 24, default 6.</p>
                         </div>
                         <div class="form-group">
                             <label for="backup_interval">Backup Days</label>
@@ -1578,9 +2192,9 @@
                         <div class="form-group">
                             <label>Get the App</label>
                             <p class="help-block">
-                                Get the <a href="${anon_url('https://play.google.com/store/apps/details?id=com.tautulli.tautulli_remote')}" target="_blank" rel="noreferrer">Tautulli Remote</a> app on Google Play<sup><small>TM</small></sup> to access Tautulli from your Android device!<br />
+                                Get the <a href="${anon_url('https://play.google.com/store/apps/details?id=com.retroarcher.retroarcher_remote')}" target="_blank" rel="noreferrer">Tautulli Remote</a> app on Google Play<sup><small>TM</small></sup> to access RetroArcher from your Android device!<br />
                                 <span class="google-play-badge">
-                                    <a href="${anon_url('https://play.google.com/store/apps/details?id=com.tautulli.tautulli_remote')}" target="_blank" rel="noreferrer"><img alt="Get it on Google Play" src="images/en-play-badge.png" /></a>
+                                    <a href="${anon_url('https://play.google.com/store/apps/details?id=com.retroarcher.retroarcher_remote')}" target="_blank" rel="noreferrer"><img alt="Get it on Google Play" src="images/en-play-badge.png" /></a>
                                 </span>
                             </p>
                         </div>
@@ -2009,7 +2623,7 @@ Rating: {rating}/10   --> Rating: /10
             </div>
             <div class="modal-body">
                 <div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
-                    You have changed settings that require Tautulli to restart.<br />Click the restart button below to restart now.
+                    You have changed settings that require RetroArcher to restart.<br />Click the restart button below to restart now.
                 </div>
             </div>
             <div class="modal-footer">
@@ -2028,7 +2642,7 @@ Rating: {rating}/10   --> Rating: /10
             <div class="modal-body">
                 <label>Instructions</label>
                 <p class="help-block">
-                    Scan the QR code below with the Tautulli Android app to automatically register it with the server (make sure the Tautulli Address below is correct)
+                    Scan the QR code below with the Tautulli Android app to automatically register it with the server (make sure the RetroArcher Address below is correct)
                     or manually enter the connection info and device token into the app settings. This window will automatically close once device registration is successful.
                 </p>
                 <p class="help-block">
@@ -2036,15 +2650,15 @@ Rating: {rating}/10   --> Rating: /10
                 </p>
                 <label>QR Code</label>
                 <pre id="api_qr_code" style="text-align: center"></pre>
-                <label>Tautulli Address</label>
+                <label>RetroArcher Address</label>
                 <input type="text" class="form-control" id="api_qr_address">
                 <p class="help-block" id="api_qr_localhost" style="display: none;">
                     Note: <span class="inline-pre">127.0.0.1</span> and <span class="inline-pre">localhost</span> will not work.
                     Please enter an internal or external IP address, or hostname or domain instead.
                 </p>
                 <p class="help-block" id="api_qr_private" style="display: none;">
-                    Note: This is a private IP address. Tautulli will not be reachable outside of your home network.
-                    Access Tautulli via an external address or manually enter the address above to generate the QR code for remote access.
+                    Note: This is a private IP address. RetroArcher will not be reachable outside of your home network.
+                    Access RetroArcher via an external address or manually enter the address above to generate the QR code for remote access.
                 </p>
                 <p class="help-block" id="api_qr_https" style="display: none;">
                     Note: This URL is not secure. Requests between the app and the server will not be encrypted.
@@ -2107,6 +2721,17 @@ Rating: {rating}/10   --> Rating: /10
             async: true,
             complete: function(xhr, status) {
                 $("#plexpy-configuration-table").html(xhr.responseText);
+            }
+        });
+    }
+
+    function getThirdPartyTable() {
+        $.ajax({
+            url: 'get_third_party_table',
+            cache: false,
+            async: true,
+            complete: function(xhr, status) {
+                $("#plexpy-third_party-table").html(xhr.responseText);
             }
         });
     }
@@ -2291,6 +2916,7 @@ $(document).ready(function() {
         }
         $("#http_hashed_password").val($("#http_hash_password").is(":checked") ? 1 : 0);
         getConfigurationTable();
+        getThirdPartyTable();
         getSchedulerTable();
         getNotifiersTable();
         getNewslettersTable();
@@ -2326,7 +2952,13 @@ $(document).ready(function() {
     }
 
     $('.save-button').click(function() {
-        preSaveChecks(function () { saveSettings(true, postSaveChecks) });
+        var locked_settings = "${config['lock_settings']}";
+
+        if (locked_settings === '1') {
+            showMsg('<i class="fa fa-exclamation-circle"></i> Settings are locked.', false, true, 5000, true)
+        } else {
+            preSaveChecks(function () { saveSettings(true, postSaveChecks) });
+        }
     });
 
     initConfigCheckbox('#api_enabled');
@@ -2335,9 +2967,10 @@ $(document).ready(function() {
     initConfigCheckbox('#check_github');
     initConfigCheckbox('#monitor_pms_updates');
     initConfigCheckbox('#newsletter_self_hosted');
+    initConfigCheckbox('#sunshine_emulate_guide_button');
 
     $('#menu_link_shutdown').click(function() {
-        $('#confirm-message').text("Are you sure you want to shutdown Tautulli?");
+        $('#confirm-message').text("Are you sure you want to quit RetroArcher?");
         $('#confirm-modal').modal();
         $('#confirm-modal').one('click', '#confirm-button', function () {
             window.location.href = 'shutdown';
@@ -2345,7 +2978,7 @@ $(document).ready(function() {
     });
 
     $('#menu_link_restart').click(function() {
-        $("#confirm-message").text("Are you sure you want to restart Tautulli?");
+        $("#confirm-message").text("Are you sure you want to restart RetroArcher?");
         $('#confirm-modal').modal();
         $('#confirm-modal').one('click', '#confirm-button', function () {
             window.location.href = 'restart';
@@ -2378,6 +3011,7 @@ $(document).ready(function() {
 
     advancedSettings();
     getConfigurationTable();
+    getThirdPartyTable();
     getSchedulerTable();
     getNotifiersTable();
     getNewslettersTable();
@@ -2397,37 +3031,37 @@ $(document).ready(function() {
     });
 
     $("#backup_config").click(function () {
-        var msg = 'Are you sure you want to create a backup of the Tautulli config?';
+        var msg = 'Are you sure you want to create a backup of the RetroArcher config?';
         var url = 'backup_config';
         confirmAjaxCall(url, msg);
     });
 
     $("#backup_database").click(function () {
-        var msg = 'Are you sure you want to create a backup of the Tautulli database?';
+        var msg = 'Are you sure you want to create a backup of the RetroArcher database?';
         var url = 'backup_db';
         confirmAjaxCall(url, msg);
     });
 
     $("#clear_cache").click(function () {
-        var msg = 'Are you sure you want to clear the Tautulli cache?';
+        var msg = 'Are you sure you want to clear the RetroArcher cache?';
         var url = 'delete_cache';
         confirmAjaxCall(url, msg);
     });
 
     $("#clear_image_cache").click(function () {
-        var msg = 'Are you sure you want to clear the Tautulli image cache?';
+        var msg = 'Are you sure you want to clear the RetroArcher image cache?';
         var url = 'delete_image_cache';
         confirmAjaxCall(url, msg);
     });
 
     $("#clear_exports").click(function () {
-        var msg = 'Are you sure you want to clear the Tautulli metadata exports?';
+        var msg = 'Are you sure you want to clear the RetroArcher metadata exports?';
         var url = 'delete_export?delete_all=true';
         confirmAjaxCall(url, msg);
     });
 
     $("#clear_logs").click(function () {
-        var msg = 'Are you sure you want to clear the Tautulli logs?';
+        var msg = 'Are you sure you want to clear the RetroArcher logs?';
         var url = 'delete_logs';
         confirmAjaxCall(url, msg);
     });
@@ -2454,7 +3088,7 @@ $(document).ready(function() {
             showMsg('<i class="fa fa-exclamation-circle"></i> Already on the ' + current_remote + ' ' + current_branch + ' branch.', false, true, 5000, true)
         } else {
             var msg = 'Are you sure you want to switch to the <strong>' + new_remote + '/' + new_branch + '</strong> branch?' +
-                '<br />Switching branches may cause Tautulli to become unstable.<br /><br />Tautulli will restart.';
+                '<br />Switching branches may cause RetroArcher to become unstable.<br /><br />RetroArcher will restart.';
             $('#confirm-message').html(msg);
             $('#confirm-modal').modal();
             $('#confirm-modal').one('click', '#confirm-button', function () {
@@ -2465,8 +3099,8 @@ $(document).ready(function() {
     });
 
     $("#reset_git_install").click(function () {
-        var msg = 'Are you sure you want to reset your Tautulli installtion back to <strong>${common.RELEASE}</strong>?' +
-                '<br /><br />Tautulli will restart.';
+        var msg = 'Are you sure you want to reset your RetroArcher installation back to <strong>${common.RELEASE}</strong>?' +
+                '<br /><br />RetroArcher will restart.';
         $('#confirm-message').html(msg);
         $('#confirm-modal').modal();
         $('#confirm-modal').one('click', '#confirm-button', function () {
@@ -2480,6 +3114,24 @@ $(document).ready(function() {
         $.get('generate_api_key',
             function (apikey) {
                 $('#api_key').val(apikey);
+        });
+    });
+
+    $('#install_vainfo').click(function(){ $('#install_vainfo').select() });
+    $("#sudo_install_vainfo").click(function() {
+        $.get('sudo_install',
+            {
+            sudo_password: $("#install_vainfo").val(),
+            package: 'vainfo'
+            },
+            function (status) {
+                if (status === 'true') {
+                    showMsg('<i class="fa fa-check"></i> Successfully installed VAINFO.', false, true, 5000);
+                    $('#install_vainfo_group').slideUp();
+                    $('#install_vainfo').val(null);
+                } else {
+                    showMsg('<i class="fa fa-exclamation-circle"></i> Failed to install VAINFO.', false, true, 5000, true)
+                };
         });
     });
 
@@ -2509,6 +3161,30 @@ $(document).ready(function() {
         } else {
             $('#'+configToggle).val(0);
         }
+    });
+
+    $('.resolution-checkbox-toggle').click(function () {
+        var allowedResolutions = [];
+
+        $('.resolution-checkbox-toggle').each(function () {
+            if ($(this).is(':checked')) {
+                allowedResolutions.push($(this).data('id'));
+            }
+        });
+
+        $('#sunshine_allowed_resolutions').val(allowedResolutions.toString());
+    });
+
+    $('.fps-checkbox-toggle').click(function () {
+        var allowedFps = [];
+
+        $('.fps-checkbox-toggle').each(function () {
+            if ($(this).is(':checked')) {
+                allowedFps.push($(this).data('id'));
+            }
+        });
+
+        $('#sunshine_allowed_fps').val(allowedFps.toString());
     });
 
     var $select_pms = $('#pms_ip_selectize').selectize({
@@ -3104,7 +3780,7 @@ $(document).ready(function() {
         var name = $(this).text();
 
         var msg = 'Are you sure you want to delete all the metadata lookup info from <strong>' + name + '</strong>?' +
-            '<br /><br />Tautulli will lookup the metadata info again the next time a notification is sent.';
+            '<br /><br />RetroArcher will lookup the metadata info again the next time a notification is sent.';
         var url = 'delete_lookup_info';
         var data = { service: service, delete_all: true };
         confirmAjaxCall(url, msg, data, false);
@@ -3185,9 +3861,9 @@ $(document).ready(function() {
         openPlexXML('/api/resources', true, {includeHttps: 1});
     });
 
-    var tautulli_news = $('#tautulli-news')
+    var retroarcher_news = $('#retroarcher-news')
     $.ajax({
-        url: 'https://tautulli.com/news/tautulli-news.json',
+        url: 'https://retroarcher.github.io/news/retroarcher-news.json',
         type: 'GET',
         dataType: 'json',
         cache: false,
@@ -3216,14 +3892,14 @@ $(document).ready(function() {
                     }
                     news.append(li)
                 });
-                tautulli_news.html(news);
+                retroarcher_news.html(news);
                 var accordion_news = new Accordion(news, false);
             } else {
-                tautulli_news.html('<p class="help-block"><i class="fa fa-check"></i>&nbsp; No news available.</p>')
+                retroarcher_news.html('<p class="help-block"><i class="fa fa-check"></i>&nbsp; No news available.</p>')
             }
         },
         error: function () {
-            tautulli_news.html('<p class="help-block"><i class="fa fa-exclamation-triangle"></i>&nbsp; Failed to retrieve news.</p>')
+            retroarcher_news.html('<p class="help-block"><i class="fa fa-exclamation-triangle"></i>&nbsp; Failed to retrieve news.</p>')
         }
     });
 
@@ -3236,6 +3912,52 @@ $(document).ready(function() {
     });
 
     toggleRevealTokens();
+
+    function externalIp() {
+        var list_val = $('#sunshine_external_ip_method').val();
+        if (list_val === '0') {
+            $('#manual_input_options').slideDown();
+        } else {
+            $('#manual_input_options').slideUp();
+        }
+        var parent;
+    }
+    $('#sunshine_external_ip_method').change(function () {
+        externalIp();
+    });
+
+    function ffmpegEncoderNotes() {
+        var list_val = $('#sunshine_ffmpeg_encoder').val();
+        if (list_val === '0') {
+            $('#ffmpeg_encoder_automatic').slideDown();
+        } else {
+            $('#ffmpeg_encoder_automatic').slideUp();
+        }
+        if (list_val === 'nvenc') {
+            $('#ffmpeg_encoder_nvenc').slideDown();
+        } else {
+            $('#ffmpeg_encoder_nvenc').slideUp();
+        }
+        if (list_val === 'amdvce') {
+            $('#ffmpeg_encoder_amdvce').slideDown();
+        } else {
+            $('#ffmpeg_encoder_amdvce').slideUp();
+        }
+        if (list_val === 'vaapi') {
+            $('#ffmpeg_encoder_vaapi').slideDown();
+        } else {
+            $('#ffmpeg_encoder_vaapi').slideUp();
+        }
+        if (list_val === 'software') {
+            $('#ffmpeg_encoder_software').slideDown();
+        } else {
+            $('#ffmpeg_encoder_software').slideUp();
+        }
+        var parent;
+    }
+    $('#sunshine_ffmpeg_encoder').change(function () {
+        ffmpegEncoderNotes();
+    });
 });
 </script>
 </%def>

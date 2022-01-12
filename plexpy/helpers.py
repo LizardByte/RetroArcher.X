@@ -1,20 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#  This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -43,6 +28,7 @@ import operator
 import os
 import re
 import shlex
+import shutil
 import socket
 import string
 import sys
@@ -53,6 +39,7 @@ from xml.dom import minidom
 import xmltodict
 
 import plexpy
+
 if plexpy.PYTHON2:
     import common
     import logger
@@ -63,6 +50,9 @@ else:
     from plexpy import logger
     from plexpy import request
     from plexpy.api2 import API2
+
+if common.PLATFORM == 'Windows':
+    import win32api
 
 
 def addtoapi(*dargs, **dkwargs):
@@ -77,6 +67,7 @@ def addtoapi(*dargs, **dkwargs):
             @addtoapi()
 
     """
+
     def rd(function):
         @wraps(function)
         def wrapper(*args, **kwargs):
@@ -107,7 +98,6 @@ def checked(variable):
 
 
 def radio(variable, pos):
-
     if variable == pos:
         return 'Checked'
     else:
@@ -161,7 +151,6 @@ def latinToAscii(unicrap, replace=False):
 
 
 def convert_milliseconds(ms):
-
     seconds = ms // 1000
     gmtime = time.gmtime(seconds)
     if seconds > 3600:
@@ -195,7 +184,6 @@ def seconds_to_minutes(s):
 
 
 def convert_seconds(s):
-
     gmtime = time.gmtime(s)
     if s > 3600:
         minutes = time.strftime("%H:%M:%S", gmtime)
@@ -206,7 +194,6 @@ def convert_seconds(s):
 
 
 def convert_seconds_to_minutes(s):
-
     if str(s).isdigit():
         minutes = round(float(s) / 60, 0)
 
@@ -313,7 +300,6 @@ def format_timedelta_Hms(td):
 
 
 def get_age(date):
-
     try:
         split_date = date.split('-')
     except:
@@ -328,7 +314,6 @@ def get_age(date):
 
 
 def bytes_to_mb(bytes):
-
     mb = float(bytes) / 1048576
     size = '%.1f MB' % mb
     return size
@@ -366,7 +351,6 @@ def piratesize(size):
 
 
 def replace_all(text, dic, normalize=False):
-
     if not text:
         return ''
 
@@ -393,7 +377,6 @@ def replace_illegal_chars(string, type="file"):
 
 
 def cleanName(string):
-
     pass1 = latinToAscii(string).lower()
     out_string = re.sub('[\.\-\/\!\@\#\$\%\^\&\*\(\)\+\-\"\'\,\;\:\[\]\{\}\<\>\=\_]', '', pass1).encode('utf-8')
 
@@ -401,7 +384,6 @@ def cleanName(string):
 
 
 def cleanTitle(title):
-
     title = re.sub('[\.\-\/\_]', ' ', title).lower()
 
     # Strip out extra whitespace
@@ -457,7 +439,8 @@ def split_path(f):
 
 def extract_logline(s):
     # Default log format
-    pattern = re.compile(r'(?P<timestamp>.*?)\s\-\s(?P<level>.*?)\s*\:\:\s(?P<thread>.*?)\s\:\s(?P<message>.*)', re.VERBOSE)
+    pattern = re.compile(r'(?P<timestamp>.*?)\s\-\s(?P<level>.*?)\s*\:\:\s(?P<thread>.*?)\s\:\s(?P<message>.*)',
+                         re.VERBOSE)
     match = pattern.match(s)
     if match:
         timestamp = match.group("timestamp")
@@ -498,7 +481,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     ips = ['IP:' + d.strip() for d in plexpy.CONFIG.HTTPS_IP.split(',') if d]
     alt_names = ','.join(domains + ips).encode('utf-8')
 
-    # Create the self-signed Tautulli certificate
+    # Create the self-signed RetroArcher certificate
     logger.debug("Generating self-signed SSL certificate.")
     pkey = createKeyPair(TYPE_RSA, 2048)
     cert = createSelfSignedCertificate(issuer, pkey, serial, not_before, not_after, alt_names)
@@ -541,7 +524,6 @@ def convert_xml_to_dict(xml):
 
 
 def get_percent(value1, value2):
-
     value1 = cast_to_float(value1)
     value2 = cast_to_float(value2)
 
@@ -661,11 +643,14 @@ def sort_helper(k, sort_key, sort_keys):
 def sanitize_out(*dargs, **dkwargs):
     """ Helper decorator that sanitized the output
     """
+
     def rd(function):
         @wraps(function)
         def wrapper(*args, **kwargs):
             return sanitize(function(*args, **kwargs))
+
         return wrapper
+
     return rd
 
 
@@ -712,7 +697,6 @@ def is_valid_ip(address):
 
 
 def whois_lookup(ip_address):
-
     nets = []
     err = None
     try:
@@ -723,7 +707,7 @@ def whois_lookup(ip_address):
         for net in nets:
             net['country'] = countries.get(net['country'])
             if net['postal_code']:
-                 net['postal_code'] = net['postal_code'].replace('-', ' ')
+                net['postal_code'] = net['postal_code'].replace('-', ' ')
     except ValueError as e:
         err = 'Invalid IP address provided: %s.' % ip_address
     except ipwhois.exceptions.IPDefinedError as e:
@@ -773,7 +757,8 @@ def upload_to_imgur(img_data, img_title='', rating_key='', fallback=''):
     img_url = delete_hash = ''
 
     if not plexpy.CONFIG.IMGUR_CLIENT_ID:
-        logger.error("Tautulli Helpers :: Cannot upload image to Imgur. No Imgur client id specified in the settings.")
+        logger.error(
+            "RetroArcher Helpers :: Cannot upload image to Imgur. No Imgur client id specified in the settings.")
         return img_url, delete_hash
 
     headers = {'Authorization': 'Client-ID %s' % plexpy.CONFIG.IMGUR_CLIENT_ID}
@@ -786,18 +771,21 @@ def upload_to_imgur(img_data, img_title='', rating_key='', fallback=''):
                                                            headers=headers, data=data)
 
     if response and not err_msg:
-        logger.debug("Tautulli Helpers :: Image '{}' ({}) uploaded to Imgur.".format(img_title, fallback))
+        logger.debug("RetroArcher Helpers :: Image '{}' ({}) uploaded to Imgur.".format(img_title, fallback))
         imgur_response_data = response.json().get('data')
         img_url = imgur_response_data.get('link', '').replace('http://', 'https://')
         delete_hash = imgur_response_data.get('deletehash', '')
     else:
         if err_msg:
-            logger.error("Tautulli Helpers :: Unable to upload image '{}' ({}) to Imgur: {}".format(img_title, fallback, err_msg))
+            logger.error(
+                "RetroArcher Helpers :: Unable to upload image '{}' ({}) to Imgur: {}".format(img_title, fallback,
+                                                                                              err_msg))
         else:
-            logger.error("Tautulli Helpers :: Unable to upload image '{}' ({}) to Imgur.".format(img_title, fallback))
+            logger.error(
+                "RetroArcher Helpers :: Unable to upload image '{}' ({}) to Imgur.".format(img_title, fallback))
 
         if req_msg:
-            logger.debug("Tautulli Helpers :: Request response: {}".format(req_msg))
+            logger.debug("RetroArcher Helpers :: Request response: {}".format(req_msg))
 
     return img_url, delete_hash
 
@@ -805,7 +793,8 @@ def upload_to_imgur(img_data, img_title='', rating_key='', fallback=''):
 def delete_from_imgur(delete_hash, img_title='', fallback=''):
     """ Deletes an image from Imgur """
     if not plexpy.CONFIG.IMGUR_CLIENT_ID:
-        logger.error("Tautulli Helpers :: Cannot delete image from Imgur. No Imgur client id specified in the settings.")
+        logger.error(
+            "RetroArcher Helpers :: Cannot delete image from Imgur. No Imgur client id specified in the settings.")
         return False
 
     headers = {'Authorization': 'Client-ID %s' % plexpy.CONFIG.IMGUR_CLIENT_ID}
@@ -814,13 +803,16 @@ def delete_from_imgur(delete_hash, img_title='', fallback=''):
                                                            headers=headers)
 
     if response and not err_msg:
-        logger.debug("Tautulli Helpers :: Image '{}' ({}) deleted from Imgur.".format(img_title, fallback))
+        logger.debug("RetroArcher Helpers :: Image '{}' ({}) deleted from Imgur.".format(img_title, fallback))
         return True
     else:
         if err_msg:
-            logger.error("Tautulli Helpers :: Unable to delete image '{}' ({}) from Imgur: {}".format(img_title, fallback, err_msg))
+            logger.error(
+                "RetroArcher Helpers :: Unable to delete image '{}' ({}) from Imgur: {}".format(img_title, fallback,
+                                                                                                err_msg))
         else:
-            logger.error("Tautulli Helpers :: Unable to delete image '{}' ({}) from Imgur.".format(img_title, fallback))
+            logger.error(
+                "RetroArcher Helpers :: Unable to delete image '{}' ({}) from Imgur.".format(img_title, fallback))
         return False
 
 
@@ -829,7 +821,8 @@ def upload_to_cloudinary(img_data, img_title='', rating_key='', fallback=''):
     img_url = ''
 
     if not plexpy.CONFIG.CLOUDINARY_CLOUD_NAME or not plexpy.CONFIG.CLOUDINARY_API_KEY or not plexpy.CONFIG.CLOUDINARY_API_SECRET:
-        logger.error("Tautulli Helpers :: Cannot upload image to Cloudinary. Cloudinary settings not specified in the settings.")
+        logger.error(
+            "RetroArcher Helpers :: Cannot upload image to Cloudinary. Cloudinary settings not specified in the settings.")
         return img_url
 
     cloudinary.config(
@@ -847,12 +840,13 @@ def upload_to_cloudinary(img_data, img_title='', rating_key='', fallback=''):
     try:
         response = upload((img_title, img_data),
                           public_id='{}_{}'.format(fallback, rating_key),
-                          tags=['tautulli', fallback, str(rating_key)],
+                          tags=['retroarcher', fallback, str(rating_key)],
                           context={'title': _img_title, 'rating_key': str(rating_key), 'fallback': fallback})
-        logger.debug("Tautulli Helpers :: Image '{}' ({}) uploaded to Cloudinary.".format(img_title, fallback))
+        logger.debug("RetroArcher Helpers :: Image '{}' ({}) uploaded to Cloudinary.".format(img_title, fallback))
         img_url = response.get('url', '')
     except Exception as e:
-        logger.error("Tautulli Helpers :: Unable to upload image '{}' ({}) to Cloudinary: {}".format(img_title, fallback, e))
+        logger.error(
+            "RetroArcher Helpers :: Unable to upload image '{}' ({}) to Cloudinary: {}".format(img_title, fallback, e))
 
     return img_url
 
@@ -860,7 +854,8 @@ def upload_to_cloudinary(img_data, img_title='', rating_key='', fallback=''):
 def delete_from_cloudinary(rating_key=None, delete_all=False):
     """ Deletes an image from Cloudinary """
     if not plexpy.CONFIG.CLOUDINARY_CLOUD_NAME or not plexpy.CONFIG.CLOUDINARY_API_KEY or not plexpy.CONFIG.CLOUDINARY_API_SECRET:
-        logger.error("Tautulli Helpers :: Cannot delete image from Cloudinary. Cloudinary settings not specified in the settings.")
+        logger.error(
+            "RetroArcher Helpers :: Cannot delete image from Cloudinary. Cloudinary settings not specified in the settings.")
         return False
 
     cloudinary.config(
@@ -870,13 +865,13 @@ def delete_from_cloudinary(rating_key=None, delete_all=False):
     )
 
     if delete_all:
-        delete_resources_by_tag('tautulli')
-        logger.debug("Tautulli Helpers :: Deleted all images from Cloudinary.")
+        delete_resources_by_tag('retroarcher')
+        logger.debug("RetroArcher Helpers :: Deleted all images from Cloudinary.")
     elif rating_key:
         delete_resources_by_tag(str(rating_key))
-        logger.debug("Tautulli Helpers :: Deleted images from Cloudinary with rating_key {}.".format(rating_key))
+        logger.debug("RetroArcher Helpers :: Deleted images from Cloudinary with rating_key {}.".format(rating_key))
     else:
-        logger.debug("Tautulli Helpers :: Unable to delete images from Cloudinary: No rating_key provided.")
+        logger.debug("RetroArcher Helpers :: Unable to delete images from Cloudinary: No rating_key provided.")
 
     return True
 
@@ -886,7 +881,8 @@ def cloudinary_transform(rating_key=None, width=1000, height=1500, opacity=100, 
     url = ''
 
     if not plexpy.CONFIG.CLOUDINARY_CLOUD_NAME or not plexpy.CONFIG.CLOUDINARY_API_KEY or not plexpy.CONFIG.CLOUDINARY_API_SECRET:
-        logger.error("Tautulli Helpers :: Cannot transform image on Cloudinary. Cloudinary settings not specified in the settings.")
+        logger.error(
+            "RetroArcher Helpers :: Cannot transform image on Cloudinary. Cloudinary settings not specified in the settings.")
         return url
 
     cloudinary.config(
@@ -916,9 +912,11 @@ def cloudinary_transform(rating_key=None, width=1000, height=1500, opacity=100, 
 
     try:
         url, options = cloudinary_url('{}_{}'.format(fallback, rating_key), **img_options)
-        logger.debug("Tautulli Helpers :: Image '{}' ({}) transformed on Cloudinary.".format(img_title, fallback))
+        logger.debug("RetroArcher Helpers :: Image '{}' ({}) transformed on Cloudinary.".format(img_title, fallback))
     except Exception as e:
-        logger.error("Tautulli Helpers :: Unable to transform image '{}' ({}) on Cloudinary: {}".format(img_title, fallback, e))
+        logger.error(
+            "RetroArcher Helpers :: Unable to transform image '{}' ({}) on Cloudinary: {}".format(img_title, fallback,
+                                                                                                  e))
 
     return url
 
@@ -931,7 +929,7 @@ def cache_image(url, image=None):
     # Create image directory if it doesn't exist
     imgdir = os.path.join(plexpy.CONFIG.CACHE_DIR, 'images/')
     if not os.path.exists(imgdir):
-        logger.debug("Tautulli Helpers :: Creating image cache directory at %s" % imgdir)
+        logger.debug("RetroArcher Helpers :: Creating image cache directory at %s" % imgdir)
         os.makedirs(imgdir)
 
     # Create a hash of the url to use as the filename
@@ -944,7 +942,7 @@ def cache_image(url, image=None):
             with open(imagefile, 'wb') as cache_file:
                 cache_file.write(image)
         except IOError as e:
-            logger.error("Tautulli Helpers :: Failed to cache image %s: %s" % (imagefile, e))
+            logger.error("RetroArcher Helpers :: Failed to cache image %s: %s" % (imagefile, e))
 
     # Try to return the image from the cache directory
     if os.path.isfile(imagefile):
@@ -1002,7 +1000,7 @@ def human_file_size(bytes, si=True):
     else:
         return bytes
 
-    #thresh = 1000 if si else 1024
+    # thresh = 1000 if si else 1024
     thresh = 1024  # Always divide by 2^10 but display SI units
     if bytes < thresh:
         return str(bytes) + ' B'
@@ -1079,7 +1077,7 @@ def parse_condition_logic_string(s, num_cond=0):
                 stack.pop()
                 nest_and -= 1
 
-        elif bool_next and x == 'and' and i < len(tokens)-1:
+        elif bool_next and x == 'and' and i < len(tokens) - 1:
             stack[-1].append([])
             stack.append(stack[-1][-1])
             stack[-1].append(stack[-2].pop(-2))
@@ -1090,7 +1088,7 @@ def parse_condition_logic_string(s, num_cond=0):
             close_bracket_next = False
             nest_and += 1
 
-        elif bool_next and x == 'or' and i < len(tokens)-1:
+        elif bool_next and x == 'or' and i < len(tokens) - 1:
             stack[-1].append(x)
             cond_next = True
             bool_next = False
@@ -1410,7 +1408,7 @@ def dict_merge(a, b, path=None):
     return a
 
 
-#https://stackoverflow.com/a/26853961
+# https://stackoverflow.com/a/26853961
 def dict_update(*dict_args):
     """
     Given any number of dictionaries, shallow copy and merge into a new dict,
@@ -1668,12 +1666,12 @@ def browse_path(path=None, include_hidden=False, filter_ext=''):
 
 
 def delete_file(file_path):
-    logger.info("Tautulli Helpers :: Deleting file: %s", file_path)
+    logger.info("RetroArcher Helpers :: Deleting file: %s", file_path)
     try:
         os.remove(file_path)
         return True
     except OSError:
-        logger.error("Tautulli Helpers :: Failed to delete file: %s", file_path)
+        logger.error("RetroArcher Helpers :: Failed to delete file: %s", file_path)
         return False
 
 
@@ -1681,3 +1679,60 @@ def short_season(title):
     if title.startswith('Season ') and title[7:].isdigit():
         return 'S%s' % title[7:]
     return title
+
+
+def get_file_properties(filename):
+    """
+    Read all properties of the given file return them as a dictionary... Windows only.
+    """
+    property_names = ('Comments', 'InternalName', 'ProductName',
+                      'CompanyName', 'LegalCopyright', 'ProductVersion',
+                      'FileDescription', 'LegalTrademarks', 'PrivateBuild',
+                      'FileVersion', 'OriginalFilename', 'SpecialBuild')
+
+    props = {'FixedFileInfo': None, 'StringFileInfo': None, 'FileVersion': None}
+
+    try:
+        # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
+        fixed_info = win32api.GetFileVersionInfo(filename, '\\')
+        props['FixedFileInfo'] = fixed_info
+        props['FileVersion'] = "%d.%d.%d.%d" % (
+            fixed_info['FileVersionMS'] / 65536,
+            fixed_info['FileVersionMS'] % 65536,
+            fixed_info['FileVersionLS'] / 65536,
+            fixed_info['FileVersionLS'] % 65536
+        )
+
+        # \VarFileInfo\Translation returns list of available (language, codepage)
+        # pairs that can be used to retreive string info. We are using only the first pair.
+        lang, codepage = win32api.GetFileVersionInfo(filename, '\VarFileInfo\Translation')[0]
+
+        # any other must be of the form \StringfileInfo\%04X%04X\parm_name, middle
+        # two are language/codepage pair returned from above
+
+        str_info = {}
+        for property_name in property_names:
+            str_info_path = u'\StringFileInfo\%04X%04X\%s' % (lang, codepage, property_name)
+
+            str_info[property_name] = win32api.GetFileVersionInfo(filename, str_info_path)
+
+        props['StringFileInfo'] = str_info
+    except:
+        pass
+
+    return props
+
+
+def glob_file_exists(full_file_path):
+    """Ignore extensions and check if file exists"""
+    import glob
+    if glob.glob(f'{full_file_path}.*'):
+        return True
+    else:
+        return False
+
+
+def is_tool(name):
+    """Check whether `name` is on PATH and marked as executable."""
+
+    return shutil.which(name) is not None

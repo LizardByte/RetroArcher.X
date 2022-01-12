@@ -13,7 +13,7 @@ if (['IE', 'Microsoft Edge', 'IE Mobile'].indexOf(p.name) > -1) {
     if (!getCookie('browserDismiss')) {
         var $browser_warning = $('<div id="browser-warning">' +
             '<i class="fa fa-exclamation-circle"></i>&nbsp;' +
-            'Tautulli does not support Internet Explorer or Microsoft Edge! ' +
+            'RetroArcher does not support Internet Explorer or Microsoft Edge! ' +
             'Please use a different browser such as Chrome or Firefox.' +
             '<button type="button" class="close"><i class="fa fa-remove"></i></button>' +
             '</div>');
@@ -615,9 +615,9 @@ function uuidv4() {
 function getPlexHeaders() {
     return {
         'Accept': 'application/json',
-        'X-Plex-Product': 'Tautulli',
+        'X-Plex-Product': 'RetroArcher',
         'X-Plex-Version': 'Plex OAuth',
-        'X-Plex-Client-Identifier': getLocalStorage('Tautulli_ClientID', uuidv4(), false),
+        'X-Plex-Client-Identifier': getLocalStorage('RetroArcher_ClientID', uuidv4(), false),
         'X-Plex-Platform': p.name,
         'X-Plex-Platform-Version': p.version,
         'X-Plex-Model': 'Plex OAuth',

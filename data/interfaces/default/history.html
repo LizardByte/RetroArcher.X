@@ -3,14 +3,14 @@
 <%def name="headIncludes()">
 <link rel="stylesheet" href="${http_root}css/dataTables.bootstrap.css">
 <link rel="stylesheet" href="${http_root}css/dataTables.colVis.css">
-<link rel="stylesheet" href="${http_root}css/tautulli-dataTables.css">
+<link rel="stylesheet" href="${http_root}css/retroarcher-dataTables.css">
 </%def>
 
 <%def name="body()">
 <div class='container-fluid'>
     % if config['database_is_importing']:
     <div style="text-align: center; margin-top: 20px;">
-        <i class="fa fa-refresh fa-spin"></i>&nbsp; Tautulli is importing history from another database. This could take a few minutes depending on the size of your database.
+        <i class="fa fa-refresh fa-spin"></i>&nbsp; RetroArcher is importing history from another database. This could take a few minutes depending on the size of your database.
         <br />
         You may leave this page and check back later.
     </div>

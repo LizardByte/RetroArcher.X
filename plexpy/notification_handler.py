@@ -1,21 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
 
-#  This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
-
 from __future__ import division
 from __future__ import unicode_literals
 from future.builtins import next
@@ -80,15 +64,15 @@ def process_queue():
                 else:
                     add_notifier_each(**params)
             except Exception as e:
-                logger.exception("Tautulli NotificationHandler :: Notification thread exception: %s" % e)
+                logger.exception("RetroArcher NotificationHandler :: Notification thread exception: %s" % e)
 
         queue.task_done()
 
-    logger.info("Tautulli NotificationHandler :: Notification thread exiting...")
+    logger.info("RetroArcher NotificationHandler :: Notification thread exiting...")
 
 
 def start_threads(num_threads=1):
-    logger.info("Tautulli NotificationHandler :: Starting background notification handler ({} threads).".format(num_threads))
+    logger.info("RetroArcher NotificationHandler :: Starting background notification handler ({} threads).".format(num_threads))
     for x in range(num_threads):
         thread = threading.Thread(target=process_queue)
         thread.daemon = True
@@ -97,7 +81,7 @@ def start_threads(num_threads=1):
 
 def add_notifier_each(notifier_id=None, notify_action=None, stream_data=None, timeline_data=None, manual_trigger=False, **kwargs):
     if not notify_action:
-        logger.debug("Tautulli NotificationHandler :: Notify called but no action received.")
+        logger.debug("RetroArcher NotificationHandler :: Notify called but no action received.")
         return
 
     if notifier_id:
@@ -108,7 +92,7 @@ def add_notifier_each(notifier_id=None, notify_action=None, stream_data=None, ti
         notifiers_enabled = notifiers.get_notifiers(notify_action=notify_action)
 
     if notifiers_enabled and not manual_trigger:
-        logger.debug("Tautulli NotificationHandler :: Notifiers enabled for notify_action '%s'." % notify_action)
+        logger.debug("RetroArcher NotificationHandler :: Notifiers enabled for notify_action '%s'." % notify_action)
 
         # Check if notification conditions are satisfied
         conditions = notify_conditions(notify_action=notify_action,
@@ -120,7 +104,7 @@ def add_notifier_each(notifier_id=None, notify_action=None, stream_data=None, ti
 
     if notifiers_enabled and (manual_trigger or conditions):
         if manual_trigger:
-            logger.debug("Tautulli NotificationHandler :: Notifiers enabled for notify_action '%s' (manual trigger)." % notify_action)
+            logger.debug("RetroArcher NotificationHandler :: Notifiers enabled for notify_action '%s' (manual trigger)." % notify_action)
 
         if stream_data or timeline_data:
             # Build the notification parameters
@@ -135,7 +119,7 @@ def add_notifier_each(notifier_id=None, notify_action=None, stream_data=None, ti
                                                     **kwargs)
 
         if not parameters:
-            logger.error("Tautulli NotificationHandler :: Failed to build notification parameters.")
+            logger.error("RetroArcher NotificationHandler :: Failed to build notification parameters.")
             return
 
         for notifier in notifiers_enabled:
@@ -151,7 +135,7 @@ def add_notifier_each(notifier_id=None, notify_action=None, stream_data=None, ti
                 data.update(kwargs)
                 plexpy.NOTIFY_QUEUE.put(data)
             else:
-                logger.debug("Tautulli NotificationHandler :: Custom notification conditions not satisfied, skipping notifier_id %s." % notifier['id'])
+                logger.debug("RetroArcher NotificationHandler :: Custom notification conditions not satisfied, skipping notifier_id %s." % notifier['id'])
 
     # Add on_concurrent and on_newdevice to queue if action is on_play
     if notify_action == 'on_play':
@@ -160,7 +144,7 @@ def add_notifier_each(notifier_id=None, notify_action=None, stream_data=None, ti
 
 
 def notify_conditions(notify_action=None, stream_data=None, timeline_data=None, **kwargs):
-    logger.debug("Tautulli NotificationHandler :: Checking global notification conditions.")
+    logger.debug("RetroArcher NotificationHandler :: Checking global notification conditions.")
 
     # Activity notifications
     if stream_data:
@@ -172,11 +156,11 @@ def notify_conditions(notify_action=None, stream_data=None, timeline_data=None, 
         # library_details = library_data.get_details(section_id=stream_data['section_id'])
 
         # if not user_details['do_notify']:
-        #     logger.debug("Tautulli NotificationHandler :: Notifications for user '%s' are disabled." % user_details['username'])
+        #     logger.debug("RetroArcher NotificationHandler :: Notifications for user '%s' are disabled." % user_details['username'])
         #     return False
         #
         # elif not library_details['do_notify'] and notify_action not in ('on_concurrent', 'on_newdevice'):
-        #     logger.debug("Tautulli NotificationHandler :: Notifications for library '%s' are disabled." % library_details['section_name'])
+        #     logger.debug("RetroArcher NotificationHandler :: Notifications for library '%s' are disabled." % library_details['section_name'])
         #     return False
 
         if notify_action == 'on_concurrent':
@@ -227,7 +211,7 @@ def notify_conditions(notify_action=None, stream_data=None, timeline_data=None, 
         # library_details = library_data.get_details(section_id=timeline_data['section_id'])
         #
         # if not library_details['do_notify_created']:
-        #     # logger.debug("Tautulli NotificationHandler :: Notifications for library '%s' is disabled." % library_details['section_name'])
+        #     # logger.debug("RetroArcher NotificationHandler :: Notifications for library '%s' is disabled." % library_details['section_name'])
         #     return False
 
         evaluated = True
@@ -248,7 +232,7 @@ def notify_conditions(notify_action=None, stream_data=None, timeline_data=None, 
     else:
         evaluated = True
 
-    logger.debug("Tautulli NotificationHandler :: Global notification conditions evaluated to '{}'.".format(evaluated))
+    logger.debug("RetroArcher NotificationHandler :: Global notification conditions evaluated to '{}'.".format(evaluated))
     return evaluated
 
 
@@ -259,7 +243,7 @@ def notify_custom_conditions(notifier_id=None, parameters=None):
     custom_conditions = notifier_config['custom_conditions']
 
     if custom_conditions_logic or any(c for c in custom_conditions if c['value']):
-        logger.debug("Tautulli NotificationHandler :: Checking custom notification conditions for notifier_id %s."
+        logger.debug("RetroArcher NotificationHandler :: Checking custom notification conditions for notifier_id %s."
                      % notifier_id)
 
         logic_groups = None
@@ -268,7 +252,7 @@ def notify_custom_conditions(notifier_id=None, parameters=None):
                 # Parse and validate the custom conditions logic
                 logic_groups = helpers.parse_condition_logic_string(custom_conditions_logic, len(custom_conditions))
             except ValueError as e:
-                logger.error("Tautulli NotificationHandler :: Unable to parse custom condition logic '%s': %s."
+                logger.error("RetroArcher NotificationHandler :: Unable to parse custom condition logic '%s': %s."
                              % (custom_conditions_logic, e))
                 return False
 
@@ -285,7 +269,7 @@ def notify_custom_conditions(notifier_id=None, parameters=None):
             if not parameter or not operator or not values:
                 evaluated = True
                 evaluated_conditions.append(evaluated)
-                logger.debug("Tautulli NotificationHandler :: {%s} Blank condition > %s" % (i+1, evaluated))
+                logger.debug("RetroArcher NotificationHandler :: {%s} Blank condition > %s" % (i+1, evaluated))
                 continue
 
             # Make sure the condition values is in a list
@@ -304,7 +288,7 @@ def notify_custom_conditions(notifier_id=None, parameters=None):
                     values = [helpers.cast_to_float(v) for v in values]
 
             except ValueError as e:
-                logger.error("Tautulli NotificationHandler :: {%s} Unable to cast condition '%s', values '%s', to type '%s'."
+                logger.error("RetroArcher NotificationHandler :: {%s} Unable to cast condition '%s', values '%s', to type '%s'."
                              % (i+1, parameter, values, parameter_type))
                 return False
 
@@ -320,7 +304,7 @@ def notify_custom_conditions(notifier_id=None, parameters=None):
                     parameter_value = helpers.cast_to_float(parameter_value)
 
             except ValueError as e:
-                logger.error("Tautulli NotificationHandler :: {%s} Unable to cast parameter '%s', value '%s', to type '%s'."
+                logger.error("RetroArcher NotificationHandler :: {%s} Unable to cast parameter '%s', value '%s', to type '%s'."
                              % (i+1, parameter, parameter_value, parameter_type))
                 return False
 
@@ -351,28 +335,28 @@ def notify_custom_conditions(notifier_id=None, parameters=None):
 
             else:
                 evaluated = None
-                logger.warn("Tautulli NotificationHandler :: {%s} Invalid condition operator '%s' > %s."
+                logger.warn("RetroArcher NotificationHandler :: {%s} Invalid condition operator '%s' > %s."
                             % (i+1, operator, evaluated))
 
             evaluated_conditions.append(evaluated)
-            logger.debug("Tautulli NotificationHandler :: {%s} %s | %s | %s > '%s' > %s"
+            logger.debug("RetroArcher NotificationHandler :: {%s} %s | %s | %s > '%s' > %s"
                          % (i+1, parameter, operator, ' or '.join(["'%s'" % v for v in values]), parameter_value, evaluated))
 
         if logic_groups:
             # Format and evaluate the logic string
             try:
                 evaluated_logic = helpers.eval_logic_groups_to_bool(logic_groups, evaluated_conditions)
-                logger.debug("Tautulli NotificationHandler :: Condition logic: %s > %s"
+                logger.debug("RetroArcher NotificationHandler :: Condition logic: %s > %s"
                              % (custom_conditions_logic, evaluated_logic))
             except Exception as e:
-                logger.error("Tautulli NotificationHandler :: Unable to evaluate custom condition logic: %s." % e)
+                logger.error("RetroArcher NotificationHandler :: Unable to evaluate custom condition logic: %s." % e)
                 return False
         else:
             evaluated_logic = all(evaluated_conditions[1:])
-            logger.debug("Tautulli NotificationHandler :: Condition logic [blank]: %s > %s"
+            logger.debug("RetroArcher NotificationHandler :: Condition logic [blank]: %s > %s"
                          % (' and '.join(['{%s}' % (i+1) for i in range(len(custom_conditions))]), evaluated_logic))
 
-        logger.debug("Tautulli NotificationHandler :: Custom conditions evaluated to '{}'. Conditions: {}.".format(
+        logger.debug("RetroArcher NotificationHandler :: Custom conditions evaluated to '{}'. Conditions: {}.".format(
             evaluated_logic, evaluated_conditions[1:]))
 
         return evaluated_logic
@@ -381,7 +365,7 @@ def notify_custom_conditions(notifier_id=None, parameters=None):
 
 
 def notify(notifier_id=None, notify_action=None, stream_data=None, timeline_data=None, parameters=None, **kwargs):
-    logger.info("Tautulli NotificationHandler :: Preparing notification for notifier_id %s." % notifier_id)
+    logger.info("RetroArcher NotificationHandler :: Preparing notification for notifier_id %s." % notifier_id)
 
     notifier_config = notifiers.get_notifier_config(notifier_id=notifier_id)
 
@@ -389,7 +373,7 @@ def notify(notifier_id=None, notify_action=None, stream_data=None, timeline_data
         return
 
     if notify_action in ('test', 'api'):
-        subject = kwargs.pop('subject', 'Tautulli')
+        subject = kwargs.pop('subject', 'RetroArcher')
         body = kwargs.pop('body', 'Test Notification')
         script_args = helpers.split_args(kwargs.pop('script_args', []))
 
@@ -498,12 +482,12 @@ def set_notify_state(notifier, notify_action, subject='', body='', script_args='
         if notify_action == 'on_pmsupdate':
             values['tag'] = parameters['update_version']
         elif notify_action == 'on_plexpyupdate':
-            values['tag'] = parameters['tautulli_update_version']
+            values['tag'] = parameters['retroarcher_update_version']
 
         monitor_db.upsert(table_name='notify_log', key_dict=keys, value_dict=values)
         return monitor_db.last_insert_id()
     else:
-        logger.error("Tautulli NotificationHandler :: Unable to set notify state.")
+        logger.error("RetroArcher NotificationHandler :: Unable to set notify state.")
 
 
 def set_notify_success(notification_id):
@@ -896,10 +880,10 @@ def build_media_notify_params(notify_action=None, session=None, timeline=None, m
 
     available_params = {
         # Global paramaters
-        'tautulli_version': common.RELEASE,
-        'tautulli_remote': plexpy.CONFIG.GIT_REMOTE,
-        'tautulli_branch': plexpy.CONFIG.GIT_BRANCH,
-        'tautulli_commit': plexpy.CURRENT_VERSION,
+        'retroarcher_version': common.RELEASE,
+        'retroarcher_remote': plexpy.CONFIG.GIT_REMOTE,
+        'retroarcher_branch': plexpy.CONFIG.GIT_BRANCH,
+        'retroarcher_commit': plexpy.CURRENT_VERSION,
         'server_name': plexpy.CONFIG.PMS_NAME,
         'server_ip': plexpy.CONFIG.PMS_IP,
         'server_port': plexpy.CONFIG.PMS_PORT,
@@ -1173,10 +1157,10 @@ def build_server_notify_params(notify_action=None, **kwargs):
 
     available_params = {
         # Global paramaters
-        'tautulli_version': common.RELEASE,
-        'tautulli_remote': plexpy.CONFIG.GIT_REMOTE,
-        'tautulli_branch': plexpy.CONFIG.GIT_BRANCH,
-        'tautulli_commit': plexpy.CURRENT_VERSION,
+        'retroarcher_version': common.RELEASE,
+        'retroarcher_remote': plexpy.CONFIG.GIT_REMOTE,
+        'retroarcher_branch': plexpy.CONFIG.GIT_BRANCH,
+        'retroarcher_commit': plexpy.CURRENT_VERSION,
         'server_name': plexpy.CONFIG.PMS_NAME,
         'server_ip': plexpy.CONFIG.PMS_IP,
         'server_port': plexpy.CONFIG.PMS_PORT,
@@ -1219,16 +1203,16 @@ def build_server_notify_params(notify_action=None, **kwargs):
         'update_extra_info': pms_download_info['extra_info'],
         'update_changelog_added': pms_download_info['changelog_added'],
         'update_changelog_fixed': pms_download_info['changelog_fixed'],
-        # Tautulli update parameters
-        'tautulli_update_version': plexpy_download_info['tag_name'],
-        'tautulli_update_release_url': plexpy_download_info['html_url'],
-        'tautulli_update_exe': windows_exe,
-        'tautulli_update_pkg': macos_pkg,
-        'tautulli_update_tar': plexpy_download_info['tarball_url'],
-        'tautulli_update_zip': plexpy_download_info['zipball_url'],
-        'tautulli_update_commit': kwargs.pop('plexpy_update_commit', ''),
-        'tautulli_update_behind': kwargs.pop('plexpy_update_behind', ''),
-        'tautulli_update_changelog': plexpy_download_info['body']
+        # RetroArcher update parameters
+        'retroarcher_update_version': plexpy_download_info['tag_name'],
+        'retroarcher_update_release_url': plexpy_download_info['html_url'],
+        'retroarcher_update_exe': windows_exe,
+        'retroarcher_update_pkg': macos_pkg,
+        'retroarcher_update_tar': plexpy_download_info['tarball_url'],
+        'retroarcher_update_zip': plexpy_download_info['zipball_url'],
+        'retroarcher_update_commit': kwargs.pop('plexpy_update_commit', ''),
+        'retroarcher_update_behind': kwargs.pop('plexpy_update_behind', ''),
+        'retroarcher_update_changelog': plexpy_download_info['body']
         }
 
     return available_params
@@ -1245,10 +1229,10 @@ def build_notify_text(subject='', body='', notify_action=None, parameters=None, 
 
     # Make sure subject and body text are strings
     if not isinstance(subject, str):
-        logger.error("Tautulli NotificationHandler :: Invalid subject text. Using fallback.")
+        logger.error("RetroArcher NotificationHandler :: Invalid subject text. Using fallback.")
         subject = default_subject
     if not isinstance(body, str):
-        logger.error("Tautulli NotificationHandler :: Invalid body text. Using fallback.")
+        logger.error("RetroArcher NotificationHandler :: Invalid body text. Using fallback.")
         body = default_body
 
     media_type = parameters.get('media_type')
@@ -1289,10 +1273,10 @@ def build_notify_text(subject='', body='', notify_action=None, parameters=None, 
         try:
             script_args = [str_formatter(arg) for arg in helpers.split_args(subject)]
         except LookupError as e:
-            logger.error("Tautulli NotificationHandler :: Unable to parse parameter %s in script argument. Using fallback." % e)
+            logger.error("RetroArcher NotificationHandler :: Unable to parse parameter %s in script argument. Using fallback." % e)
             script_args = []
         except Exception as e:
-            logger.exception("Tautulli NotificationHandler :: Unable to parse custom script arguments: %s. Using fallback." % e)
+            logger.exception("RetroArcher NotificationHandler :: Unable to parse custom script arguments: %s. Using fallback." % e)
             script_args = []
 
     elif agent_id == 25:
@@ -1300,51 +1284,51 @@ def build_notify_text(subject='', body='', notify_action=None, parameters=None, 
             try:
                 subject = json.loads(subject)
             except ValueError as e:
-                logger.error("Tautulli NotificationHandler :: Unable to parse custom webhook json header data: %s. Using fallback." % e)
+                logger.error("RetroArcher NotificationHandler :: Unable to parse custom webhook json header data: %s. Using fallback." % e)
                 subject = ''
         if subject:
             try:
                 subject = json.dumps(helpers.traverse_map(subject, str_formatter))
             except LookupError as e:
-                logger.error("Tautulli NotificationHandler :: Unable to parse parameter %s in webhook header data. Using fallback." % e)
+                logger.error("RetroArcher NotificationHandler :: Unable to parse parameter %s in webhook header data. Using fallback." % e)
                 subject = ''
             except Exception as e:
-                logger.exception("Tautulli NotificationHandler :: Unable to parse custom webhook header data: %s. Using fallback." % e)
+                logger.exception("RetroArcher NotificationHandler :: Unable to parse custom webhook header data: %s. Using fallback." % e)
                 subject = ''
 
         if body:
             try:
                 body = json.loads(body)
             except ValueError as e:
-                logger.error("Tautulli NotificationHandler :: Unable to parse custom webhook json body data: %s. Using fallback." % e)
+                logger.error("RetroArcher NotificationHandler :: Unable to parse custom webhook json body data: %s. Using fallback." % e)
                 body = ''
         if body:
             try:
                 body = json.dumps(helpers.traverse_map(body, str_formatter))
             except LookupError as e:
-                logger.error("Tautulli NotificationHandler :: Unable to parse parameter %s in webhook body data. Using fallback." % e)
+                logger.error("RetroArcher NotificationHandler :: Unable to parse parameter %s in webhook body data. Using fallback." % e)
                 body = ''
             except Exception as e:
-                logger.exception("Tautulli NotificationHandler :: Unable to parse custom webhook body data: %s. Using fallback." % e)
+                logger.exception("RetroArcher NotificationHandler :: Unable to parse custom webhook body data: %s. Using fallback." % e)
                 body = ''
 
     else:
         try:
             subject = str_formatter(subject)
         except LookupError as e:
-            logger.error("Tautulli NotificationHandler :: Unable to parse parameter %s in notification subject. Using fallback." % e)
+            logger.error("RetroArcher NotificationHandler :: Unable to parse parameter %s in notification subject. Using fallback." % e)
             subject = str(default_subject).format(**parameters)
         except Exception as e:
-            logger.exception("Tautulli NotificationHandler :: Unable to parse custom notification subject: %s. Using fallback." % e)
+            logger.exception("RetroArcher NotificationHandler :: Unable to parse custom notification subject: %s. Using fallback." % e)
             subject = str(default_subject).format(**parameters)
 
         try:
             body = str_formatter(body)
         except LookupError as e:
-            logger.error("Tautulli NotificationHandler :: Unable to parse parameter %s in notification body. Using fallback." % e)
+            logger.error("RetroArcher NotificationHandler :: Unable to parse parameter %s in notification body. Using fallback." % e)
             body = str(default_body).format(**parameters)
         except Exception as e:
-            logger.exception("Tautulli NotificationHandler :: Unable to parse custom notification body: %s. Using fallback." % e)
+            logger.exception("RetroArcher NotificationHandler :: Unable to parse custom notification body: %s. Using fallback." % e)
             body = str(default_body).format(**parameters)
 
     return subject, body, script_args
@@ -1564,18 +1548,18 @@ def lookup_tvmaze_by_id(rating_key=None, thetvdb_id=None, imdb_id=None, title=No
                 'WHERE rating_key = ?'
         tvmaze_info = db.select_single(query, args=[rating_key])
     except Exception as e:
-        logger.warn("Tautulli NotificationHandler :: Unable to execute database query for lookup_tvmaze_by_tvdb_id: %s." % e)
+        logger.warn("RetroArcher NotificationHandler :: Unable to execute database query for lookup_tvmaze_by_tvdb_id: %s." % e)
         return {}
 
     if not tvmaze_info:
         tvmaze_info = {}
 
         if thetvdb_id:
-            logger.debug("Tautulli NotificationHandler :: Looking up TVmaze info for thetvdb_id '{}'.".format(thetvdb_id))
+            logger.debug("RetroArcher NotificationHandler :: Looking up TVmaze info for thetvdb_id '{}'.".format(thetvdb_id))
         elif imdb_id:
-            logger.debug("Tautulli NotificationHandler :: Looking up TVmaze info for imdb_id '{}'.".format(imdb_id))
+            logger.debug("RetroArcher NotificationHandler :: Looking up TVmaze info for imdb_id '{}'.".format(imdb_id))
         else:
-            logger.debug("Tautulli NotificationHandler :: Looking up TVmaze info for '{}'.".format(title))
+            logger.debug("RetroArcher NotificationHandler :: Looking up TVmaze info for '{}'.".format(title))
 
         if thetvdb_id or imdb_id:
             params = {'thetvdb': thetvdb_id} if thetvdb_id else {'imdb': imdb_id}
@@ -1608,10 +1592,10 @@ def lookup_tvmaze_by_id(rating_key=None, thetvdb_id=None, imdb_id=None, title=No
 
         else:
             if err_msg:
-                logger.error("Tautulli NotificationHandler :: {}".format(err_msg))
+                logger.error("RetroArcher NotificationHandler :: {}".format(err_msg))
 
             if req_msg:
-                logger.debug("Tautulli NotificationHandler :: Request response: {}".format(req_msg))
+                logger.debug("RetroArcher NotificationHandler :: Request response: {}".format(req_msg))
 
     return tvmaze_info
 
@@ -1624,18 +1608,18 @@ def lookup_themoviedb_by_id(rating_key=None, thetvdb_id=None, imdb_id=None, titl
                 'WHERE rating_key = ?'
         themoviedb_info = db.select_single(query, args=[rating_key])
     except Exception as e:
-        logger.warn("Tautulli NotificationHandler :: Unable to execute database query for lookup_themoviedb_by_imdb_id: %s." % e)
+        logger.warn("RetroArcher NotificationHandler :: Unable to execute database query for lookup_themoviedb_by_imdb_id: %s." % e)
         return {}
 
     if not themoviedb_info:
         themoviedb_info = {}
 
         if thetvdb_id:
-            logger.debug("Tautulli NotificationHandler :: Looking up The Movie Database info for thetvdb_id '{}'.".format(thetvdb_id))
+            logger.debug("RetroArcher NotificationHandler :: Looking up The Movie Database info for thetvdb_id '{}'.".format(thetvdb_id))
         elif imdb_id:
-            logger.debug("Tautulli NotificationHandler :: Looking up The Movie Database info for imdb_id '{}'.".format(imdb_id))
+            logger.debug("RetroArcher NotificationHandler :: Looking up The Movie Database info for imdb_id '{}'.".format(imdb_id))
         else:
-            logger.debug("Tautulli NotificationHandler :: Looking up The Movie Database info for '{} ({})'.".format(title, year))
+            logger.debug("RetroArcher NotificationHandler :: Looking up The Movie Database info for '{} ({})'.".format(title, year))
 
         params = {'api_key': plexpy.CONFIG.THEMOVIEDB_APIKEY}
 
@@ -1683,10 +1667,10 @@ def lookup_themoviedb_by_id(rating_key=None, thetvdb_id=None, imdb_id=None, titl
 
         else:
             if err_msg:
-                logger.error("Tautulli NotificationHandler :: {}".format(err_msg))
+                logger.error("RetroArcher NotificationHandler :: {}".format(err_msg))
 
             if req_msg:
-                logger.debug("Tautulli NotificationHandler :: Request response: {}".format(req_msg))
+                logger.debug("RetroArcher NotificationHandler :: Request response: {}".format(req_msg))
 
     return themoviedb_info
 
@@ -1702,7 +1686,7 @@ def get_themoviedb_info(rating_key=None, media_type=None, themoviedb_id=None):
                 'WHERE rating_key = ?'
         result = db.select_single(query, args=[rating_key])
     except Exception as e:
-        logger.warn("Tautulli NotificationHandler :: Unable to execute database query for get_themoviedb_info: %s." % e)
+        logger.warn("RetroArcher NotificationHandler :: Unable to execute database query for get_themoviedb_info: %s." % e)
         return {}
 
     if result:
@@ -1713,7 +1697,7 @@ def get_themoviedb_info(rating_key=None, media_type=None, themoviedb_id=None):
 
     themoviedb_json = {}
 
-    logger.debug("Tautulli NotificationHandler :: Looking up The Movie Database info for themoviedb_id '{}'.".format(themoviedb_id))
+    logger.debug("RetroArcher NotificationHandler :: Looking up The Movie Database info for themoviedb_id '{}'.".format(themoviedb_id))
 
     params = {'api_key': plexpy.CONFIG.THEMOVIEDB_APIKEY}
     response, err_msg, req_msg = request.request_response2('https://api.themoviedb.org/3/{}/{}'.format(media_type, themoviedb_id), params=params)
@@ -1736,10 +1720,10 @@ def get_themoviedb_info(rating_key=None, media_type=None, themoviedb_id=None):
 
     else:
         if err_msg:
-            logger.error("Tautulli NotificationHandler :: {}".format(err_msg))
+            logger.error("RetroArcher NotificationHandler :: {}".format(err_msg))
 
         if req_msg:
-            logger.debug("Tautulli NotificationHandler :: Request response: {}".format(req_msg))
+            logger.debug("RetroArcher NotificationHandler :: Request response: {}".format(req_msg))
 
     return themoviedb_json
 
@@ -1753,25 +1737,25 @@ def lookup_musicbrainz_info(musicbrainz_type=None, rating_key=None, artist=None,
                 'WHERE rating_key = ?'
         musicbrainz_info = db.select_single(query, args=[rating_key])
     except Exception as e:
-        logger.warn("Tautulli NotificationHandler :: Unable to execute database query for lookup_musicbrainz: %s." % e)
+        logger.warn("RetroArcher NotificationHandler :: Unable to execute database query for lookup_musicbrainz: %s." % e)
         return {}
 
     if not musicbrainz_info:
         musicbrainzngs.set_useragent(
             common.PRODUCT,
             common.RELEASE,
-            "https://tautulli.com",
+            "https://retroarcher.github.io",
         )
 
         if musicbrainz_type == 'artist':
-            logger.debug("Tautulli NotificationHandler :: Looking up MusicBrainz info for "
+            logger.debug("RetroArcher NotificationHandler :: Looking up MusicBrainz info for "
                          "{} '{}'.".format(musicbrainz_type, artist))
             result = musicbrainzngs.search_artists(artist=artist, strict=True, limit=1)
             if result['artist-list']:
                 musicbrainz_info = result['artist-list'][0]
 
         elif musicbrainz_type == 'release':
-            logger.debug("Tautulli NotificationHandler :: Looking up MusicBrainz info for "
+            logger.debug("RetroArcher NotificationHandler :: Looking up MusicBrainz info for "
                          "{} '{} - {}'.".format(musicbrainz_type, artist, release))
             result = musicbrainzngs.search_releases(artist=artist, release=release, tracks=tracks,
                                                     strict=True, limit=1)
@@ -1779,7 +1763,7 @@ def lookup_musicbrainz_info(musicbrainz_type=None, rating_key=None, artist=None,
                 musicbrainz_info = result['release-list'][0]
 
         elif musicbrainz_type == 'recording':
-            logger.debug("Tautulli NotificationHandler :: Looking up MusicBrainz info for "
+            logger.debug("RetroArcher NotificationHandler :: Looking up MusicBrainz info for "
                          "{} '{} - {} - {}'.".format(musicbrainz_type, artist, release, recording))
             result = musicbrainzngs.search_recordings(artist=artist, release=release, recording=recording,
                                                       tracks=tracks, tnum=tnum,
@@ -1802,7 +1786,7 @@ def lookup_musicbrainz_info(musicbrainz_type=None, rating_key=None, artist=None,
             musicbrainz_info.pop('musicbrainz_json')
 
         else:
-            logger.warn("Tautulli NotificationHandler :: No match found on MusicBrainz.")
+            logger.warn("RetroArcher NotificationHandler :: No match found on MusicBrainz.")
 
     return musicbrainz_info
 

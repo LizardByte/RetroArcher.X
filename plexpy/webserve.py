@@ -1,20 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import unicode_literals
 from future.builtins import next
 from future.builtins import object
@@ -26,7 +11,9 @@ import base64
 import json
 import linecache
 import os
+import requests
 import shutil
+import subprocess
 import sys
 import threading
 import zipfile
@@ -50,6 +37,7 @@ if plexpy.PYTHON2:
     import config
     import database
     import datafactory
+    import emulators
     import exporter
     import graphs
     import helpers
@@ -66,6 +54,7 @@ if plexpy.PYTHON2:
     import plexivity_import
     import plexwatch_import
     import pmsconnect
+    import streamer
     import users
     import versioncheck
     import web_socket
@@ -84,6 +73,7 @@ else:
     from plexpy import config
     from plexpy import database
     from plexpy import datafactory
+    from plexpy import emulators
     from plexpy import exporter
     from plexpy import graphs
     from plexpy import helpers
@@ -100,6 +90,7 @@ else:
     from plexpy import plexivity_import
     from plexpy import plexwatch_import
     from plexpy import pmsconnect
+    from plexpy import streamer
     from plexpy import users
     from plexpy import versioncheck
     from plexpy import web_socket
@@ -124,6 +115,31 @@ def serve_template(templatename, **kwargs):
     http_root = plexpy.HTTP_ROOT
     server_name = plexpy.CONFIG.PMS_NAME
     cache_param = '?' + (plexpy.CURRENT_VERSION or common.RELEASE)
+
+    _session = get_session_info()
+
+    try:
+        template = _hplookup.get_template(templatename)
+        return template.render(http_root=http_root, server_name=server_name, cache_param=cache_param,
+                               _session=_session, **kwargs)
+    except Exception as e:
+        logger.exception("WebUI :: Mako template render error: %s" % e)
+        return mako.exceptions.html_error_template().render()
+
+
+def serve_plugin(templatename, plugin_name, **kwargs):
+    plugin_dir = os.path.join(str(plexpy.PROG_DIR), 'plugins', plugin_name,)
+    template_dir = os.path.join(str(plugin_dir), 'html')
+
+    interface_dir = os.path.join(str(plexpy.PROG_DIR), 'data/interfaces/')
+    default_dir = os.path.join(str(interface_dir), plexpy.CONFIG.INTERFACE)
+
+    _hplookup = TemplateLookup(directories=[template_dir, default_dir], default_filters=['unicode', 'h'],
+                               error_handler=mako_error_handler)
+
+    http_root = plexpy.HTTP_ROOT
+    server_name = plexpy.CONFIG.PMS_NAME
+    cache_param = '?' + (plexpy.CURRENT_VERSION or common.RELEASE)  # need to change to use plugin version number
 
     _session = get_session_info()
 
@@ -286,7 +302,7 @@ class WebInterface(object):
     @requireAuth()
     @addtoapi()
     def get_date_formats(self, **kwargs):
-        """ Get the date and time formats used by Tautulli.
+        """ Get the date and time formats used by RetroArcher.
 
              ```
             Required parameters:
@@ -413,11 +429,18 @@ class WebInterface(object):
 
     @cherrypy.expose
     @requireAuth()
-    def get_recently_added(self, count='0', media_type='', **kwargs):
+    def get_recently_added(self, count='0', section_id='', **kwargs):
+        if section_id == 'all':
+            sections = plexpy.CONFIG.HOME_LIBRARY_CARDS
+        else:
+            sections = [section_id]
 
         try:
             pms_connect = pmsconnect.PmsConnect()
-            result = pms_connect.get_recently_added_details(count=count, media_type=media_type)
+            result = {'recently_added': []}
+            for section in sections:
+                result['recently_added'] += pms_connect.get_recently_added_details(section_id=int(section), count=count)['recently_added']
+
         except IOError as e:
             return serve_template(templatename="recently_added.html", data=None)
 
@@ -469,7 +492,7 @@ class WebInterface(object):
     @sanitize_out()
     @addtoapi("get_libraries_table")
     def get_library_list(self, grouping=None, **kwargs):
-        """ Get the data on the Tautulli libraries table.
+        """ Get the data on the RetroArcher libraries table.
 
             ```
             Required parameters:
@@ -639,7 +662,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def edit_library(self, section_id=None, **kwargs):
-        """ Update a library section on Tautulli.
+        """ Update a library section on RetroArcher.
 
             ```
             Required parameters:
@@ -752,7 +775,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def get_library_media_info(self, section_id=None, section_type=None, rating_key=None, refresh='', **kwargs):
-        """ Get the data on the Tautulli media info tables.
+        """ Get the data on the RetroArcher media info tables.
 
             ```
             Required parameters:
@@ -849,7 +872,7 @@ class WebInterface(object):
     @requireAuth()
     @addtoapi("get_collections_table")
     def get_collections_list(self, section_id=None, **kwargs):
-        """ Get the data on the Tautulli collections tables.
+        """ Get the data on the RetroArcher collections tables.
 
             ```
             Required parameters:
@@ -886,7 +909,7 @@ class WebInterface(object):
     @requireAuth()
     @addtoapi("get_playlists_table")
     def get_playlists_list(self, section_id=None, user_id=None, **kwargs):
-        """ Get the data on the Tautulli playlists tables.
+        """ Get the data on the RetroArcher playlists tables.
 
             ```
             Required parameters:
@@ -1098,7 +1121,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_all_library_history(self, server_id=None, section_id=None, row_ids=None, **kwargs):
-        """ Delete all Tautulli history for a specific library.
+        """ Delete all RetroArcher history for a specific library.
 
             ```
             Required parameters:
@@ -1127,7 +1150,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_library(self, server_id=None, section_id=None, row_ids=None, **kwargs):
-        """ Delete a library section from Tautulli. Also erases all history for the library.
+        """ Delete a library section from RetroArcher. Also erases all history for the library.
 
             ```
             Required parameters:
@@ -1156,7 +1179,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def undelete_library(self, section_id=None, section_name=None, **kwargs):
-        """ Restore a deleted library section to Tautulli.
+        """ Restore a deleted library section to RetroArcher.
 
             ```
             Required parameters:
@@ -1239,7 +1262,7 @@ class WebInterface(object):
     @sanitize_out()
     @addtoapi("get_users_table")
     def get_user_list(self, grouping=None, **kwargs):
-        """ Get the data on Tautulli users table.
+        """ Get the data on RetroArcher users table.
 
             ```
             Required parameters:
@@ -1366,7 +1389,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def edit_user(self, user_id=None, **kwargs):
-        """ Update a user on Tautulli.
+        """ Update a user on RetroArcher.
 
             ```
             Required parameters:
@@ -1464,7 +1487,7 @@ class WebInterface(object):
     @sanitize_out()
     @addtoapi()
     def get_user_ips(self, user_id=None, **kwargs):
-        """ Get the data on Tautulli users IP table.
+        """ Get the data on RetroArcher users IP table.
 
             ```
             Required parameters:
@@ -1536,7 +1559,7 @@ class WebInterface(object):
     @sanitize_out()
     @addtoapi()
     def get_user_logins(self, user_id=None, **kwargs):
-        """ Get the data on Tautulli user login table.
+        """ Get the data on RetroArcher user login table.
 
             ```
             Required parameters:
@@ -1600,7 +1623,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def logout_user_session(self, row_ids=None, **kwargs):
-        """ Logout Tautulli user sessions.
+        """ Logout RetroArcher user sessions.
 
             ```
             Required parameters:
@@ -1768,7 +1791,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_all_user_history(self, user_id=None, row_ids=None, **kwargs):
-        """ Delete all Tautulli history for a specific user.
+        """ Delete all RetroArcher history for a specific user.
 
             ```
             Required parameters:
@@ -1796,7 +1819,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_user(self, user_id=None, row_ids=None, **kwargs):
-        """ Delete a user from Tautulli. Also erases all history for the user.
+        """ Delete a user from RetroArcher. Also erases all history for the user.
 
             ```
             Required parameters:
@@ -1824,7 +1847,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def undelete_user(self, user_id=None, username=None, **kwargs):
-        """ Restore a deleted user to Tautulli.
+        """ Restore a deleted user to RetroArcher.
 
             ```
             Required parameters:
@@ -1866,7 +1889,7 @@ class WebInterface(object):
     @sanitize_out()
     @addtoapi()
     def get_history(self, user=None, user_id=None, grouping=None, include_activity=None, **kwargs):
-        """ Get the Tautulli history.
+        """ Get the RetroArcher history.
 
             ```
             Required parameters:
@@ -2069,7 +2092,7 @@ class WebInterface(object):
                      "optimized_version_profile": "",
                      "optimized_version_title": "",
                      "original_title": "",
-                     "pre_tautulli": "",
+                     "pre_retroarcher": "",
                      "quality_profile": "1.5 Mbps 480p",
                      "stream_audio_bitrate": 203,
                      "stream_audio_channels": 2,
@@ -2130,7 +2153,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi("delete_history")
     def delete_history_rows(self, row_ids=None, **kwargs):
-        """ Delete history rows from Tautulli.
+        """ Delete history rows from RetroArcher.
 
             ```
             Required parameters:
@@ -2762,7 +2785,7 @@ class WebInterface(object):
         filtered = []
         fa = filt.append
 
-        if logfile == "tautulli_api":
+        if logfile == "retroarcher_api":
             filename = logger.FILENAME_API
         elif logfile == "plex_websocket":
             filename = logger.FILENAME_PLEX_WEBSOCKET
@@ -2855,7 +2878,7 @@ class WebInterface(object):
     @sanitize_out()
     @addtoapi()
     def get_notification_log(self, **kwargs):
-        """ Get the data on the Tautulli notification logs table.
+        """ Get the data on the RetroArcher notification logs table.
 
             ```
             Required parameters:
@@ -2882,7 +2905,7 @@ class WebInterface(object):
                           "notify_action": "on_play",
                           "rating_key": 153037,
                           "session_key": 147,
-                          "subject_text": "Tautulli (Winterfell-Server)",
+                          "subject_text": "RetroArcher (Winterfell-Server)",
                           "success": 1,
                           "timestamp": 1462253821,
                           "user": "DanyKhaleesi69",
@@ -2917,7 +2940,7 @@ class WebInterface(object):
     @sanitize_out()
     @addtoapi()
     def get_newsletter_log(self, **kwargs):
-        """ Get the data on the Tautulli newsletter logs table.
+        """ Get the data on the RetroArcher newsletter logs table.
 
             ```
             Required parameters:
@@ -2976,11 +2999,279 @@ class WebInterface(object):
         return newsletter_logs
 
     @cherrypy.expose
+    @requireAuth(member_of("admin"))
+    def get_sunshine_log(self, **kwargs):
+        json_data = helpers.process_json_kwargs(json_kwargs=kwargs.get('json_data'))
+        log_level = kwargs.get('log_level', "")
+
+        start = json_data['start']
+        length = json_data['length']
+        order_column = json_data['order'][0]['column']
+        order_dir = json_data['order'][0]['dir']
+        search_value = json_data['search']['value']
+        sortcolumn = 0
+
+        filt = []
+        filtered = []
+        fa = filt.append
+
+        log_directory = plexpy.CONFIG.LOG_DIR
+        filename = 'sunshine.log'
+
+        with open(os.path.join(log_directory, filename), 'r', encoding='utf-8') as f:
+            for l in f.readlines():
+                if l.startswith('['):  # new entry
+                    temp_timestamp = l.split('[', 1)[-1].split(']', 1)[0].split(':')
+                    timestamp = f'{temp_timestamp[0]}-{temp_timestamp[1]}-{temp_timestamp[2]} {temp_timestamp[3]}:{temp_timestamp[4]}:{temp_timestamp[5]}'
+                    loglvl = l.split(': ', 2)[1].upper()
+                    msg = helpers.sanitize(l.split(': ', 2)[-1].replace('\n', ''))
+                    fa([timestamp, loglvl, msg])
+                else:  # continued entry
+                    tl = (len(filt) - 1)
+                    n = len(l) - len(l.lstrip(' '))
+                    ll = '&nbsp;' * (2 * n) + helpers.sanitize(l[n:])
+                    if l.lower().startswith('device description'):
+                        filt[tl][2] = ll
+                    else:
+                        filt[tl][2] += '<br>' + ll
+                    continue
+
+        log_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR']
+        if log_level in log_levels:
+            log_levels = log_levels[log_levels.index(log_level)::]
+            filtered = [row for row in filt if row[1] in log_levels]
+        else:
+            filtered = filt
+
+        if search_value:
+            filtered = [row for row in filtered for column in row if search_value.lower() in column.lower()]
+
+        if order_column == '1':
+            sortcolumn = 2
+        elif order_column == '2':
+            sortcolumn = 1
+
+        filtered.sort(key=lambda x: x[sortcolumn])
+
+        if order_dir == 'desc':
+            filtered = filtered[::-1]
+
+        rows = filtered[start:(start + length)]
+
+        return json.dumps({
+            'recordsFiltered': len(filtered),
+            'recordsTotal': len(filt),
+            'data': rows,
+        })
+
+    @cherrypy.expose
+    @requireAuth(member_of("admin"))
+    def get_retroarch_log(self, **kwargs):
+        json_data = helpers.process_json_kwargs(json_kwargs=kwargs.get('json_data'))
+        log_level = kwargs.get('log_level', "")
+
+        start = json_data['start']
+        length = json_data['length']
+        order_column = json_data['order'][0]['column']
+        order_dir = json_data['order'][0]['dir']
+        search_value = json_data['search']['value']
+        sortcolumn = 0
+
+        filt = []
+        filtered = []
+        fa = filt.append
+
+        f = emulators.RetroArch().get_log_file()
+
+        index = 0
+        for l in f.getvalue().splitlines():
+            if l.startswith('['):  # new entry
+                timestamp = index
+                loglvl = l.split('[', 1)[-1].split(']', 1)[0]
+                msg = helpers.sanitize(l.split('] ', 1)[-1].replace('\n', ''))
+                fa([timestamp, loglvl, msg])
+                index += 1
+            else:  # continued entry
+                tl = (len(filt) - 1)
+                n = len(l) - len(l.lstrip(' '))
+                ll = '&nbsp;' * (2 * n) + helpers.sanitize(l[n:])
+                filt[tl][2] += '<br>' + ll
+                continue
+
+        log_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR']
+        if log_level in log_levels:
+            log_levels = log_levels[log_levels.index(log_level)::]
+            filtered = [row for row in filt if row[1] in log_levels]
+        else:
+            filtered = filt
+
+        if search_value:
+            filtered = [row for row in filtered for column in row if search_value.lower() in column.lower()]
+
+        if order_column == '1':
+            sortcolumn = 2
+        elif order_column == '2':
+            sortcolumn = 1
+
+        filtered.sort(key=lambda x: x[sortcolumn])
+
+        if order_dir == 'desc':
+            filtered = filtered[::-1]
+
+        rows = filtered[start:(start + length)]
+
+        return json.dumps({
+            'recordsFiltered': len(filtered),
+            'recordsTotal': len(filt),
+            'data': rows,
+        })
+
+    @cherrypy.expose
+    @requireAuth(member_of("admin"))
+    def get_rpcs3_log(self, **kwargs):
+        json_data = helpers.process_json_kwargs(json_kwargs=kwargs.get('json_data'))
+        log_level = kwargs.get('log_level', "")
+
+        start = json_data['start']
+        length = json_data['length']
+        order_column = json_data['order'][0]['column']
+        order_dir = json_data['order'][0]['dir']
+        search_value = json_data['search']['value']
+        sortcolumn = 0
+
+        filt = []
+        filtered = []
+        fa = filt.append
+
+        f = emulators.RPCS3().get_log_file()
+
+        first = True
+        for l in f.getvalue().splitlines():
+            levels = {
+                # https://github.com/RPCS3/rpcs3/blob/c646476ca8076727a9f290b51b94cd1d8f74e1c4/rpcs3/util/logs.cpp#L630
+                '·A': 'ALWAYS',
+                '·F': 'FATAL',
+                '·E': 'ERROR',
+                '·U': 'TODO',
+                '·S': 'SUCCESS',
+                '·W': 'WARNING',
+                '·!': 'NOTICE',
+                '·T': 'TRACE',
+            }
+            if l.startswith('·'):  # new entry
+                temp_timestamp = l.split(' ', 2)[-2].split(':')
+                seconds = int(temp_timestamp[0]) * 3600 + int(temp_timestamp[1]) * 60 + round(
+                    float(temp_timestamp[2]), 0)
+                timestamp = str(int(seconds))
+                loglvl = levels[l.split(' ', 1)[0]]
+                full_msg = helpers.sanitize(l.split(' ', 2)[-1].replace('\n', '')).split(':', 1)
+                msg = full_msg[-1]
+                msg_type = full_msg[0]
+                fa([timestamp, loglvl, msg_type, msg])
+                first = False
+            elif not first:  # continued entry
+                tl = (len(filt) - 1)
+                n = len(l) - len(l.lstrip(' '))
+                ll = '&nbsp;' * (2 * n) + helpers.sanitize(l[n:])
+                filt[tl][-1] += '<br>' + ll
+                continue
+            if first:
+                seconds = 0
+                timestamp = str(seconds)
+                loglvl = 'NOTICE'
+                msg = helpers.sanitize(l.replace('\n', ''))
+                msg_type = 'INIT'
+                fa([timestamp, loglvl, msg_type, msg])
+                first = False
+
+        log_levels = ['TRACE', 'NOTICE', 'WARNING', 'SUCCESS', 'TODO', 'ERROR', 'FATAL', 'ALWAYS']
+
+        if log_level in log_levels:
+            log_levels = log_levels[log_levels.index(log_level)::]
+            filtered = [row for row in filt if row[1] in log_levels]
+        else:
+            filtered = filt
+
+        if search_value:
+            filtered = [row for row in filtered for column in row if search_value.lower() in column.lower()]
+
+        if order_column == '1':
+            sortcolumn = 2
+        elif order_column == '2':
+            sortcolumn = 1
+
+        filtered.sort(key=lambda x: x[sortcolumn])
+
+        if order_dir == 'desc':
+            filtered = filtered[::-1]
+
+        rows = filtered[start:(start + length)]
+
+        return json.dumps({
+            'recordsFiltered': len(filtered),
+            'recordsTotal': len(filt),
+            'data': rows,
+        })
+
+    @cherrypy.expose
+    @requireAuth(member_of("admin"))
+    def get_cemu_log(self, **kwargs):
+        json_data = helpers.process_json_kwargs(json_kwargs=kwargs.get('json_data'))
+
+        start = json_data['start']
+        length = json_data['length']
+        order_column = json_data['order'][0]['column']
+        order_dir = json_data['order'][0]['dir']
+        search_value = json_data['search']['value']
+        sortcolumn = 0
+
+        filt = []
+        filtered = []
+        fa = filt.append
+
+        f = emulators.Cemu().get_log_file()
+
+        for l in f.getvalue().splitlines():
+            if l.startswith('['):  # new entry
+                timestamp = l.split('[', 1)[-1].split(']', 1)[0]
+                msg = helpers.sanitize(l.split('] ', 1)[-1].replace('\n', ''))
+                fa([timestamp, msg])
+            else:  # continued entry
+                tl = (len(filt) - 1)
+                n = len(l) - len(l.lstrip(' '))
+                ll = '&nbsp;' * (2 * n) + helpers.sanitize(l[n:])
+                filt[tl][-1] += '<br>' + ll
+                continue
+
+        filtered = filt
+
+        if search_value:
+            filtered = [row for row in filtered for column in row if search_value.lower() in column.lower()]
+
+        if order_column == '1':
+            sortcolumn = 2
+        elif order_column == '2':
+            sortcolumn = 1
+
+        filtered.sort(key=lambda x: x[sortcolumn])
+
+        if order_dir == 'desc':
+            filtered = filtered[::-1]
+
+        rows = filtered[start:(start + length)]
+
+        return json.dumps({
+            'recordsFiltered': len(filtered),
+            'recordsTotal': len(filt),
+            'data': rows,
+        })
+
+    @cherrypy.expose
     @cherrypy.tools.json_out()
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_notification_log(self, **kwargs):
-        """ Delete the Tautulli notification logs.
+        """ Delete the RetroArcher notification logs.
 
             ```
             Required paramters:
@@ -3005,7 +3296,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_newsletter_log(self, **kwargs):
-        """ Delete the Tautulli newsletter logs.
+        """ Delete the RetroArcher newsletter logs.
 
             ```
             Required paramters:
@@ -3030,7 +3321,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_login_log(self, **kwargs):
-        """ Delete the Tautulli login logs.
+        """ Delete the RetroArcher login logs.
 
             ```
             Required paramters:
@@ -3054,7 +3345,7 @@ class WebInterface(object):
     @cherrypy.tools.json_out()
     @requireAuth(member_of("admin"))
     def delete_logs(self, logfile='', **kwargs):
-        if logfile == "tautulli_api":
+        if logfile == "retroarcher_api":
             filename = logger.FILENAME_API
         elif logfile == "plex_websocket":
             filename = logger.FILENAME_PLEX_WEBSOCKET
@@ -3070,6 +3361,132 @@ class WebInterface(object):
             result = 'error'
             msg = 'Failed to clear the %s file.' % filename
             logger.exception('Failed to clear the %s file: %s.' % (filename, e))
+
+        return {'result': result, 'message': msg}
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    @requireAuth(member_of("admin"))
+    def create_gist(self, **kwargs):
+        headers = {
+            'accept': 'application/vnd.github.v3+json',
+            'Authorization': f'token {plexpy.CONFIG.GIT_TOKEN}'
+        }
+
+        logfiles = {
+            'retroarcher.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, logger.FILENAME)).read(),
+            'plex_websocket.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, logger.FILENAME_PLEX_WEBSOCKET)).read(),
+            'retroarcher_api.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, logger.FILENAME_API)).read(),
+            'sunshine.log': open(os.path.join(plexpy.CONFIG.LOG_DIR, 'sunshine.log')).read(),
+            'retroarch.log': emulators.RetroArch().get_log_file().getvalue(),
+            'RPCS3.log': emulators.RPCS3().get_log_file().getvalue(),
+            'cemu.log': emulators.Cemu().get_log_file().getvalue()
+        }
+
+        data = {
+            'description': 'RetroArcher support',
+            "public": 'true',
+            'files': {}
+        }
+
+        for logfile_name, contents in logfiles.items():
+            if contents:
+                data['files'][logfile_name] = {
+                    'content': contents
+                }
+
+        url = 'https://api.github.com/gists'
+        response = requests.post(url, headers=headers, json=data)
+
+        try:
+            html_url = response.json()['html_url']
+            result = 'success'
+            msg = f'Successfully created the gist.<br>Provide this url to support:<br>{html_url}'
+            logger.info(msg)
+            return {'result': result, 'message': msg, 'link': html_url}
+        except KeyError:
+            html_msg = response.json()['message']
+            result = 'error'
+            msg = f'Failed to create the gist. {html_msg}'
+            logger.exception(msg)
+        except Exception as e:
+            result = 'error'
+            msg = f'Failed to create the gist. Exception: {e}'
+            logger.exception(msg)
+
+        return {'result': result, 'message': msg}
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    @requireAuth(member_of("admin"))
+    def update_app(self, app='', **kwargs):
+        application = False
+        if app == 'all':
+            application = [
+                streamer.Sunshine(),
+                emulators.RetroArch(),
+                emulators.RPCS3(),
+            ]
+            if common.PLATFORM in ('Windows'):
+                application.append(emulators.Cemu())
+        elif app == 'sunshine':
+            application = streamer.Sunshine()
+        elif app == 'retroarch':
+            application = emulators.RetroArch()
+        elif app == 'rpcs3':
+            application = emulators.RPCS3()
+        elif app == 'cemu':
+            application = emulators.Cemu()
+        else:
+            result = 'error'
+            msg = f'Emulator does not exist: {app}'
+            logger.exception(msg)
+
+        apps_true = []
+        apps_false = []
+
+        if app == 'all':
+            status = True
+            for x in application:
+                temp_status = x.update_base(force=True)
+                if not temp_status:
+                    apps_false.append(x)
+                    status = False
+                else:
+                    apps_true.append(x)
+        elif application:
+            status = application.update_base(force=True)
+            if status:
+                apps_true.append(app)
+            else:
+                apps_false.append(app)
+
+        if len(apps_true) > 1:
+            apps_true_text = 'apps'
+        else:
+            apps_true_text = 'app'
+
+        if len(apps_false) > 1:
+            apps_false_text = 'apps'
+        else:
+            apps_false_text = 'app'
+
+        if len(apps_true) > 0 and len(apps_false) > 0:  # some apps succeeded, and some failed
+            result = 'error'
+            msg = f'Failed updating {apps_false_text}: {apps_false}, Success updating {apps_true_text}: {apps_true}'
+            logger.exception(msg)
+        elif len(apps_true) > 0:  # all apps succeeded
+            result = 'success'
+            msg = f'Success updating {apps_true_text}: {apps_true}'
+            logger.info(msg)
+        elif len(apps_false) > 0:  # all apps failed
+            result = 'error'
+            msg = f'Failed updating {apps_false_text}: {apps_false}'
+            logger.exception(msg)
+        else:
+            result = 'error'
+            msg = f'Failed updating apps with argument: {app}'
+            logger.exception(msg)
 
         return {'result': result, 'message': msg}
 
@@ -3099,7 +3516,7 @@ class WebInterface(object):
     @cherrypy.expose
     @requireAuth(member_of("admin"))
     def logFile(self, logfile='', **kwargs):
-        if logfile == "tautulli_api":
+        if logfile == "retroarcher_api":
             filename = logger.FILENAME_API
         elif logfile == "plex_websocket":
             filename = logger.FILENAME_PLEX_WEBSOCKET
@@ -3237,7 +3654,43 @@ class WebInterface(object):
             "newsletter_password": plexpy.CONFIG.NEWSLETTER_PASSWORD,
             "newsletter_inline_styles": checked(plexpy.CONFIG.NEWSLETTER_INLINE_STYLES),
             "newsletter_custom_dir": plexpy.CONFIG.NEWSLETTER_CUSTOM_DIR,
-            "sys_tray_icon": checked(plexpy.CONFIG.SYS_TRAY_ICON)
+            "sys_tray_icon": checked(plexpy.CONFIG.SYS_TRAY_ICON),
+            "rom_dir": plexpy.CONFIG.ROM_DIR,
+            "retroarch_nightly_assets": plexpy.CONFIG.RETROARCH_NIGHTLY_ASSETS,
+            "retroarch_strict_core_matching": plexpy.CONFIG.RETROARCH_STRICT_CORE_MATCHING,
+            "sunshine_moonlight_name": plexpy.CONFIG.SUNSHINE_MOONLIGHT_NAME,
+            "sunshine_external_ip_method": plexpy.CONFIG.SUNSHINE_EXTERNAL_IP_METHOD,
+            "sunshine_external_ip": plexpy.CONFIG.SUNSHINE_EXTERNAL_IP,
+            "sunshine_port": plexpy.CONFIG.SUNSHINE_PORT,
+            "sunshine_upnp": plexpy.CONFIG.SUNSHINE_UPNP,
+            "sunshine_ping_timeout": plexpy.CONFIG.SUNSHINE_PING_TIMEOUT,
+            "sunshine_audio_sink": plexpy.CONFIG.SUNSHINE_AUDIO_SINK,
+            "sunshine_virtual_sink": plexpy.CONFIG.SUNSHINE_VIRTUAL_SINK,
+            "sunshine_adapter_name": plexpy.CONFIG.SUNSHINE_ADAPTER_NAME,
+            "sunshine_output_name": plexpy.CONFIG.SUNSHINE_OUTPUT_NAME,
+            "sunshine_allowed_fps": plexpy.CONFIG.SUNSHINE_ALLOWED_FPS,
+            "sunshine_allowed_resolutions": plexpy.CONFIG.SUNSHINE_ALLOWED_RESOLUTIONS,
+            "sunshine_gamepad": plexpy.CONFIG.SUNSHINE_GAMEPAD,
+            "sunshine_emulate_guide_button": plexpy.CONFIG.SUNSHINE_EMULATE_GUIDE_BUTTON,
+            "sunshine_back_button_timeout": plexpy.CONFIG.SUNSHINE_BACK_BUTTON_TIMEOUT,
+            "sunshine_key_repeat_delay": plexpy.CONFIG.SUNSHINE_KEY_REPEAT_DELAY,
+            "sunshine_key_repeat_frequency": plexpy.CONFIG.SUNSHINE_KEY_REPEAT_FREQUENCY,
+            "sunshine_ffmpeg_quantitization_parameter": plexpy.CONFIG.SUNSHINE_FFMPEG_QUANTITIZATION_PARAMETER,
+            "sunshine_ffmpeg_minimum_threads": plexpy.CONFIG.SUNSHINE_FFMPEG_MINIMUM_THREADS,
+            "sunshine_ffmpeg_hevc_mode": plexpy.CONFIG.SUNSHINE_FFMPEG_HEVC_MODE,
+            "sunshine_ffmpeg_encoder": plexpy.CONFIG.SUNSHINE_FFMPEG_ENCODER,
+            "sunshine_ffmpeg_encoder_sw_preset": plexpy.CONFIG.SUNSHINE_FFMPEG_ENCODER_SW_PRESET,
+            "sunshine_ffmpeg_encoder_sw_tune": plexpy.CONFIG.SUNSHINE_FFMPEG_ENCODER_SW_TUNE,
+            "sunshine_ffmpeg_encoder_nv_preset": plexpy.CONFIG.SUNSHINE_FFMPEG_ENCODER_NV_PRESET,
+            "sunshine_ffmpeg_encoder_nv_rate_control": plexpy.CONFIG.SUNSHINE_FFMPEG_ENCODER_NV_RATE_CONTROL,
+            "sunshine_ffmpeg_encoder_nv_coder": plexpy.CONFIG.SUNSHINE_FFMPEG_ENCODER_NV_CODER,
+            "sunshine_ffmpeg_encoder_amd_preset": plexpy.CONFIG.SUNSHINE_FFMPEG_ENCODER_AMD_PRESET,
+            "sunshine_ffmpeg_encoder_amd_rate_control": plexpy.CONFIG.SUNSHINE_FFMPEG_ENCODER_AMD_RATE_CONTROL,
+            "sunshine_ffmpeg_encoder_amd_coder": plexpy.CONFIG.SUNSHINE_FFMPEG_ENCODER_AMD_CODER,
+            "sunshine_error_correction_factor": plexpy.CONFIG.SUNSHINE_ERROR_CORRECTION_FACTOR,
+            "sunshine_multicasting_channels": plexpy.CONFIG.SUNSHINE_MULTICASTING_CHANNELS,
+            "sunshine_vaapi_device": plexpy.CONFIG.SUNSHINE_VAAPI_DEVICE,
+            "lock_settings": plexpy.CONFIG.LOCK_SETTINGS,
         }
 
         return serve_template(templatename="settings.html", title="Settings", config=config, kwargs=kwargs)
@@ -3275,7 +3728,9 @@ class WebInterface(object):
             "allow_guest_access", "cache_images", "http_proxy", "http_basic_auth", "notify_concurrent_by_ip",
             "history_table_activity", "plexpy_auto_update",
             "themoviedb_lookup", "tvmaze_lookup", "musicbrainz_lookup", "http_plex_admin",
-            "newsletter_self_hosted", "newsletter_inline_styles", "sys_tray_icon"
+            "newsletter_self_hosted", "newsletter_inline_styles", "sys_tray_icon",
+            "retroarch_nightly_assets", "retroarch_strict_core_matching",
+            "sunshine_upnp", "sunshine_emulate_guide_button"
         ]
         for checked_config in checked_configs:
             if checked_config not in kwargs:
@@ -3325,7 +3780,8 @@ class WebInterface(object):
                 kwargs.get('refresh_users_interval') != str(plexpy.CONFIG.REFRESH_USERS_INTERVAL) or \
                 kwargs.get('pms_update_check_interval') != str(plexpy.CONFIG.PMS_UPDATE_CHECK_INTERVAL) or \
                 kwargs.get('monitor_pms_updates') != plexpy.CONFIG.MONITOR_PMS_UPDATES or \
-                kwargs.get('pms_url_manual') != plexpy.CONFIG.PMS_URL_MANUAL:
+                kwargs.get('pms_url_manual') != plexpy.CONFIG.PMS_URL_MANUAL or \
+                kwargs.get('retroarch_nightly_assets') != plexpy.CONFIG.RETROARCH_NIGHTLY_ASSETS:
             reschedule = True
 
         # If we change the SSL setting for PMS or PMS remote setting, make sure we grab the new url.
@@ -3443,6 +3899,11 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     def get_configuration_table(self, **kwargs):
         return serve_template(templatename="configuration_table.html")
+
+    @cherrypy.expose
+    @requireAuth(member_of("admin"))
+    def get_third_party_table(self, **kwargs):
+        return serve_template(templatename="third_party_table.html")
 
     @cherrypy.expose
     @requireAuth(member_of("admin"))
@@ -3717,8 +4178,8 @@ class WebInterface(object):
     @cherrypy.expose
     @cherrypy.tools.json_out()
     @requireAuth(member_of("admin"))
-    def send_notification(self, notifier_id=None, subject='Tautulli', body='Test notification', notify_action='', **kwargs):
-        """ Send a notification using Tautulli.
+    def send_notification(self, notifier_id=None, subject='RetroArcher', body='Test notification', notify_action='', **kwargs):
+        """ Send a notification using RetroArcher.
 
             ```
             Required parameters:
@@ -3797,11 +4258,11 @@ class WebInterface(object):
         access_token = facebook._get_credentials(code)
 
         if access_token:
-            return "Facebook authorization successful. Tautulli can send notification to Facebook. " \
+            return "Facebook authorization successful. RetroArcher can send notification to Facebook. " \
                 "Your Facebook access token is:" \
                 "<pre>{0}</pre>You may close this page.".format(access_token)
         else:
-            return "Failed to request authorization from Facebook. Check the Tautulli logs for details.<br />You may close this page."
+            return "Failed to request authorization from Facebook. Check the RetroArcher logs for details.<br />You may close this page."
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -3944,20 +4405,20 @@ class WebInterface(object):
     @addtoapi()
     def import_database(self, app=None, database_file=None, database_path=None, method=None, backup=False,
                         table_name=None, import_ignore_interval=0, **kwargs):
-        """ Import a Tautulli, PlexWatch, or Plexivity database into Tautulli.
+        """ Import a RetroArcher, PlexWatch, or Plexivity database into RetroArcher.
 
             ```
             Required parameters:
-                app (str):                      "tautulli" or "plexwatch" or "plexivity"
+                app (str):                      "retroarcher"
                 database_file (file):           The database file to import (multipart/form-data)
                 or
                 database_path (str):            The full path to the database file to import
-                method (str):                   For Tautulli only, "merge" or "overwrite"
+                method (str):                   For RetroArcher only, "merge" or "overwrite"
                 table_name (str):               For PlexWatch or Plexivity only, "processed" or "grouped"
 
 
             Optional parameters:
-                backup (bool):                  For Tautulli only, true or false whether to backup
+                backup (bool):                  For RetroArcher only, true or false whether to backup
                                                 the current database before importing
                 import_ignore_interval (int):   For PlexWatch or Plexivity only, the minimum number
                                                 of seconds for a stream to import
@@ -3993,43 +4454,13 @@ class WebInterface(object):
         if not database_path:
             return {'result': 'error', 'message': 'No database specified for import'}
 
-        if app.lower() == 'tautulli':
+        if app.lower() == 'retroarcher':
             db_check_msg = database.validate_database(database=database_path)
             if db_check_msg == 'success':
-                threading.Thread(target=database.import_tautulli_db,
+                threading.Thread(target=database.import_retroarcher_db,
                                  kwargs={'database': database_path,
                                          'method': method,
                                          'backup': helpers.bool_true(backup)}).start()
-                return {'result': 'success',
-                        'message': 'Database import has started. Check the logs to monitor any problems.'}
-            else:
-                if database_file:
-                    helpers.delete_file(database_path)
-                return {'result': 'error', 'message': db_check_msg}
-
-        elif app.lower() == 'plexwatch':
-            db_check_msg = plexwatch_import.validate_database(database_file=database_path,
-                                                              table_name=table_name)
-            if db_check_msg == 'success':
-                threading.Thread(target=plexwatch_import.import_from_plexwatch,
-                                 kwargs={'database_file': database_path,
-                                         'table_name': table_name,
-                                         'import_ignore_interval': import_ignore_interval}).start()
-                return {'result': 'success',
-                        'message': 'Database import has started. Check the logs to monitor any problems.'}
-            else:
-                if database_file:
-                    helpers.delete_file(database_path)
-                return {'result': 'error', 'message': db_check_msg}
-
-        elif app.lower() == 'plexivity':
-            db_check_msg = plexivity_import.validate_database(database_file=database_path,
-                                                              table_name=table_name)
-            if db_check_msg == 'success':
-                threading.Thread(target=plexivity_import.import_from_plexivity,
-                                 kwargs={'database_file': database_path,
-                                         'table_name': table_name,
-                                         'import_ignore_interval': import_ignore_interval}).start()
                 return {'result': 'success',
                         'message': 'Database import has started. Check the logs to monitor any problems.'}
             else:
@@ -4045,7 +4476,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def import_config(self, config_file=None, config_path=None, backup=False, **kwargs):
-        """ Import a Tautulli config file.
+        """ Import a RetroArcher config file.
 
             ```
             Required parameters:
@@ -4062,7 +4493,7 @@ class WebInterface(object):
                 json:
                     {"result": "success",
                      "message": "Config import has started. Check the logs to monitor any problems. "
-                                "Tautulli will restart automatically."
+                                "RetroArcher will restart automatically."
                      }
             ```
         """
@@ -4088,17 +4519,13 @@ class WebInterface(object):
 
         return {'result': 'success',
                 'message': 'Config import has started. Check the logs to monitor any problems. '
-                           'Tautulli will restart automatically.'}
+                           'RetroArcher will restart automatically.'}
 
     @cherrypy.expose
     @requireAuth(member_of("admin"))
     def import_database_tool(self, app=None, **kwargs):
-        if app == 'tautulli':
-            return serve_template(templatename="app_import.html", title="Import Tautulli Database", app="Tautulli")
-        elif app == 'plexwatch':
-            return serve_template(templatename="app_import.html", title="Import PlexWatch Database", app="PlexWatch")
-        elif app == 'plexivity':
-            return serve_template(templatename="app_import.html", title="Import Plexivity Database", app="Plexivity")
+        if app == 'retroarcher':
+            return serve_template(templatename="app_import.html", title="Import RetroArcher Database", app="RetroArcher")
 
         logger.warn("No app specified for import.")
         return
@@ -4106,7 +4533,7 @@ class WebInterface(object):
     @cherrypy.expose
     @requireAuth(member_of("admin"))
     def import_config_tool(self, **kwargs):
-        return serve_template(templatename="config_import.html", title="Import Tautulli Configuration")
+        return serve_template(templatename="config_import.html", title="Import RetroArcher Configuration")
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -4281,11 +4708,42 @@ class WebInterface(object):
         return apikey
 
     @cherrypy.expose
+    @requireAuth(member_of("admin"))
+    def sudo_install(self, **kwargs):
+        """installs a package using apt-get and sudo password as supplied by the user in the web interface
+
+        returns 'true' as a string if the install succeeded
+        returns 'false' as a string if the install failed
+
+        returning bool values fails which is the reason for returning strings
+        """
+        _user_pw = kwargs['sudo_password']
+        package = kwargs['package']
+
+        logger.info("User installed VAINFO using Sudo Password from #Settings.")
+        #logger._BLACKLIST_WORDS.add(sudo_password)
+
+        proc = subprocess.Popen(['sudo', '-S', 'apt-get', 'install', '-y', package], stdin=subprocess.PIPE, stderr=subprocess.PIPE,
+          universal_newlines=True)
+
+        bypass_sudo_prompt = proc.communicate(_user_pw + '\n')[1]
+
+        returncode = proc.returncode
+        proc.kill()
+
+        if returncode == 0:
+            status = 'true'
+        else:
+            status = 'false'
+
+        return status
+
+    @cherrypy.expose
     @cherrypy.tools.json_out()
     @requireAuth(member_of("admin"))
     @addtoapi()
     def update_check(self, **kwargs):
-        """ Check for Tautulli updates.
+        """ Check for RetroArcher updates.
 
             ```
             Required parameters:
@@ -4298,7 +4756,7 @@ class WebInterface(object):
                 json
                     {"result": "success",
                      "update": true,
-                     "message": "An update for Tautulli is available."
+                     "message": "An update for RetroArcher is available."
                     }
             ```
         """
@@ -4307,14 +4765,14 @@ class WebInterface(object):
         if plexpy.UPDATE_AVAILABLE is None:
             update = {'result': 'error',
                       'update': None,
-                      'message': 'You are running an unknown version of Tautulli.'
+                      'message': 'You are running an unknown version of RetroArcher.'
                       }
 
         elif plexpy.UPDATE_AVAILABLE == 'release':
             update = {'result': 'success',
                       'update': True,
                       'release': True,
-                      'message': 'A new release (%s) of Tautulli is available.' % plexpy.LATEST_RELEASE,
+                      'message': 'A new release (%s) of RetroArcher is available.' % plexpy.LATEST_RELEASE,
                       'current_release': plexpy.common.RELEASE,
                       'latest_release': plexpy.LATEST_RELEASE,
                       'release_url': helpers.anon_url(
@@ -4328,7 +4786,7 @@ class WebInterface(object):
             update = {'result': 'success',
                       'update': True,
                       'release': False,
-                      'message': 'A newer version of Tautulli is available.',
+                      'message': 'A newer version of RetroArcher is available.',
                       'current_version': plexpy.CURRENT_VERSION,
                       'latest_version': plexpy.LATEST_VERSION,
                       'commits_behind': plexpy.COMMITS_BEHIND,
@@ -4343,7 +4801,7 @@ class WebInterface(object):
         else:
             update = {'result': 'success',
                       'update': False,
-                      'message': 'Tautulli is up to date.'
+                      'message': 'RetroArcher is up to date.'
                       }
 
         if plexpy.DOCKER or plexpy.SNAP or plexpy.FROZEN:
@@ -4355,7 +4813,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     def do_state_change(self, signal, title, timer, **kwargs):
         message = title
-        quote = self.random_arnold_quotes()
+        quote = self.random_quotes()
         if signal:
             plexpy.SIGNAL = signal
 
@@ -4592,7 +5050,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi('notify_recently_added')
     def send_manual_on_created(self, notifier_id='', rating_key='', **kwargs):
-        """ Send a recently added notification using Tautulli.
+        """ Send a recently added notification using RetroArcher.
 
             ```
             Required parameters:
@@ -4788,7 +5246,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def download_config(self, **kwargs):
-        """ Download the Tautulli configuration file. """
+        """ Download the RetroArcher configuration file. """
         config_file = config.FILENAME
 
         try:
@@ -4802,7 +5260,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def download_database(self, **kwargs):
-        """ Download the Tautulli database file. """
+        """ Download the RetroArcher database file. """
         database_file = database.FILENAME
 
         try:
@@ -4819,23 +5277,38 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def download_log(self, logfile='', **kwargs):
-        """ Download the Tautulli log file. """
-        if logfile == "tautulli_api":
+        """ Download the RetroArcher log file. """
+        if logfile == "retroarcher_api":
             filename = logger.FILENAME_API
             log = logger.logger_api
+            filepath = os.path.join(plexpy.CONFIG.LOG_DIR, filename)
         elif logfile == "plex_websocket":
             filename = logger.FILENAME_PLEX_WEBSOCKET
             log = logger.logger_plex_websocket
-        else:
+            filepath = os.path.join(plexpy.CONFIG.LOG_DIR, filename)
+        elif logfile == 'retroarcher':
             filename = logger.FILENAME
             log = logger.logger
+            filepath = os.path.join(plexpy.CONFIG.LOG_DIR, filename)
+        elif logfile == 'retroarch':
+            filename = 'retroarch.log'
+            filepath = os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'logs', filename)
+        elif logfile == 'rpcs3':
+            filename = 'RPCS3.log'
+            filepath = os.path.join(plexpy.CONFIG.RPCS3_DIR, filename)
+        elif logfile == 'cemu':
+            filename = 'log.txt'
+            filepath = os.path.join(plexpy.CONFIG.CEMU_DIR, filename)
+        else:
+            filename = f'{logfile}.log'
+            filepath = os.path.join(plexpy.CONFIG.LOG_DIR, filename)
 
         try:
             log.flush()
         except:
             pass
 
-        return serve_download(os.path.join(plexpy.CONFIG.LOG_DIR, filename), name=filename)
+        return serve_download(filepath, name=filename)
 
     @cherrypy.expose
     @requireAuth(member_of("admin"))
@@ -5056,7 +5529,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def update_metadata_details(self, old_rating_key, new_rating_key, media_type, **kwargs):
-        """ Update the metadata in the Tautulli database by matching rating keys.
+        """ Update the metadata in the RetroArcher database by matching rating keys.
             Also updates all parents or children of the media item if it is a show/season/episode
             or artist/album/track.
 
@@ -5125,7 +5598,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def get_old_rating_keys(self, rating_key='', media_type='', **kwargs):
-        """ Get a list of old rating keys from the Tautulli database for all of the item's parent/children.
+        """ Get a list of old rating keys from the RetroArcher database for all of the item's parent/children.
 
             ```
             Required parameters:
@@ -5854,6 +6327,12 @@ class WebInterface(object):
             result = pms_connect.get_current_activity()
 
             if result:
+                for session in result['sessions']:
+                    if str(session['section_id']) not in plexpy.CONFIG.HOME_LIBRARY_CARDS:
+                        result['sessions'].remove(session)
+                        result['stream_count'] = str(int(result["stream_count"])-1)
+
+            if result:
                 if session_key:
                     return next((s for s in result['sessions'] if s['session_key'] == session_key), {})
                 if session_id:
@@ -6163,46 +6642,52 @@ class WebInterface(object):
 
     @cherrypy.expose
     @requireAuth(member_of("admin"))
-    @addtoapi("arnold")
-    def random_arnold_quotes(self, **kwargs):
-        """ Get to the chopper! """
+    @addtoapi("get_quotes")
+    def random_quotes(self, **kwargs):
+        """ Returns a random quote """
         import random
-        quote_list = ['To crush your enemies, see them driven before you, and to hear the lamentation of their women!',
-                      'Your clothes, give them to me, now!',
-                      'Do it!',
-                      'If it bleeds, we can kill it.',
-                      'See you at the party Richter!',
-                      'Let off some steam, Bennett.',
-                      'I\'ll be back.',
-                      'Get to the chopper!',
-                      'Hasta La Vista, Baby!',
-                      'It\'s not a tumor!',
-                      'Dillon, you son of a bitch!',
-                      'Benny!! Screw you!!',
-                      'Stop whining! You kids are soft. You lack discipline.',
-                      'Nice night for a walk.',
-                      'Stick around!',
-                      'I need your clothes, your boots and your motorcycle.',
-                      'No, it\'s not a tumor. It\'s not a tumor!',
-                      'I LIED!',
-                      'Are you Sarah Connor?',
-                      'I\'m a cop you idiot!',
-                      'Come with me if you want to live.',
-                      'Who is your daddy and what does he do?',
-                      'Oh, cookies! I can\'t wait to toss them.',
-                      'Make it quick because my horse is getting tired.',
-                      'What killed the dinosaurs? The Ice Age!',
-                      'That\'s for sleeping with my wife!',
-                      'Remember when I said I\'d kill you last... I lied!',
-                      'You want to be a farmer? Here\'s a couple of acres.',
-                      'Now, this is the plan. Get your ass to Mars.',
-                      'I just had a terrible thought... What if this is a dream?',
-                      'Well, listen to this one: Rubber baby buggy bumpers!',
-                      'Take your toy back to the carpet!',
-                      'My name is John Kimble... And I love my car.',
-                      'I eat Green Berets for breakfast.',
-                      'Put that cookie down! NOW!'
-                      ]
+        quote_list = [
+            "@!#?@!",
+            "Ah shit, here we go again",
+            "All Your Base Are Belong To Us",
+            "Beyond the scope of Light, beyond the reach of Dark. What could possibly await us. And yet we seek it, insatiably.",
+            "Bury me with my money!",
+            "Did I ever tell you what the definition of insanity is?",
+            "Do a barrel roll!",
+            "Don't make a girl a promise... If you know you can't keep it.",
+            "Finish Him!",
+            "Get over here!",
+            "Hell, it's about time",
+            "Hello, my friend. Stay awhile and listen.",
+            "Hey! Listen!",
+            "I gotta believe!!",
+            "I need a weapon.",
+            "I used to be an adventurer like you. Then I took an arrow in the knee.",
+            "I want to restore this world, but I fear I can't do it alone. Perhaps you could give me a hand?",
+            "It is pitch black. You are likely to be eaten by a grue.",
+            "It’s dangerous to go alone, take this!",
+            "It’s easy to forget what a sin is in the middle of a battlefield.",
+            "It's time to kick ass and chew bubblegum... and I'm all outta gum.",
+            "No Gods or Kings, only Man",
+            "Nothing is true, everything is permitted.",
+            "Reticulating splines",
+            "Sir. Finishing this fight.",
+            "Stand by for Titanfall",
+            "The Cake Is a Lie",
+            "Thank you Mario! But our Princess is in another castle!",
+            "Thought I'd Try Shooting My Way Out—Mix Things Up A Little.",
+            "Wake me... when you need me.",
+            "War Never Changes",
+            "We all make choices, but in the end our choices make us.",
+            "We should start from the first floor, okay? And, Jill, here's a lock pick. It might be handy if you, the master of unlocking, take it with you.",
+            "Well, butter my biscuits!",
+            "Wololo",
+            "Would you kindly?",
+            "Yes sir, I need a weapon.",
+            "You've got a heart of gold. Don't let them take it from you.",
+            "You have died of dysentery.",
+            "You must construct additional pylons.",
+        ]
 
         return random.choice(quote_list)
 
@@ -6506,7 +6991,7 @@ class WebInterface(object):
     @cherrypy.tools.json_out()
     @requireAuth(member_of("admin"))
     def send_newsletter(self, newsletter_id=None, subject='', body='', message='', notify_action='', **kwargs):
-        """ Send a newsletter using Tautulli.
+        """ Send a newsletter using RetroArcher.
 
             ```
             Required parameters:
@@ -6637,7 +7122,7 @@ class WebInterface(object):
     @cherrypy.tools.json_out()
     @addtoapi()
     def status(self, *args, **kwargs):
-        """ Get the current status of Tautulli.
+        """ Get the current status of RetroArcher.
 
             ```
             Required parameters:
@@ -6676,7 +7161,7 @@ class WebInterface(object):
     @cherrypy.tools.json_out()
     @addtoapi()
     def server_status(self, *args, **kwargs):
-        """ Get the current status of Tautulli's connection to the Plex server.
+        """ Get the current status of RetroArcher's connection to the Plex server.
 
             ```
             Required parameters:
@@ -6702,7 +7187,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi("get_exports_table")
     def get_export_list(self, section_id=None, user_id=None, rating_key=None, **kwargs):
-        """ Get the data on the Tautulli export tables.
+        """ Get the data on the RetroArcher export tables.
 
             ```
             Required parameters:
@@ -6992,7 +7477,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     @addtoapi()
     def delete_export(self, export_id=None, delete_all=False, **kwargs):
-        """ Delete exports from Tautulli.
+        """ Delete exports from RetroArcher.
 
             ```
             Required parameters:
@@ -7024,3 +7509,61 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     def exporter_docs(self, **kwargs):
         return '<pre>' + exporter.build_export_docs() + '</pre>'
+
+    ##### Plugins #####
+    @cherrypy.expose
+    @requireAuth(member_of("admin"))
+    def plugin(self, *args, **kwargs):
+        """ Serve the requested plugin template.
+
+            ```
+            Required parameters:
+                name (str):             The name of the plugin
+
+            Optional parameters:
+                template (str):         index, config, example, example.html (default 'index')
+                                        Default value = 'index'
+                                        '.html' will be appended automatically if not included.
+                                        Only html templates are supported.
+                                        Template should follow mako template syntax.
+
+            Returns:
+                html
+            ```
+        """
+        try:
+            plugin_name = kwargs['name']
+        except KeyError:
+            cherrypy.response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+            return json.dumps(API2()._api_responds(result_type='error',
+                                                   msg='Parameter name is required.')).encode('utf-8')
+
+        try:
+            template_name = kwargs['template']
+        except KeyError:
+            template_name = 'index.html'
+
+        if not template_name.endswith('.html'):
+            template_name += '.html'
+
+        # test that required files exist for plugin
+        files = [
+            os.path.join(plexpy.CONFIG.PLUGIN_DIR, plugin_name, 'manifest.xml'),
+            os.path.join(plexpy.CONFIG.PLUGIN_DIR, plugin_name, '__init__.py'),
+            os.path.join(plexpy.CONFIG.PLUGIN_DIR, plugin_name, 'html', template_name),
+        ]
+
+        missing_files = []
+        for file in files:
+            if not os.path.isfile(file):
+                missing_files.append(file)
+
+        if not missing_files:
+            try:
+                return serve_plugin(templatename=template_name, plugin_name=plugin_name, title=plugin_name)
+            except NotFound:
+                return
+        else:
+            cherrypy.response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+            return json.dumps(API2()._api_responds(result_type='error',
+                                                   msg=f'Files missing: {missing_files}.')).encode('utf-8')

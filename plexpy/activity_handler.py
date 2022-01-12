@@ -1,19 +1,4 @@
-﻿# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
-from __future__ import unicode_literals
+﻿from __future__ import unicode_literals
 from future.builtins import str
 from future.builtins import object
 
@@ -94,7 +79,8 @@ class ActivityHandler(object):
                     if not session['rating_key']:
                         session['rating_key'] = self.get_rating_key()
                     session['rating_key_websocket'] = self.get_rating_key()
-                    return session
+                    if str(session['section_id']) in plexpy.CONFIG.HOME_LIBRARY_CARDS:
+                        return session
 
         return None
 
@@ -131,7 +117,7 @@ class ActivityHandler(object):
                 if not session:
                     return
 
-            logger.debug("Tautulli ActivityHandler :: Session %s started by user %s (%s) with ratingKey %s (%s)%s."
+            logger.debug("RetroArcher ActivityHandler :: Session %s started by user %s (%s) with ratingKey %s (%s)%s."
                          % (str(session['session_key']), str(session['user_id']), session['username'],
                             str(session['rating_key']), session['full_title'], '[Live TV]' if session['live'] else ''))
 
@@ -149,7 +135,7 @@ class ActivityHandler(object):
 
     def on_stop(self, force_stop=False):
         if self.is_valid_session():
-            logger.debug("Tautulli ActivityHandler :: Session %s %sstopped."
+            logger.debug("RetroArcher ActivityHandler :: Session %s %sstopped."
                          % (str(self.get_session_key()), 'force ' if force_stop else ''))
 
             # Set the session last_paused timestamp
@@ -174,7 +160,7 @@ class ActivityHandler(object):
                 schedule_callback('session_key-{}'.format(self.get_session_key()), remove_job=True)
 
                 # Remove the session from our temp session table
-                logger.debug("Tautulli ActivityHandler :: Removing sessionKey %s ratingKey %s from session queue"
+                logger.debug("RetroArcher ActivityHandler :: Removing sessionKey %s ratingKey %s from session queue"
                              % (str(self.get_session_key()), str(self.get_rating_key())))
                 ap.delete_session(row_id=row_id)
                 delete_metadata_cache(self.get_session_key())
@@ -187,7 +173,7 @@ class ActivityHandler(object):
     def on_pause(self, still_paused=False):
         if self.is_valid_session():
             if not still_paused:
-                logger.debug("Tautulli ActivityHandler :: Session %s paused." % str(self.get_session_key()))
+                logger.debug("RetroArcher ActivityHandler :: Session %s paused." % str(self.get_session_key()))
 
             # Set the session last_paused timestamp
             ap = activity_processor.ActivityProcessor()
@@ -204,7 +190,7 @@ class ActivityHandler(object):
 
     def on_resume(self):
         if self.is_valid_session():
-            logger.debug("Tautulli ActivityHandler :: Session %s resumed." % str(self.get_session_key()))
+            logger.debug("RetroArcher ActivityHandler :: Session %s resumed." % str(self.get_session_key()))
 
             # Set the session last_paused timestamp
             ap = activity_processor.ActivityProcessor()
@@ -220,7 +206,7 @@ class ActivityHandler(object):
 
     def on_change(self):
         if self.is_valid_session():
-            logger.debug("Tautulli ActivityHandler :: Session %s has changed transcode decision." % str(self.get_session_key()))
+            logger.debug("RetroArcher ActivityHandler :: Session %s has changed transcode decision." % str(self.get_session_key()))
 
             # Update the session state and viewOffset
             self.update_db_session()
@@ -233,7 +219,7 @@ class ActivityHandler(object):
 
     def on_buffer(self):
         if self.is_valid_session():
-            logger.debug("Tautulli ActivityHandler :: Session %s is buffering." % self.get_session_key())
+            logger.debug("RetroArcher ActivityHandler :: Session %s is buffering." % self.get_session_key())
             ap = activity_processor.ActivityProcessor()
             db_stream = ap.get_session_by_key(session_key=self.get_session_key())
 
@@ -242,7 +228,7 @@ class ActivityHandler(object):
 
             # Get our current buffer count
             current_buffer_count = ap.get_session_buffer_count(self.get_session_key())
-            logger.debug("Tautulli ActivityHandler :: Session %s buffer count is %s." %
+            logger.debug("RetroArcher ActivityHandler :: Session %s buffer count is %s." %
                          (self.get_session_key(), current_buffer_count))
 
             # Get our last triggered time
@@ -253,7 +239,7 @@ class ActivityHandler(object):
 
             time_since_last_trigger = 0
             if buffer_last_triggered:
-                logger.debug("Tautulli ActivityHandler :: Session %s buffer last triggered at %s." %
+                logger.debug("RetroArcher ActivityHandler :: Session %s buffer last triggered at %s." %
                              (self.get_session_key(), buffer_last_triggered))
                 time_since_last_trigger = helpers.timestamp() - int(buffer_last_triggered)
 
@@ -268,7 +254,7 @@ class ActivityHandler(object):
 
     def on_error(self):
         if self.is_valid_session():
-            logger.debug("Tautulli ActivityHandler :: Session %s encountered an error." % str(self.get_session_key()))
+            logger.debug("RetroArcher ActivityHandler :: Session %s encountered an error." % str(self.get_session_key()))
 
             # Update the session state and viewOffset
             self.update_db_session()
@@ -367,7 +353,7 @@ class ActivityHandler(object):
                                        }
 
                     if progress_percent >= watched_percent.get(db_session['media_type'], 101):
-                        logger.debug("Tautulli ActivityHandler :: Session %s watched."
+                        logger.debug("RetroArcher ActivityHandler :: Session %s watched."
                                      % str(self.get_session_key()))
                         ap.set_watched(session_key=self.get_session_key())
 
@@ -447,7 +433,7 @@ class TimelineHandler(object):
 
                     RECENTLY_ADDED_QUEUE[rating_key] = {grandparent_rating_key}
 
-                    logger.debug("Tautulli TimelineHandler :: Library item '%s' (%s, grandparent %s) "
+                    logger.debug("RetroArcher TimelineHandler :: Library item '%s' (%s, grandparent %s) "
                                  "added to recently added queue."
                                  % (title, str(rating_key), str(grandparent_rating_key)))
 
@@ -462,7 +448,7 @@ class TimelineHandler(object):
                     parent_set.add(rating_key)
                     RECENTLY_ADDED_QUEUE[parent_rating_key] = parent_set
 
-                    logger.debug("Tautulli TimelineHandler :: Library item '%s' (%s , parent %s) "
+                    logger.debug("RetroArcher TimelineHandler :: Library item '%s' (%s , parent %s) "
                                  "added to recently added queue."
                                  % (title, str(rating_key), str(parent_rating_key)))
 
@@ -476,7 +462,7 @@ class TimelineHandler(object):
                     queue_set = RECENTLY_ADDED_QUEUE.get(rating_key, set())
                     RECENTLY_ADDED_QUEUE[rating_key] = queue_set
 
-                    logger.debug("Tautulli TimelineHandler :: Library item '%s' (%s) "
+                    logger.debug("RetroArcher TimelineHandler :: Library item '%s' (%s) "
                                  "added to recently added queue."
                                  % (title, str(rating_key)))
 
@@ -491,14 +477,14 @@ class TimelineHandler(object):
                     state_type == 5 and metadata_state is None and queue_size is None and \
                     rating_key in RECENTLY_ADDED_QUEUE:
 
-                logger.debug("Tautulli TimelineHandler :: Library item '%s' (%s) "
+                logger.debug("RetroArcher TimelineHandler :: Library item '%s' (%s) "
                              "done processing metadata."
                              % (title, str(rating_key)))
 
             # An item was deleted, make sure it is removed from the queue
             elif state_type == 9 and metadata_state == 'deleted':
                 if rating_key in RECENTLY_ADDED_QUEUE and not RECENTLY_ADDED_QUEUE[rating_key]:
-                    logger.debug("Tautulli TimelineHandler :: Library item %s "
+                    logger.debug("RetroArcher TimelineHandler :: Library item %s "
                                  "removed from recently added queue."
                                  % str(rating_key))
                     del_keys(rating_key)
@@ -543,27 +529,27 @@ class ReachabilityHandler(object):
         if server_response:
             # Waiting for port mapping
             if server_response['mapping_state'] == 'waiting':
-                logger.warn("Tautulli ReachabilityHandler :: Remote access waiting for port mapping.")
+                logger.warn("RetroArcher ReachabilityHandler :: Remote access waiting for port mapping.")
 
             elif plexpy.PLEX_REMOTE_ACCESS_UP is not False and server_response['reason']:
-                logger.warn("Tautulli ReachabilityHandler :: Remote access failed: %s" % server_response['reason'])
-                logger.info("Tautulli ReachabilityHandler :: Plex remote access is down.")
+                logger.warn("RetroArcher ReachabilityHandler :: Remote access failed: %s" % server_response['reason'])
+                logger.info("RetroArcher ReachabilityHandler :: Plex remote access is down.")
 
                 plexpy.PLEX_REMOTE_ACCESS_UP = False
 
                 if not ACTIVITY_SCHED.get_job('on_extdown'):
-                    logger.debug("Tautulli ReachabilityHandler :: Scheduling remote access down callback in %d seconds.",
+                    logger.debug("RetroArcher ReachabilityHandler :: Scheduling remote access down callback in %d seconds.",
                                  plexpy.CONFIG.NOTIFY_REMOTE_ACCESS_THRESHOLD)
                     schedule_callback('on_extdown', func=self.on_extdown, args=[server_response],
                                       seconds=plexpy.CONFIG.NOTIFY_REMOTE_ACCESS_THRESHOLD)
 
             elif plexpy.PLEX_REMOTE_ACCESS_UP is False and not server_response['reason']:
-                logger.info("Tautulli ReachabilityHandler :: Plex remote access is back up.")
+                logger.info("RetroArcher ReachabilityHandler :: Plex remote access is back up.")
 
                 plexpy.PLEX_REMOTE_ACCESS_UP = True
 
                 if ACTIVITY_SCHED.get_job('on_extdown'):
-                    logger.debug("Tautulli ReachabilityHandler :: Cancelling scheduled remote access down callback.")
+                    logger.debug("RetroArcher ReachabilityHandler :: Cancelling scheduled remote access down callback.")
                     schedule_callback('on_extdown', remove_job=True)
                 else:
                     self.on_extup(server_response)
@@ -605,7 +591,7 @@ def force_stop_stream(session_key, title, user):
 
     if row_id:
         # If session is written to the database successfully, remove the session from the session table
-        logger.info("Tautulli ActivityHandler :: Removing stale stream with sessionKey %s ratingKey %s from session queue"
+        logger.info("RetroArcher ActivityHandler :: Removing stale stream with sessionKey %s ratingKey %s from session queue"
                     % (session['session_key'], session['rating_key']))
         ap.delete_session(row_id=row_id)
         delete_metadata_cache(session_key)
@@ -614,7 +600,7 @@ def force_stop_stream(session_key, title, user):
         session['write_attempts'] += 1
 
         if session['write_attempts'] < plexpy.CONFIG.SESSION_DB_WRITE_ATTEMPTS:
-            logger.warn("Tautulli ActivityHandler :: Failed to write stream with sessionKey %s ratingKey %s to the database. " \
+            logger.warn("RetroArcher ActivityHandler :: Failed to write stream with sessionKey %s ratingKey %s to the database. " \
                         "Will try again in 30 seconds. Write attempt %s."
                         % (session['session_key'], session['rating_key'], str(session['write_attempts'])))
             ap.increment_write_attempts(session_key=session_key)
@@ -624,17 +610,17 @@ def force_stop_stream(session_key, title, user):
                               args=[session_key, session['full_title'], session['user']], seconds=30)
 
         else:
-            logger.warn("Tautulli ActivityHandler :: Failed to write stream with sessionKey %s ratingKey %s to the database. " \
+            logger.warn("RetroArcher ActivityHandler :: Failed to write stream with sessionKey %s ratingKey %s to the database. " \
                         "Removing session from the database. Write attempt %s."
                         % (session['session_key'], session['rating_key'], str(session['write_attempts'])))
-            logger.info("Tautulli ActivityHandler :: Removing stale stream with sessionKey %s ratingKey %s from session queue"
+            logger.info("RetroArcher ActivityHandler :: Removing stale stream with sessionKey %s ratingKey %s from session queue"
                         % (session['session_key'], session['rating_key']))
             ap.delete_session(session_key=session_key)
             delete_metadata_cache(session_key)
 
 
 def clear_recently_added_queue(rating_key, title):
-    logger.debug("Tautulli TimelineHandler :: Starting callback for library item '%s' (%s) after delay.",
+    logger.debug("RetroArcher TimelineHandler :: Starting callback for library item '%s' (%s) after delay.",
                  title, str(rating_key))
 
     child_keys = RECENTLY_ADDED_QUEUE[rating_key]
@@ -667,7 +653,7 @@ def on_created(rating_key, **kwargs):
     pms_connect = pmsconnect.PmsConnect()
     metadata = pms_connect.get_metadata_details(rating_key)
 
-    logger.debug("Tautulli TimelineHandler :: Library item '%s' (%s) added to Plex.",
+    logger.debug("RetroArcher TimelineHandler :: Library item '%s' (%s) added to Plex.",
                  metadata['full_title'], str(rating_key))
 
     if metadata:
@@ -675,14 +661,14 @@ def on_created(rating_key, **kwargs):
         # now = helpers.timestamp()
         #
         # if helpers.cast_to_int(metadata['added_at']) < now - 86400:  # Updated more than 24 hours ago
-        #     logger.debug("Tautulli TimelineHandler :: Library item %s added more than 24 hours ago. Not notifying."
+        #     logger.debug("RetroArcher TimelineHandler :: Library item %s added more than 24 hours ago. Not notifying."
         #                  % str(rating_key))
         #     notify = False
 
         data_factory = datafactory.DataFactory()
         if 'child_keys' not in kwargs:
             if data_factory.get_recently_added_item(rating_key):
-                logger.debug("Tautulli TimelineHandler :: Library item %s added already. Not notifying again."
+                logger.debug("RetroArcher TimelineHandler :: Library item %s added already. Not notifying again."
                              % str(rating_key))
                 notify = False
 
@@ -701,12 +687,12 @@ def on_created(rating_key, **kwargs):
         logger.debug("Added %s items to the recently_added database table." % str(len(all_keys)))
 
     else:
-        logger.error("Tautulli TimelineHandler :: Unable to retrieve metadata for rating_key %s" % str(rating_key))
+        logger.error("RetroArcher TimelineHandler :: Unable to retrieve metadata for rating_key %s" % str(rating_key))
 
 
 def delete_metadata_cache(session_key):
     try:
         os.remove(os.path.join(plexpy.CONFIG.CACHE_DIR, 'session_metadata/metadata-sessionKey-%s.json' % session_key))
     except OSError as e:
-        logger.error("Tautulli ActivityHandler :: Failed to remove metadata cache file (sessionKey %s): %s"
+        logger.error("RetroArcher ActivityHandler :: Failed to remove metadata cache file (sessionKey %s): %s"
                      % (session_key, e))

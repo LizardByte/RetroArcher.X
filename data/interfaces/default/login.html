@@ -7,15 +7,15 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Tautulli - ${title}</title>
+    <title>RetroArcher - ${title}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
     <link href="${http_root}css/bootstrap3/bootstrap.min.css" rel="stylesheet">
-    <link href="${http_root}css/tautulli.css${cache_param}" rel="stylesheet">
+    <link href="${http_root}css/retroarcher.css${cache_param}" rel="stylesheet">
     <link href="${http_root}css/opensans.min.css" rel="stylesheet">
-    <link href="${http_root}css/font-awesome.all.min.css" rel="stylesheet">
-    <link href="${http_root}css/font-awesome.v4-shims.min.css" rel="stylesheet">
+    <link href="${http_root}fonts/fontawesome-free-web/css/all.min.css" rel="stylesheet">
+    <link href="${http_root}fonts/fontawesome-free-web/css/v4-shims.min.css" rel="stylesheet">
 
     <!-- Favicons -->
     <link rel="icon" type="image/png" sizes="32x32" href="${http_root}images/favicon/favicon-32x32.png?v=2.6.0">
@@ -29,9 +29,9 @@
     <!-- Apple -->
     <link rel="apple-touch-icon" sizes="180x180" href="${http_root}images/favicon/apple-touch-icon.png?v=2.6.0">
     <link rel="mask-icon" href="${http_root}images/favicon/safari-pinned-tab.svg?v=2.6.0" color="#282a2d">
-    <meta name="apple-mobile-web-app-title" content="Tautulli">
+    <meta name="apple-mobile-web-app-title" content="RetroArcher">
     <!-- Microsoft -->
-    <meta name="application-name" content="Tautulli">
+    <meta name="application-name" content="RetroArcher">
     <meta name="msapplication-config" content="${http_root}images/favicon/browserconfig.xml?v=2.6.0">
 </head>
 
@@ -41,7 +41,7 @@
         <div class="row">
             <div class="login-container">
                 <div class="login-logo">
-                    <img src="${http_root}images/logo-tautulli-100.png" height="100" alt="Tautulli">
+                    <img src="${http_root}images/logo-retroarcher-100.png" height="100" alt="RetroArcher">
                 </div>
                 <div class="row">
                     <div class="col-sm-6 col-sm-offset-3">
@@ -72,7 +72,7 @@
                             % endif
                             <li class="${'open' if not plex_login else ''}">
                                 <div class="link login-method-header">
-                                    Sign In with Tautulli
+                                    Sign In with RetroArcher
                                 </div>
                                 <ul class="submenu" style="${'display: block;' if not plex_login else ''}">
                                     <li>

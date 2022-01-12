@@ -1,21 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
-
 from __future__ import unicode_literals
 from future.builtins import str
 from future.builtins import object
@@ -169,15 +153,15 @@ class API2(object):
                 self._api_kwargs = kwargs
 
         if self._api_msg:
-            logger.api_debug('Tautulli APIv2 :: %s.' % self._api_msg)
+            logger.api_debug('RetroArcher APIv2 :: %s.' % self._api_msg)
 
-        logger.api_debug('Tautulli APIv2 :: Cleaned kwargs: %s' % self._api_kwargs)
+        logger.api_debug('RetroArcher APIv2 :: Cleaned kwargs: %s' % self._api_kwargs)
 
         return self._api_kwargs
 
     def get_logs(self, sort='', search='', order='desc', regex='', start=0, end=0, **kwargs):
         """
-            Get the Tautulli logs.
+            Get the RetroArcher logs.
 
             ```
             Required parameters:
@@ -209,7 +193,7 @@ class API2(object):
         end = int(end)
 
         if regex:
-            logger.api_debug("Tautulli APIv2 :: Filtering log using regex '%s'" % regex)
+            logger.api_debug("RetroArcher APIv2 :: Filtering log using regex '%s'" % regex)
             reg = re.compile(regex, flags=re.I)
 
         with open(logfile, 'r', encoding='utf-8') as f:
@@ -245,15 +229,15 @@ class API2(object):
             templog = templog[::-1]
 
         if end > 0 or start > 0:
-            logger.api_debug("Tautulli APIv2 :: Slicing the log from %s to %s" % (start, end))
+            logger.api_debug("RetroArcher APIv2 :: Slicing the log from %s to %s" % (start, end))
             templog = templog[start:end]
 
         if sort:
-            logger.api_debug("Tautulli APIv2 :: Sorting log based on '%s'" % sort)
+            logger.api_debug("RetroArcher APIv2 :: Sorting log based on '%s'" % sort)
             templog = sorted(templog, key=lambda k: k[sort])
 
         if search:
-            logger.api_debug("Tautulli APIv2 :: Searching log values for '%s'" % search)
+            logger.api_debug("RetroArcher APIv2 :: Searching log values for '%s'" % search)
             tt = [d for d in templog for k, v in d.items() if search.lower() in v.lower()]
 
             if len(tt):
@@ -317,9 +301,9 @@ class API2(object):
         return config
 
     def sql(self, query=''):
-        """ Query the Tautulli database with raw SQL. Automatically makes a backup of
+        """ Query the RetroArcher database with raw SQL. Automatically makes a backup of
             the database if the latest backup is older then 24h. `api_sql` must be
-            manually enabled in the config file while Tautulli is shut down.
+            manually enabled in the config file while RetroArcher is shut down.
 
             ```
             Required parameters:
@@ -371,28 +355,28 @@ class API2(object):
         return data
 
     def restart(self, **kwargs):
-        """ Restart Tautulli."""
+        """ Restart RetroArcher."""
 
         plexpy.SIGNAL = 'restart'
-        self._api_msg = 'Restarting Tautulli'
+        self._api_msg = 'Restarting RetroArcher'
         self._api_result_type = 'success'
 
     def update(self, **kwargs):
-        """ Update Tautulli."""
+        """ Update RetroArcher."""
 
         plexpy.SIGNAL = 'update'
-        self._api_msg = 'Updating Tautulli'
+        self._api_msg = 'Updating RetroArcher'
         self._api_result_type = 'success'
 
     def refresh_libraries_list(self, **kwargs):
-        """ Refresh the Tautulli libraries list."""
+        """ Refresh the RetroArcher libraries list."""
         data = libraries.refresh_libraries()
         self._api_result_type = 'success' if data else 'error'
 
         return data
 
     def refresh_users_list(self, **kwargs):
-        """ Refresh the Tautulli users list."""
+        """ Refresh the RetroArcher users list."""
         data = users.refresh_users()
         self._api_result_type = 'success' if data else 'error'
 
@@ -410,7 +394,7 @@ class API2(object):
             Optional parameters:
                 friendly_name (str):      A friendly name to identify the mobile device
                 onesignal_id (str):       The OneSignal id for the mobile device
-                min_version (str):        The minimum Tautulli version supported by the mobile device, e.g. v2.5.6
+                min_version (str):        The minimum RetroArcher version supported by the mobile device, e.g. v2.5.6
 
             Returns:
                 json:
@@ -426,16 +410,16 @@ class API2(object):
                      "pms_url_manual": 0,
                      "pms_version": "1.20.0.3133-fede5bdc7"
                      "server_id": "2ce060c87958445d8399a7a0c5663755",
-                     "tautulli_install_type": "git",
-                     "tautulli_branch": "master",
-                     "tautulli_commit": "14b98a32e085d969f010f0249c3d2f660db50880",
-                     "tautulli_platform": "Windows",
-                     "tautulli_platform_device_name": "Winterfell-PC",
-                     "tautulli_platform_linux_distro": "",
-                     "tautulli_platform_release": "10",
-                     "tautulli_platform_version": "10.0.18362",
-                     "tautulli_python_version": "3.8.3"
-                     "tautulli_version": "v2.5.6",
+                     "retroarcher_install_type": "git",
+                     "retroarcher_branch": "master",
+                     "retroarcher_commit": "14b98a32e085d969f010f0249c3d2f660db50880",
+                     "retroarcher_platform": "Windows",
+                     "retroarcher_platform_device_name": "Winterfell-PC",
+                     "retroarcher_platform_linux_distro": "",
+                     "retroarcher_platform_release": "10",
+                     "retroarcher_platform_version": "10.0.18362",
+                     "retroarcher_python_version": "3.8.3"
+                     "retroarcher_version": "v2.5.6",
                      }
             ```
         """
@@ -450,7 +434,7 @@ class API2(object):
             return
 
         elif min_version and helpers.version_to_tuple(min_version) > helpers.version_to_tuple(common.RELEASE):
-            self._api_msg = 'Device registration failed: Tautulli version {} ' \
+            self._api_msg = 'Device registration failed: RetroArcher version {} ' \
                             'does not meet the minimum requirement of {}.'.format(common.RELEASE, min_version)
             self._api_result_type = 'error'
             return
@@ -472,11 +456,11 @@ class API2(object):
             mobile_app.set_temp_device_token(self._api_apikey, success=True)
 
             plex_server = plextv.get_server_resources(return_info=True)
-            tautulli = plexpy.get_tautulli_info()
+            retroarcher = plexpy.get_retroarcher_info()
 
             data = {"server_id": plexpy.CONFIG.PMS_UUID}
             data.update(plex_server)
-            data.update(tautulli)
+            data.update(retroarcher)
 
             return data
 
@@ -487,7 +471,7 @@ class API2(object):
         return
 
     def notify(self, notifier_id='', subject='', body='', **kwargs):
-        """ Send a notification using Tautulli.
+        """ Send a notification using RetroArcher.
 
             ```
             Required parameters:
@@ -515,7 +499,7 @@ class API2(object):
             self._api_result_type = 'error'
             return
 
-        logger.api_debug('Tautulli APIv2 :: Sending notification.')
+        logger.api_debug('RetroArcher APIv2 :: Sending notification.')
         success = notification_handler.notify(notifier_id=notifier_id,
                                               notify_action='api',
                                               subject=subject,
@@ -532,7 +516,7 @@ class API2(object):
         return
 
     def notify_newsletter(self, newsletter_id='', subject='', body='', message='', **kwargs):
-        """ Send a newsletter using Tautulli.
+        """ Send a newsletter using RetroArcher.
 
             ```
             Required parameters:
@@ -559,7 +543,7 @@ class API2(object):
             self._api_result_type = 'error'
             return
 
-        logger.api_debug('Tautulli APIv2 :: Sending newsletter.')
+        logger.api_debug('RetroArcher APIv2 :: Sending newsletter.')
         success = newsletter_handler.notify(newsletter_id=newsletter_id,
                                             notify_action='api',
                                             subject=subject,
@@ -587,7 +571,7 @@ http://IP_ADDRESS:PORT + [/HTTP_ROOT] + /api/v2?apikey=$apikey&cmd=$command
 
 Example:
 ```
-http://localhost:8181/api/v2?apikey=66198313a092496b8a725867d2223b5f&cmd=get_metadata&rating_key=153037
+http://localhost:9696/api/v2?apikey=66198313a092496b8a725867d2223b5f&cmd=get_metadata&rating_key=153037
 ```
 
 Response example (default `json`)
@@ -637,8 +621,8 @@ General optional parameters:
                 None
 
             Optional parameters:
-                username (str):     Your Tautulli username
-                password (str):     Your Tautulli password
+                username (str):     Your RetroArcher username
+                password (str):     Your RetroArcher password
 
             Returns:
                 string:             "apikey"
@@ -716,7 +700,7 @@ General optional parameters:
                     out = self._api_callback + '(' + out + ');'
             # if we fail to generate the output fake an error
             except Exception as e:
-                logger.api_exception('Tautulli APIv2 :: ' + traceback.format_exc())
+                logger.api_exception('RetroArcher APIv2 :: ' + traceback.format_exc())
                 self._api_response_code = 500
                 out['message'] = traceback.format_exc()
                 out['result'] = 'error'
@@ -726,7 +710,7 @@ General optional parameters:
             try:
                 out = xmltodict.unparse(out, pretty=True)
             except Exception as e:
-                logger.api_error('Tautulli APIv2 :: Failed to parse xml result')
+                logger.api_error('RetroArcher APIv2 :: Failed to parse xml result')
                 self._api_response_code = 500
                 try:
                     out['message'] = e
@@ -734,7 +718,7 @@ General optional parameters:
                     out = xmltodict.unparse(out, pretty=True)
 
                 except Exception as e:
-                    logger.api_error('Tautulli APIv2 :: Failed to parse xml result error message %s' % e)
+                    logger.api_error('RetroArcher APIv2 :: Failed to parse xml result error message %s' % e)
                     out = '''<?xml version="1.0" encoding="utf-8"?>
                                 <response>
                                     <message>%s</message>
@@ -760,7 +744,7 @@ General optional parameters:
                 logger._BLACKLIST_WORDS.add(kwargs['password'])
 
         result = None
-        logger.api_debug('Tautulli APIv2 :: API called with kwargs: %s' % kwargs)
+        logger.api_debug('RetroArcher APIv2 :: API called with kwargs: %s' % kwargs)
 
         self._api_validate(**kwargs)
 
@@ -778,7 +762,7 @@ General optional parameters:
 
                 result = call(**self._api_kwargs)
             except Exception as e:
-                logger.api_error('Tautulli APIv2 :: Failed to run %s with %s: %s' % (self._api_cmd, self._api_kwargs, e))
+                logger.api_error('RetroArcher APIv2 :: Failed to run %s with %s: %s' % (self._api_cmd, self._api_kwargs, e))
                 self._api_response_code = 500
                 if self._api_debug:
                     cherrypy.request.show_tracebacks = True

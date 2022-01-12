@@ -1,19 +1,4 @@
-﻿# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
-from __future__ import unicode_literals
+﻿from __future__ import unicode_literals
 from future.builtins import str
 from future.builtins import object
 
@@ -151,6 +136,7 @@ class ActivityProcessor(object):
                       'stopped': helpers.timestamp()
                       }
 
+            #if values['section_id'] in plexpy.CONFIG.HOME_LIBRARY_CARDS: # only "movies" for RetroArcher
             keys = {'session_key': session.get('session_key', ''),
                     'rating_key': session.get('rating_key', '')}
 
@@ -170,10 +156,6 @@ class ActivityProcessor(object):
                 if notify:
                     session.update(timestamp)
                     plexpy.NOTIFY_QUEUE.put({'stream_data': session.copy(), 'notify_action': 'on_play'})
-
-                # Add Live TV library if it hasn't been added
-                if values['live']:
-                    libraries.add_live_tv_library()
 
                 return True
 
@@ -228,7 +210,7 @@ class ActivityProcessor(object):
             if str(session['rating_key']).isdigit() and session['media_type'] in ('movie', 'episode', 'track'):
                 logging_enabled = True
             else:
-                logger.debug("Tautulli ActivityProcessor :: Session %s ratingKey %s not logged. "
+                logger.debug("RetroArcher ActivityProcessor :: Session %s ratingKey %s not logged. "
                              "Does not meet logging criteria. Media type is '%s'" %
                              (session['session_key'], session['rating_key'], session['media_type']))
                 return session['id']
@@ -239,36 +221,36 @@ class ActivityProcessor(object):
                 if (session['media_type'] == 'movie' or session['media_type'] == 'episode') and \
                         (real_play_time < int(plexpy.CONFIG.LOGGING_IGNORE_INTERVAL)):
                     logging_enabled = False
-                    logger.debug("Tautulli ActivityProcessor :: Play duration for session %s ratingKey %s is %s secs "
+                    logger.debug("RetroArcher ActivityProcessor :: Play duration for session %s ratingKey %s is %s secs "
                                  "which is less than %s seconds, so we're not logging it." %
                                  (session['session_key'], session['rating_key'], str(real_play_time),
                                   plexpy.CONFIG.LOGGING_IGNORE_INTERVAL))
-            if not is_import and session['media_type'] == 'track':
-                if real_play_time < 15 and helpers.cast_to_int(session['duration']) >= 30:
-                    logging_enabled = False
-                    logger.debug("Tautulli ActivityProcessor :: Play duration for session %s ratingKey %s is %s secs, "
-                                 "looks like it was skipped so we're not logging it" %
-                                 (session['session_key'], session['rating_key'], str(real_play_time)))
+            if not is_import and session['media_type'] in ('episode', 'track'):
+                logging_enabled = False
+                logger.debug("RetroArcher ActivityProcessor :: Session %s ratingKey %s not logged. "
+                             "Does not meet logging criteria. Media type is '%s'" %
+                             (session['session_key'], session['rating_key'], session['media_type']))
             elif is_import and import_ignore_interval:
-                if (session['media_type'] == 'movie' or session['media_type'] == 'episode') and \
+                #if (session['media_type'] == 'movie' or session['media_type'] == 'episode') and \
+                if (session['media_type'] == 'movie') and \
                         (real_play_time < int(import_ignore_interval)):
                     logging_enabled = False
-                    logger.debug("Tautulli ActivityProcessor :: Play duration for ratingKey %s is %s secs which is less than %s "
+                    logger.debug("RetroArcher ActivityProcessor :: Play duration for ratingKey %s is %s secs which is less than %s "
                                  "seconds, so we're not logging it." %
                                  (session['rating_key'], str(real_play_time), import_ignore_interval))
 
             if not is_import and not user_details['keep_history']:
                 logging_enabled = False
-                logger.debug("Tautulli ActivityProcessor :: History logging for user '%s' is disabled." % user_details['username'])
+                logger.debug("RetroArcher ActivityProcessor :: History logging for user '%s' is disabled." % user_details['username'])
             elif not is_import and not library_details['keep_history']:
                 logging_enabled = False
-                logger.debug("Tautulli ActivityProcessor :: History logging for library '%s' is disabled." % library_details['section_name'])
+                logger.debug("RetroArcher ActivityProcessor :: History logging for library '%s' is disabled." % library_details['section_name'])
 
             if logging_enabled:
 
                 # Fetch metadata first so we can return false if it fails
                 if not is_import:
-                    logger.debug("Tautulli ActivityProcessor :: Fetching metadata for item ratingKey %s" % session['rating_key'])
+                    logger.debug("RetroArcher ActivityProcessor :: Fetching metadata for item ratingKey %s" % session['rating_key'])
                     pms_connect = pmsconnect.PmsConnect()
                     if session['live']:
                         metadata = pms_connect.get_metadata_details(rating_key=str(session['rating_key']),
@@ -287,7 +269,7 @@ class ActivityProcessor(object):
                     ## TODO: Fix media info from imports. Temporary media info from import session.
                     media_info = session
 
-                # logger.debug("Tautulli ActivityProcessor :: Attempting to write sessionKey %s to session_history table..."
+                # logger.debug("RetroArcher ActivityProcessor :: Attempting to write sessionKey %s to session_history table..."
                 #              % session['session_key'])
                 keys = {'id': None}
                 values = {'started': session['started'],
@@ -316,7 +298,7 @@ class ActivityProcessor(object):
                           'relayed': session['relayed']
                           }
 
-                # logger.debug("Tautulli ActivityProcessor :: Writing sessionKey %s session_history transaction..."
+                # logger.debug("RetroArcher ActivityProcessor :: Writing sessionKey %s session_history transaction..."
                 #              % session['session_key'])
                 self.db.upsert(table_name='session_history', key_dict=keys, value_dict=values)
 
@@ -389,12 +371,12 @@ class ActivityProcessor(object):
 
                 self.db.action(query=query, args=args)
                 
-                # logger.debug("Tautulli ActivityProcessor :: Successfully written history item, last id for session_history is %s"
+                # logger.debug("RetroArcher ActivityProcessor :: Successfully written history item, last id for session_history is %s"
                 #              % last_id)
 
                 # Write the session_history_media_info table
 
-                # logger.debug("Tautulli ActivityProcessor :: Attempting to write to sessionKey %s session_history_media_info table..."
+                # logger.debug("RetroArcher ActivityProcessor :: Attempting to write to sessionKey %s session_history_media_info table..."
                 #              % session['session_key'])
                 keys = {'id': last_id}
                 values = {'rating_key': session['rating_key'],
@@ -472,7 +454,7 @@ class ActivityProcessor(object):
                           'optimized_version_title': session['optimized_version_title']
                           }
 
-                # logger.debug("Tautulli ActivityProcessor :: Writing sessionKey %s session_history_media_info transaction..."
+                # logger.debug("RetroArcher ActivityProcessor :: Writing sessionKey %s session_history_media_info transaction..."
                 #              % session['session_key'])
                 self.db.upsert(table_name='session_history_media_info', key_dict=keys, value_dict=values)
 
@@ -483,7 +465,7 @@ class ActivityProcessor(object):
                 genres = ";".join(metadata['genres'])
                 labels = ";".join(metadata['labels'])
 
-                # logger.debug("Tautulli ActivityProcessor :: Attempting to write to sessionKey %s session_history_metadata table..."
+                # logger.debug("RetroArcher ActivityProcessor :: Attempting to write to sessionKey %s session_history_metadata table..."
                 #              % session['session_key'])
                 keys = {'id': last_id}
                 values = {'rating_key': session['rating_key'],
@@ -524,7 +506,7 @@ class ActivityProcessor(object):
                           'channel_thumb': media_info.get('channel_thumb', '')
                           }
 
-                # logger.debug("Tautulli ActivityProcessor :: Writing sessionKey %s session_history_metadata transaction..."
+                # logger.debug("RetroArcher ActivityProcessor :: Writing sessionKey %s session_history_metadata transaction..."
                 #              % session['session_key'])
                 self.db.upsert(table_name='session_history_metadata', key_dict=keys, value_dict=values)
 

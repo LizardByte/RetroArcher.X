@@ -1,5 +1,6 @@
 <%inherit file="base.html"/>
 <%!
+    from plexpy import CONFIG
     from plexpy.helpers import anon_url
 %>
 <%def name="headIncludes()">
@@ -15,11 +16,17 @@
             <span><i class="fa fa-comment"></i> Support</span>
         </div>
         <div class="button-bar">
+            % if CONFIG.GIT_TOKEN:
+                <button class="btn btn-dark" id="create-gist"><i class="fa fa-github"></i> Send logs to gists</button>
+            % endif
             <div class="btn-group">
-                <a class="btn btn-dark" href="${anon_url('https://tautulli.com/discord')}" target="_blank" rel="noreferrer"><i class="fab fa-discord"></i>&nbsp; Join Discord</a>
+                <a class="btn btn-dark" href="${anon_url('https://retroarcher.github.io/discord_join')}" target="_blank" rel="noreferrer"><i class="fab fa-discord"></i>&nbsp; Join Discord</a>
             </div>
             <div class="btn-group">
-                <a class="btn btn-dark" href="${anon_url('https://www.reddit.com/r/Tautulli')}" target="_blank" rel="noreferrer"><i class="fab fa-reddit"></i>&nbsp; Join Reddit</a>
+                <a class="btn btn-dark" href="${anon_url('https://www.facebook.com/groups/retroracher')}" target="_blank" rel="noreferrer"><i class="fab fa-facebook-f"></i>&nbsp; Join Facebook</a>
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-dark" href="${anon_url('https://www.reddit.com/r/RetroArcher')}" target="_blank" rel="noreferrer"><i class="fab fa-reddit-alien"></i>&nbsp; Join Reddit</a>
             </div>
             <div class="btn-group">
                 <button class="btn btn-dark" id="popout-iframe-button"><i class="fa fa-external-link"></i> Pop Out Chat</button>
@@ -28,7 +35,7 @@
     </div>
     <div class='table-card-back'>
         <div class="iframe-container">
-            <iframe class="iframe" allowfullscreen="true" id="support-iframe" data-name="Tautulli-Support" data-src="https://support.tautulli.com"
+            <iframe class="iframe" allowfullscreen="true" id="support-iframe" data-name="RetroArcher-Support" data-src="https://retroarcher.github.io/discord"
                     sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation"
                     style="display: none;">
             </iframe>
@@ -60,9 +67,45 @@
 
     $('#popout-iframe-button').click(function () {
         var iframe = $('#support-iframe');
-        popout_chat = PopupCenter(iframe.data('src'), 'Tautulli-Discord-Support', 1280, 720);
+        popout_chat = PopupCenter(iframe.data('src'), 'RetroArcher-Discord-Support', 1280, 720);
         iframe.attr('src', '').fadeOut();
         $('.iframe-overlay').fadeIn();
     });
+
+    $("#create-gist").click(function () {
+        $("#confirm-message").text("This will create a gist on github with all of your log files. Continue?");
+        $('#confirm-modal').modal();
+        $('#confirm-modal').one('click', '#confirm-button', function () {
+            $.ajax({
+                url: 'create_gist',
+                type: 'POST',
+                data: {},
+                complete: function (xhr, status) {
+                    result = $.parseJSON(xhr.responseText);
+                    msg = result.message;
+                    if (result.result === 'success') {
+                        var link = result.link;
+                        $("#confirm-message").text('You must provide this url to support. ' + link + ' Copy URL to clipboard?');
+                        $('#confirm-modal').modal();
+                        $('#confirm-modal').one('click', '#confirm-button', function () {
+                            navigator.clipboard.writeText(link).then(function() {
+                                showMsg('<i class="fa fa-check"></i> The url has been copied to the clipboard.', false, true, 20000)
+                            }, function() {
+                                showMsg('<i class="fa fa-check"></i> The url could not be copied to the clipboard; however ' + msg, false, true, 20000, true)
+                                window.open(link, "_blank", "toolbar=yes, top=100, left=100, width=600, height=800");
+                            });
+                        });
+                        $('#confirm-modal').one('click', '#cancel-button', function () {
+                            showMsg('<i class="fa fa-check"></i> The url was not be copied to the clipboard; however ' + msg, false, true, 20000, true)
+                            window.open(link, "_blank", "toolbar=yes, top=100, left=100, width=600, height=800");
+                        });
+                    } else {
+                        showMsg('<i class="fa fa-times"></i> ' + msg, false, true, 5000, true)
+                    }
+                }
+            });
+        });
+    });
+
 </script>
 </%def>

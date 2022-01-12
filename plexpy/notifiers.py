@@ -1,20 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
 
-#  This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import unicode_literals
 from future.builtins import str
 from future.builtins import object
@@ -266,7 +251,7 @@ def available_notification_actions(agent_id=None):
     actions = [{'label': 'Playback Start',
                 'name': 'on_play',
                 'description': 'Trigger a notification when a stream is started.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': '{user} ({player}) started playing {title}.',
                 'icon': 'fa-play',
                 'media_types': ('movie', 'episode', 'track')
@@ -274,7 +259,7 @@ def available_notification_actions(agent_id=None):
                {'label': 'Playback Stop',
                 'name': 'on_stop',
                 'description': 'Trigger a notification when a stream is stopped.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': '{user} ({player}) has stopped {title}.',
                 'icon': 'fa-stop',
                 'media_types': ('movie', 'episode', 'track')
@@ -282,7 +267,7 @@ def available_notification_actions(agent_id=None):
                {'label': 'Playback Pause',
                 'name': 'on_pause',
                 'description': 'Trigger a notification when a stream is paused.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': '{user} ({player}) has paused {title}.',
                 'icon': 'fa-pause',
                 'media_types': ('movie', 'episode', 'track')
@@ -290,7 +275,7 @@ def available_notification_actions(agent_id=None):
                {'label': 'Playback Resume',
                 'name': 'on_resume',
                 'description': 'Trigger a notification when a stream is resumed.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': '{user} ({player}) has resumed {title}.',
                 'icon': 'fa-play',
                 'media_types': ('movie', 'episode', 'track')
@@ -298,7 +283,7 @@ def available_notification_actions(agent_id=None):
                {'label': 'Playback Error',
                 'name': 'on_error',
                 'description': 'Trigger a notification when a stream encounters an error.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': '{user} ({player}) encountered an error trying to play {title}.',
                 'icon': 'fa-exclamation-triangle',
                 'media_types': ('movie', 'episode', 'track')
@@ -306,7 +291,7 @@ def available_notification_actions(agent_id=None):
                {'label': 'Transcode Decision Change',
                 'name': 'on_change',
                 'description': 'Trigger a notification when a stream changes transcode decision.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': '{user} ({player}) has changed transcode decision for {title}.',
                 'icon': 'fa-exchange-alt',
                 'media_types': ('movie', 'episode', 'track')
@@ -314,7 +299,7 @@ def available_notification_actions(agent_id=None):
                {'label': 'Watched',
                 'name': 'on_watched',
                 'description': 'Trigger a notification when a video stream reaches the specified watch percentage.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': '{user} ({player}) has watched {title}.',
                 'icon': 'fa-eye',
                 'media_types': ('movie', 'episode', 'track')
@@ -322,7 +307,7 @@ def available_notification_actions(agent_id=None):
                {'label': 'Buffer Warning',
                 'name': 'on_buffer',
                 'description': 'Trigger a notification when a stream exceeds the specified buffer threshold.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': '{user} ({player}) is buffering {title}.',
                 'icon': 'fa-spinner',
                 'media_types': ('movie', 'episode', 'track')
@@ -330,7 +315,7 @@ def available_notification_actions(agent_id=None):
                {'label': 'User Concurrent Streams',
                 'name': 'on_concurrent',
                 'description': 'Trigger a notification when a user exceeds the concurrent stream threshold.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': '{user} has {user_streams} concurrent streams.',
                 'icon': 'fa-arrow-circle-o-right',
                 'media_types': ('movie', 'episode', 'track')
@@ -338,7 +323,7 @@ def available_notification_actions(agent_id=None):
                {'label': 'User New Device',
                 'name': 'on_newdevice',
                 'description': 'Trigger a notification when a user streams from a new device.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': '{user} is streaming from a new device: {player}.',
                 'icon': 'fa-desktop',
                 'media_types': ('movie', 'episode', 'track')
@@ -346,7 +331,7 @@ def available_notification_actions(agent_id=None):
                {'label': 'Recently Added',
                 'name': 'on_created',
                 'description': 'Trigger a notification when a media item is added to the Plex Media Server.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': '{title} was recently added to Plex.',
                 'icon': 'fa-download',
                 'media_types': ('movie', 'show', 'season', 'episode', 'artist', 'album', 'track')
@@ -354,7 +339,7 @@ def available_notification_actions(agent_id=None):
                {'label': 'Plex Server Down',
                 'name': 'on_intdown',
                 'description': 'Trigger a notification when the Plex Media Server cannot be reached internally.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': 'The Plex Media Server is down.',
                 'icon': 'fa-server',
                 'media_types': ('server',)
@@ -362,7 +347,7 @@ def available_notification_actions(agent_id=None):
                {'label': 'Plex Server Back Up',
                 'name': 'on_intup',
                 'description': 'Trigger a notification when the Plex Media Server can be reached internally after being down.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': 'The Plex Media Server is back up.',
                 'icon': 'fa-server',
                 'media_types': ('server',)
@@ -370,7 +355,7 @@ def available_notification_actions(agent_id=None):
                {'label': 'Plex Remote Access Down',
                 'name': 'on_extdown',
                 'description': 'Trigger a notification when the Plex Media Server cannot be reached externally.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': 'The Plex Media Server remote access is down. ({remote_access_reason})',
                 'icon': 'fa-server',
                 'media_types': ('server',)
@@ -378,7 +363,7 @@ def available_notification_actions(agent_id=None):
                {'label': 'Plex Remote Access Back Up',
                 'name': 'on_extup',
                 'description': 'Trigger a notification when the Plex Media Server can be reached externally after being down.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': 'The Plex Media Server remote access is back up.',
                 'icon': 'fa-server',
                 'media_types': ('server',)
@@ -386,24 +371,24 @@ def available_notification_actions(agent_id=None):
                {'label': 'Plex Update Available',
                 'name': 'on_pmsupdate',
                 'description': 'Trigger a notification when an update for the Plex Media Server is available.',
-                'subject': 'Tautulli ({server_name})',
+                'subject': 'RetroArcher ({server_name})',
                 'body': 'An update is available for the Plex Media Server (version {update_version}).',
                 'icon': 'fa-refresh',
                 'media_types': ('server',)
                 },
-               {'label': 'Tautulli Update Available',
+               {'label': 'RetroArcher Update Available',
                 'name': 'on_plexpyupdate',
-                'description': 'Trigger a notification when an update for the Tautulli is available.',
-                'subject': 'Tautulli ({server_name})',
-                'body': 'An update is available for Tautulli (version {tautulli_update_version}).',
+                'description': 'Trigger a notification when an update for RetroArcher is available.',
+                'subject': 'RetroArcher ({server_name})',
+                'body': 'An update is available for RetroArcher (version {retroarcher_update_version}).',
                 'icon': 'fa-refresh',
                 'media_types': ('server',)
                 },
-               {'label': 'Tautulli Database Corruption',
+               {'label': 'RetroArcher Database Corruption',
                 'name': 'on_plexpydbcorrupt',
-                'description': 'Trigger a notification if Tautulli database corruption is detected when backing up the database.',
-                'subject': 'Tautulli ({server_name})',
-                'body': 'Tautulli database corruption detected. Automatic cleanup of database backups is suspended.',
+                'description': 'Trigger a notification if RetroArcher database corruption is detected when backing up the database.',
+                'subject': 'RetroArcher ({server_name})',
+                'body': 'RetroArcher database corruption detected. Automatic cleanup of database backups is suspended.',
                 'icon': 'fa-database',
                 'media_types': ('server',)
                 }
@@ -467,7 +452,7 @@ def delete_notifier(notifier_id=None):
     db = database.MonitorDatabase()
 
     if str(notifier_id).isdigit():
-        logger.debug("Tautulli Notifiers :: Deleting notifier_id %s from the database."
+        logger.debug("RetroArcher Notifiers :: Deleting notifier_id %s from the database."
                      % notifier_id)
         result = db.action('DELETE FROM notifiers WHERE id = ?', args=[notifier_id])
         return True
@@ -479,7 +464,7 @@ def get_notifier_config(notifier_id=None, mask_passwords=False):
     if str(notifier_id).isdigit():
         notifier_id = int(notifier_id)
     else:
-        logger.error("Tautulli Notifiers :: Unable to retrieve notifier config: invalid notifier_id %s."
+        logger.error("RetroArcher Notifiers :: Unable to retrieve notifier config: invalid notifier_id %s."
                      % notifier_id)
         return None
 
@@ -493,7 +478,7 @@ def get_notifier_config(notifier_id=None, mask_passwords=False):
         config = json.loads(result.pop('notifier_config', '{}'))
         notifier_agent = get_agent_class(agent_id=result['agent_id'], config=config)
     except Exception as e:
-        logger.error("Tautulli Notifiers :: Failed to get notifier config options: %s." % e)
+        logger.error("RetroArcher Notifiers :: Failed to get notifier config options: %s." % e)
         return
 
     if mask_passwords:
@@ -537,14 +522,14 @@ def add_notifier_config(agent_id=None, **kwargs):
     if str(agent_id).isdigit():
         agent_id = int(agent_id)
     else:
-        logger.error("Tautulli Notifiers :: Unable to add new notifier: invalid agent_id %s."
+        logger.error("RetroArcher Notifiers :: Unable to add new notifier: invalid agent_id %s."
                      % agent_id)
         return False
 
     agent = get_notify_agents(return_dict=True).get(agent_id, None)
 
     if not agent:
-        logger.error("Tautulli Notifiers :: Unable to retrieve new notification agent: invalid agent_id %s."
+        logger.error("RetroArcher Notifiers :: Unable to retrieve new notification agent: invalid agent_id %s."
                      % agent_id)
         return False
 
@@ -573,12 +558,12 @@ def add_notifier_config(agent_id=None, **kwargs):
     try:
         db.upsert(table_name='notifiers', key_dict=keys, value_dict=values)
         notifier_id = db.last_insert_id()
-        logger.info("Tautulli Notifiers :: Added new notification agent: %s (notifier_id %s)."
+        logger.info("RetroArcher Notifiers :: Added new notification agent: %s (notifier_id %s)."
                     % (agent['label'], notifier_id))
         blacklist_logger()
         return notifier_id
     except Exception as e:
-        logger.warn("Tautulli Notifiers :: Unable to add notification agent: %s." % e)
+        logger.warn("RetroArcher Notifiers :: Unable to add notification agent: %s." % e)
         return False
 
 
@@ -586,14 +571,14 @@ def set_notifier_config(notifier_id=None, agent_id=None, **kwargs):
     if str(agent_id).isdigit():
         agent_id = int(agent_id)
     else:
-        logger.error("Tautulli Notifiers :: Unable to set existing notifier: invalid agent_id %s."
+        logger.error("RetroArcher Notifiers :: Unable to set existing notifier: invalid agent_id %s."
                      % agent_id)
         return False
 
     agent = get_notify_agents(return_dict=True).get(agent_id, None)
 
     if not agent:
-        logger.error("Tautulli Notifiers :: Unable to retrieve existing notification agent: invalid agent_id %s."
+        logger.error("RetroArcher Notifiers :: Unable to retrieve existing notification agent: invalid agent_id %s."
                      % agent_id)
         return False
 
@@ -634,7 +619,7 @@ def set_notifier_config(notifier_id=None, agent_id=None, **kwargs):
     db = database.MonitorDatabase()
     try:
         db.upsert(table_name='notifiers', key_dict=keys, value_dict=values)
-        logger.info("Tautulli Notifiers :: Updated notification agent: %s (notifier_id %s)."
+        logger.info("RetroArcher Notifiers :: Updated notification agent: %s (notifier_id %s)."
                     % (agent['label'], notifier_id))
         blacklist_logger()
 
@@ -643,7 +628,7 @@ def set_notifier_config(notifier_id=None, agent_id=None, **kwargs):
 
         return True
     except Exception as e:
-        logger.warn("Tautulli Notifiers :: Unable to update notification agent: %s." % e)
+        logger.warn("RetroArcher Notifiers :: Unable to update notification agent: %s." % e)
         return False
 
 
@@ -658,7 +643,7 @@ def send_notification(notifier_id=None, subject='', body='', notify_action='', n
                             notification_id=notification_id,
                             **kwargs)
     else:
-        logger.debug("Tautulli Notifiers :: Notification requested but no notifier_id received.")
+        logger.debug("RetroArcher Notifiers :: Notification requested but no notifier_id received.")
 
 
 def blacklist_logger():
@@ -834,10 +819,10 @@ class Notifier(object):
     def notify(self, subject='', body='', action='', **kwargs):
         if self.NAME not in ('Script', 'Webhook'):
             if not subject and self.config.get('incl_subject', True):
-                logger.error("Tautulli Notifiers :: %s notification subject cannot be blank." % self.NAME)
+                logger.error("RetroArcher Notifiers :: %s notification subject cannot be blank." % self.NAME)
                 return
             elif not body:
-                logger.error("Tautulli Notifiers :: %s notification body cannot be blank." % self.NAME)
+                logger.error("RetroArcher Notifiers :: %s notification body cannot be blank." % self.NAME)
                 return
 
         return self.agent_notify(subject=subject, body=body, action=action, **kwargs)
@@ -846,11 +831,11 @@ class Notifier(object):
         pass
 
     def make_request(self, url, method='POST', **kwargs):
-        logger.info("Tautulli Notifiers :: Sending {name} notification...".format(name=self.NAME))
+        logger.info("RetroArcher Notifiers :: Sending {name} notification...".format(name=self.NAME))
         response, err_msg, req_msg = request.request_response2(url, method, **kwargs)
 
         if response and not err_msg:
-            logger.info("Tautulli Notifiers :: {name} notification sent.".format(name=self.NAME))
+            logger.info("RetroArcher Notifiers :: {name} notification sent.".format(name=self.NAME))
             return True
 
         else:
@@ -858,13 +843,13 @@ class Notifier(object):
             if response is not None and 400 <= response.status_code < 500:
                 verify_msg = " Verify your notification agent settings are correct."
 
-            logger.error("Tautulli Notifiers :: {name} notification failed.{msg}".format(msg=verify_msg, name=self.NAME))
+            logger.error("RetroArcher Notifiers :: {name} notification failed.{msg}".format(msg=verify_msg, name=self.NAME))
 
             if err_msg:
-                logger.error("Tautulli Notifiers :: {}".format(err_msg))
+                logger.error("RetroArcher Notifiers :: {}".format(err_msg))
 
             if req_msg:
-                logger.debug("Tautulli Notifiers :: Request response: {}".format(req_msg))
+                logger.debug("RetroArcher Notifiers :: Request response: {}".format(req_msg))
 
             return False
 
@@ -896,7 +881,7 @@ class ANDROIDAPP(Notifier):
         # Check mobile device is still registered
         device = mobile_app.get_mobile_devices(device_id=self.config['device_id'])
         if not device:
-            logger.warn("Tautulli Notifiers :: Unable to send Android app notification: device not registered.")
+            logger.warn("RetroArcher Notifiers :: Unable to send Android app notification: device not registered.")
             return
         else:
             device = device[0]
@@ -941,7 +926,7 @@ class ANDROIDAPP(Notifier):
 
             payload = {'app_id': mobile_app._ONESIGNAL_APP_ID,
                        'include_player_ids': [device['onesignal_id']],
-                       'contents': {'en': 'Tautulli Notification'},
+                       'contents': {'en': 'RetroArcher Notification'},
                        'data': {'encrypted': True,
                                 'cipher_text': base64.b64encode(encrypted_data),
                                 'nonce': base64.b64encode(nonce),
@@ -949,13 +934,13 @@ class ANDROIDAPP(Notifier):
                                 'server_id': plexpy.CONFIG.PMS_UUID}
                        }
         else:
-            logger.warn("Tautulli Notifiers :: PyCryptodome library is missing. "
+            logger.warn("RetroArcher Notifiers :: PyCryptodome library is missing. "
                         "Android app notifications will be sent unecrypted. "
                         "Install the library to encrypt the notifications.")
 
             payload = {'app_id': mobile_app._ONESIGNAL_APP_ID,
                        'include_player_ids': [device['onesignal_id']],
-                       'contents': {'en': 'Tautulli Notification'},
+                       'contents': {'en': 'RetroArcher Notification'},
                        'data': {'encrypted': False,
                                 'plain_text': plaintext_data,
                                 'server_id': plexpy.CONFIG.PMS_UUID}
@@ -975,7 +960,7 @@ class ANDROIDAPP(Notifier):
                     'AND onesignal_id IS NOT NULL AND onesignal_id != ""'
             result = db.select(query=query)
         except Exception as e:
-            logger.warn("Tautulli Notifiers :: Unable to retrieve Android app devices list: %s." % e)
+            logger.warn("RetroArcher Notifiers :: Unable to retrieve Android app devices list: %s." % e)
             return {'': ''}
 
         devices = {}
@@ -1035,7 +1020,7 @@ class ANDROIDAPP(Notifier):
                 'name': 'androidapp_device_id',
                 'description': 'Set your mobile device or '
                                '<a data-tab-destination="android_app" data-toggle="tab" data-dismiss="modal">'
-                               'register a new device</a> with Tautulli.<br>'
+                               'register a new device</a> with RetroArcher.<br>'
                                'Note: Only devices registered with a valid OneSignal ID will appear in the list.',
                 'input_type': 'select',
                 'select_options': devices
@@ -1144,7 +1129,7 @@ class BROWSER(Notifier):
                        }
 
     def agent_notify(self, subject='', body='', action='', **kwargs):
-        logger.info("Tautulli Notifiers :: {name} notification sent.".format(name=self.NAME))
+        logger.info("RetroArcher Notifiers :: {name} notification sent.".format(name=self.NAME))
         return True
 
     def _return_config_options(self):
@@ -1362,7 +1347,7 @@ class EMAIL(Notifier):
     Email notifications
     """
     NAME = 'Email'
-    _DEFAULT_CONFIG = {'from_name': 'Tautulli',
+    _DEFAULT_CONFIG = {'from_name': 'RetroArcher',
                        'from': '',
                        'to': [],
                        'cc': [],
@@ -1377,7 +1362,7 @@ class EMAIL(Notifier):
 
     def agent_notify(self, subject='', body='', action='', **kwargs):
         if not self.config['smtp_server']:
-            logger.error("Tautulli Notifiers :: %s notification failed: %s",
+            logger.error("RetroArcher Notifiers :: %s notification failed: %s",
                          self.NAME, "Missing SMTP server")
             return False
 
@@ -1431,11 +1416,11 @@ class EMAIL(Notifier):
                 mailserver.login(str(self.config['smtp_user']), str(self.config['smtp_password']))
 
             mailserver.sendmail(self.config['from'], recipients, msg.as_string())
-            logger.info("Tautulli Notifiers :: {name} notification sent.".format(name=self.NAME))
+            logger.info("RetroArcher Notifiers :: {name} notification sent.".format(name=self.NAME))
             success = True
 
         except Exception as e:
-            logger.error("Tautulli Notifiers :: %s notification failed: %s", self.NAME, e)
+            logger.error("RetroArcher Notifiers :: %s notification failed: %s", self.NAME, e)
 
         finally:
             if mailserver:
@@ -1570,7 +1555,7 @@ class FACEBOOK(Notifier):
                                  perms=['publish_to_groups'])
 
     def _get_credentials(self, code=''):
-        logger.info("Tautulli Notifiers :: Requesting access token from {name}.".format(name=self.NAME))
+        logger.info("RetroArcher Notifiers :: Requesting access token from {name}.".format(name=self.NAME))
 
         app_id = plexpy.CONFIG.FACEBOOK_APP_ID
         app_secret = plexpy.CONFIG.FACEBOOK_APP_SECRET
@@ -1592,7 +1577,7 @@ class FACEBOOK(Notifier):
 
             plexpy.CONFIG.FACEBOOK_TOKEN = response['access_token']
         except Exception as e:
-            logger.error("Tautulli Notifiers :: Error requesting {name} access token: {e}".format(name=self.NAME, e=e))
+            logger.error("RetroArcher Notifiers :: Error requesting {name} access token: {e}".format(name=self.NAME, e=e))
             plexpy.CONFIG.FACEBOOK_TOKEN = ''
 
         # Clear out temporary config values
@@ -1608,14 +1593,14 @@ class FACEBOOK(Notifier):
 
             try:
                 api.put_object(parent_object=self.config['group_id'], connection_name='feed', **data)
-                logger.info("Tautulli Notifiers :: {name} notification sent.".format(name=self.NAME))
+                logger.info("RetroArcher Notifiers :: {name} notification sent.".format(name=self.NAME))
                 return True
             except Exception as e:
-                logger.error("Tautulli Notifiers :: Error sending {name} post: {e}".format(name=self.NAME, e=e))
+                logger.error("RetroArcher Notifiers :: Error sending {name} post: {e}".format(name=self.NAME, e=e))
                 return False
 
         else:
-            logger.error("Tautulli Notifiers :: Error sending {name} post: No {name} Group ID provided.".format(name=self.NAME))
+            logger.error("RetroArcher Notifiers :: Error sending {name} post: No {name} Group ID provided.".format(name=self.NAME))
             return False
 
     def agent_notify(self, subject='', body='', action='', **kwargs):
@@ -1753,7 +1738,7 @@ class GROUPME(Notifier):
                 poster_content = result[0]
             else:
                 poster_content = ''
-                logger.error("Tautulli Notifiers :: Unable to retrieve image for {name}.".format(name=self.NAME))
+                logger.error("RetroArcher Notifiers :: Unable to retrieve image for {name}.".format(name=self.NAME))
 
             if poster_content:
                 headers = {'X-Access-Token': self.config['access_token'],
@@ -1762,14 +1747,14 @@ class GROUPME(Notifier):
                 r = requests.post('https://image.groupme.com/pictures', headers=headers, data=poster_content)
 
                 if r.status_code == 200:
-                    logger.info("Tautulli Notifiers :: {name} poster sent.".format(name=self.NAME))
+                    logger.info("RetroArcher Notifiers :: {name} poster sent.".format(name=self.NAME))
                     r_content = r.json()
                     data['attachments'] = [{'type': 'image',
                                             'url': r_content['payload']['picture_url']}]
                 else:
-                    logger.error("Tautulli Notifiers :: {name} poster failed: "
+                    logger.error("RetroArcher Notifiers :: {name} poster failed: "
                                  "[{r.status_code}] {r.reason}".format(name=self.NAME, r=r))
-                    logger.debug("Tautulli Notifiers :: Request response: {}".format(request.server_message(r, True)))
+                    logger.debug("RetroArcher Notifiers :: Request response: {}".format(request.server_message(r, True)))
 
         return self.make_request('https://api.groupme.com/v3/bots/post', json=data)
 
@@ -1830,7 +1815,7 @@ class GROWL(Notifier):
 
         # Register notification
         growl = gntp.notifier.GrowlNotifier(
-            applicationName='Tautulli',
+            applicationName='RetroArcher',
             notifications=['New Event'],
             defaultNotifications=['New Event'],
             hostname=host,
@@ -1841,10 +1826,10 @@ class GROWL(Notifier):
         try:
             growl.register()
         except gntp.notifier.errors.NetworkError:
-            logger.error("Tautulli Notifiers :: {name} notification failed: network error".format(name=self.NAME))
+            logger.error("RetroArcher Notifiers :: {name} notification failed: network error".format(name=self.NAME))
             return False
         except gntp.notifier.errors.AuthError:
-            logger.error("Tautulli Notifiers :: {name} notification failed: authentication error".format(name=self.NAME))
+            logger.error("RetroArcher Notifiers :: {name} notification failed: authentication error".format(name=self.NAME))
             return False
 
         # Send it, including an image
@@ -1861,10 +1846,10 @@ class GROWL(Notifier):
                 description=body,
                 icon=image
             )
-            logger.info("Tautulli Notifiers :: {name} notification sent.".format(name=self.NAME))
+            logger.info("RetroArcher Notifiers :: {name} notification sent.".format(name=self.NAME))
             return True
         except gntp.notifier.errors.NetworkError:
-            logger.error("Tautulli Notifiers :: {name} notification failed: network error".format(name=self.NAME))
+            logger.error("RetroArcher Notifiers :: {name} notification failed: network error".format(name=self.NAME))
             return False
 
     def _return_config_options(self):
@@ -1891,7 +1876,7 @@ class IFTTT(Notifier):
     """
     NAME = 'IFTTT'
     _DEFAULT_CONFIG = {'key': '',
-                       'event': 'tautulli',
+                       'event': 'retroarcher',
                        'value3': '',
                        }
 
@@ -1990,15 +1975,15 @@ class JOIN(Notifier):
         if r.status_code == 200:
             response_data = r.json()
             if response_data.get('success'):
-                logger.info("Tautulli Notifiers :: {name} notification sent.".format(name=self.NAME))
+                logger.info("RetroArcher Notifiers :: {name} notification sent.".format(name=self.NAME))
                 return True
             else:
                 error_msg = response_data.get('errorMessage')
-                logger.error("Tautulli Notifiers :: {name} notification failed: {msg}".format(name=self.NAME, msg=error_msg))
+                logger.error("RetroArcher Notifiers :: {name} notification failed: {msg}".format(name=self.NAME, msg=error_msg))
                 return False
         else:
-            logger.error("Tautulli Notifiers :: {name} notification failed: [{r.status_code}] {r.reason}".format(name=self.NAME, r=r))
-            logger.debug("Tautulli Notifiers :: Request response: {}".format(request.server_message(r, True)))
+            logger.error("RetroArcher Notifiers :: {name} notification failed: [{r.status_code}] {r.reason}".format(name=self.NAME, r=r))
+            logger.debug("RetroArcher Notifiers :: Request response: {}".format(request.server_message(r, True)))
             return False
 
     def get_devices(self):
@@ -2018,14 +2003,14 @@ class JOIN(Notifier):
                         devices.update({d['deviceName']: d['deviceName'] for d in response_devices})
                     else:
                         error_msg = response_data.get('errorMessage')
-                        logger.error("Tautulli Notifiers :: Unable to retrieve {name} devices list: {msg}".format(name=self.NAME, msg=error_msg))
+                        logger.error("RetroArcher Notifiers :: Unable to retrieve {name} devices list: {msg}".format(name=self.NAME, msg=error_msg))
 
                 else:
-                    logger.error("Tautulli Notifiers :: Unable to retrieve {name} devices list: [{r.status_code}] {r.reason}".format(name=self.NAME, r=r))
-                    logger.debug("Tautulli Notifiers :: Request response: {}".format(request.server_message(r, True)))
+                    logger.error("RetroArcher Notifiers :: Unable to retrieve {name} devices list: [{r.status_code}] {r.reason}".format(name=self.NAME, r=r))
+                    logger.debug("RetroArcher Notifiers :: Request response: {}".format(request.server_message(r, True)))
 
             except Exception as e:
-                logger.error("Tautulli Notifiers :: Unable to retrieve {name} devices list: {msg}".format(name=self.NAME, msg=e))
+                logger.error("RetroArcher Notifiers :: Unable to retrieve {name} devices list: {msg}".format(name=self.NAME, msg=e))
 
         return devices
 
@@ -2103,7 +2088,7 @@ class MQTT(Notifier):
                        'protocol': 'MQTTv311',
                        'username': '',
                        'password': '',
-                       'clientid': 'tautulli',
+                       'clientid': 'retroarcher',
                        'topic': '',
                        'qos': 1,
                        'retain': 0,
@@ -2112,7 +2097,7 @@ class MQTT(Notifier):
 
     def agent_notify(self, subject='', body='', action='', **kwargs):
         if not self.config['topic']:
-            logger.error("Tautulli Notifiers :: MQTT topic not specified.")
+            logger.error("RetroArcher Notifiers :: MQTT topic not specified.")
             return
 
         data = {'subject': subject,
@@ -2209,7 +2194,7 @@ class OSX(Notifier):
     macOS notifications
     """
     NAME = 'macOS'
-    _DEFAULT_CONFIG = {'notify_app': '/Applications/Tautulli'
+    _DEFAULT_CONFIG = {'notify_app': '/Applications/RetroArcher'
                        }
 
     def __init__(self, config=None):
@@ -2219,7 +2204,7 @@ class OSX(Notifier):
             self.objc = __import__("objc")
             self.AppKit = __import__("AppKit")
         except:
-            # logger.error("Tautulli Notifiers :: Cannot load OSX Notifications agent.")
+            # logger.error("RetroArcher Notifiers :: Cannot load OSX Notifications agent.")
             pass
 
     def validate(self):
@@ -2240,7 +2225,7 @@ class OSX(Notifier):
         self.objc.classAddMethod(cls, SEL, new_IMP)
 
     def _swizzled_bundleIdentifier(self, original, swizzled):
-        return 'ade.tautulli.osxnotify'
+        return 'ade.retroarcher.osxnotify'
 
     def agent_notify(self, subject='', body='', action='', **kwargs):
 
@@ -2278,13 +2263,13 @@ class OSX(Notifier):
 
             notification_center = NSUserNotificationCenter.defaultUserNotificationCenter()
             notification_center.deliverNotification_(notification)
-            logger.info("Tautulli Notifiers :: {name} notification sent.".format(name=self.NAME))
+            logger.info("RetroArcher Notifiers :: {name} notification sent.".format(name=self.NAME))
 
             del pool
             return True
 
         except Exception as e:
-            logger.error("Tautulli Notifiers :: {name} failed: {e}".format(name=self.NAME, e=e))
+            logger.error("RetroArcher Notifiers :: {name} failed: {e}".format(name=self.NAME, e=e))
             return False
 
     def _return_config_options(self):
@@ -2292,13 +2277,13 @@ class OSX(Notifier):
                           'value': self.config['notify_app'],
                           'name': 'osx_notify_app',
                           'description': 'Enter the path/application name to be registered with the Notification Center. '
-                                         'Default is <span class="inline-pre">/Applications/Tautulli</span>.',
+                                         'Default is <span class="inline-pre">/Applications/RetroArcher</span>.',
                           'input_type': 'text'
                           },
                          {'label': 'Register App',
                           'value': 'Register App',
                           'name': 'osx_notify_register',
-                          'description': 'Register Tautulli with the Notification Center.',
+                          'description': 'Register RetroArcher with the Notification Center.',
                           'input_type': 'button'
                           }
                          ]
@@ -2356,7 +2341,7 @@ class PLEX(Notifier):
             image = os.path.join(plexpy.DATA_DIR, os.path.abspath("data/interfaces/default/images/logo-circle.png"))
 
         for host in hosts:
-            logger.info("Tautulli Notifiers :: Sending notification command to {name} @ {host}".format(name=self.NAME, host=host))
+            logger.info("RetroArcher Notifiers :: Sending notification command to {name} @ {host}".format(name=self.NAME, host=host))
             try:
                 version = self._sendjson(host, 'Application.GetProperties', {'properties': ['version']})['version']['major']
 
@@ -2372,10 +2357,10 @@ class PLEX(Notifier):
                 if not request:
                     raise Exception
                 else:
-                    logger.info("Tautulli Notifiers :: {name} notification sent.".format(name=self.NAME))
+                    logger.info("RetroArcher Notifiers :: {name} notification sent.".format(name=self.NAME))
 
             except Exception as e:
-                logger.error("Tautulli Notifiers :: {name} notification failed: {e}".format(name=self.NAME, e=e))
+                logger.error("RetroArcher Notifiers :: {name} notification failed: {e}".format(name=self.NAME, e=e))
                 return False
 
         return True
@@ -2437,7 +2422,7 @@ class PLEXMOBILEAPP(Notifier):
 
     def agent_notify(self, subject='', body='', action='', **kwargs):
         if action not in self.configurations and not action.startswith('test'):
-            logger.error(u"Tautulli Notifiers :: Notification action %s not allowed for %s." % (action, self.NAME))
+            logger.error(u"RetroArcher Notifiers :: Notification action %s not allowed for %s." % (action, self.NAME))
             return
 
         if action == 'test':
@@ -2470,7 +2455,7 @@ class PLEXMOBILEAPP(Notifier):
             data['data']['player'] = {
                 'title': 'Device',
                 'platform': 'Platform',
-                'machineIdentifier': 'Tautulli'
+                'machineIdentifier': 'RetroArcher'
             }
             data['data']['user'] = {
                 'title': 'User',
@@ -2499,7 +2484,7 @@ class PLEXMOBILEAPP(Notifier):
             pass
 
         else:
-            logger.error(u"Tautulli Notifiers :: Notification action %s not supported for %s." % (action, self.NAME))
+            logger.error(u"RetroArcher Notifiers :: Notification action %s not supported for %s." % (action, self.NAME))
             return
 
         if data['group'] == 'media' and not action.startswith('test'):
@@ -2559,7 +2544,7 @@ class PLEXMOBILEAPP(Notifier):
                 }
                 uri_rating_key = pretty_metadata.parameters['parent_rating_key']
             else:
-                logger.error(u"Tautulli Notifiers :: Media type %s not supported for %s." % (media_type, self.NAME))
+                logger.error(u"RetroArcher Notifiers :: Media type %s not supported for %s." % (media_type, self.NAME))
                 return
 
             data['metadata'] = metadata
@@ -2582,7 +2567,7 @@ class PLEXMOBILEAPP(Notifier):
                           'name': 'plexmobileapp_user_ids',
                           'description': 'Select which Plex User(s) to receive notifications.<br>'
                                          'Note: The user(s) must have notifications enabled '
-                                         'for the matching Tautulli triggers in their Plex mobile app.',
+                                         'for the matching RetroArcher triggers in their Plex mobile app.',
                           'input_type': 'select',
                           'select_options': self.get_users()
                           },
@@ -2610,7 +2595,7 @@ class PROWL(Notifier):
 
     def agent_notify(self, subject='', body='', action='', **kwargs):
         data = {'apikey': self.config['key'],
-                'application': 'Tautulli',
+                'application': 'RetroArcher',
                 'event': subject,
                 'description': body,
                 'priority': self.config['priority']}
@@ -2677,7 +2662,7 @@ class PUSHBULLET(Notifier):
                 poster_content = result[0]
             else:
                 poster_content = ''
-                logger.error("Tautulli Notifiers :: Unable to retrieve image for {name}.".format(name=self.NAME))
+                logger.error("RetroArcher Notifiers :: Unable to retrieve image for {name}.".format(name=self.NAME))
 
             if poster_content:
                 poster_filename = 'poster_{}.png'.format(pretty_metadata.parameters['rating_key'])
@@ -2696,9 +2681,9 @@ class PUSHBULLET(Notifier):
                     file_response.pop('data', None)
                     data.update(file_response)
                 else:
-                    logger.error("Tautulli Notifiers :: Unable to upload image to {name}: "
+                    logger.error("RetroArcher Notifiers :: Unable to upload image to {name}: "
                                  "[{r.status_code}] {r.reason}".format(name=self.NAME, r=r))
-                    logger.debug("Tautulli Notifiers :: Request response: {}".format(request.server_message(r, True)))
+                    logger.debug("RetroArcher Notifiers :: Request response: {}".format(request.server_message(r, True)))
 
         return self.make_request('https://api.pushbullet.com/v2/pushes', headers=headers, json=data)
 
@@ -2717,12 +2702,12 @@ class PUSHBULLET(Notifier):
                     pushbullet_devices = response_data.get('devices', [])
                     devices.update({d['iden']: d['nickname'] for d in pushbullet_devices if d['active']})
                 else:
-                    logger.error("Tautulli Notifiers :: Unable to retrieve {name} devices list: "
+                    logger.error("RetroArcher Notifiers :: Unable to retrieve {name} devices list: "
                                  "[{r.status_code}] {r.reason}".format(name=self.NAME, r=r))
-                    logger.debug("Tautulli Notifiers :: Request response: {}".format(request.server_message(r, True)))
+                    logger.debug("RetroArcher Notifiers :: Request response: {}".format(request.server_message(r, True)))
 
             except Exception as e:
-                logger.error("Tautulli Notifiers :: Unable to retrieve {name} devices list: {msg}".format(name=self.NAME, msg=e))
+                logger.error("RetroArcher Notifiers :: Unable to retrieve {name} devices list: {msg}".format(name=self.NAME, msg=e))
 
         return devices
 
@@ -2834,7 +2819,7 @@ class PUSHOVER(Notifier):
                 poster_content = result[0]
             else:
                 poster_content = ''
-                logger.error("Tautulli Notifiers :: Unable to retrieve image for {name}.".format(name=self.NAME))
+                logger.error("RetroArcher Notifiers :: Unable to retrieve image for {name}.".format(name=self.NAME))
 
             if poster_content:
                 poster_filename = 'poster_{}.png'.format(pretty_metadata.parameters['rating_key'])
@@ -2884,9 +2869,9 @@ class PUSHOVER(Notifier):
         #         print sounds
         #         return sounds
         #     else:
-        #         logger.error("Tautulli Notifiers :: Unable to retrieve {name} sounds list: "
+        #         logger.error("RetroArcher Notifiers :: Unable to retrieve {name} sounds list: "
         #                      "[{r.status_code}] {r.reason}".format(name=self.NAME, r=r))
-        #         logger.debug("Tautulli Notifiers :: Request response: {}".format(request.server_message(r, True)))
+        #         logger.debug("RetroArcher Notifiers :: Request response: {}".format(request.server_message(r, True)))
         #         return {'': ''}
         #
         # else:
@@ -3044,11 +3029,11 @@ class SCRIPTS(Notifier):
             'PLEX_URL': plexpy.CONFIG.PMS_URL,
             'PLEX_TOKEN': plexpy.CONFIG.PMS_TOKEN,
             'PLEX_USER_TOKEN': '',
-            'TAUTULLI_URL': helpers.get_plexpy_url(hostname='localhost'),
-            'TAUTULLI_PUBLIC_URL': plexpy.CONFIG.HTTP_BASE_URL + plexpy.HTTP_ROOT,
-            'TAUTULLI_APIKEY': plexpy.CONFIG.API_KEY,
-            'TAUTULLI_ENCODING': plexpy.SYS_ENCODING,
-            'TAUTULLI_PYTHON_VERSION': common.PYTHON_VERSION
+            'RETROARCHER_URL': helpers.get_plexpy_url(hostname='localhost'),
+            'RETROARCHER_PUBLIC_URL': plexpy.CONFIG.HTTP_BASE_URL + plexpy.HTTP_ROOT,
+            'RETROARCHER_APIKEY': plexpy.CONFIG.API_KEY,
+            'RETROARCHER_ENCODING': plexpy.SYS_ENCODING,
+            'RETROARCHER_PYTHON_VERSION': common.PYTHON_VERSION
             }
 
         if user_id:
@@ -3082,31 +3067,31 @@ class SCRIPTS(Notifier):
                     timer.start()
                 output, error = process.communicate()
                 status = process.returncode
-                logger.debug("Tautulli Notifiers :: Subprocess returned with status code %s." % status)
+                logger.debug("RetroArcher Notifiers :: Subprocess returned with status code %s." % status)
             finally:
                 if timer:
                     timer.cancel()
 
         except OSError as e:
-            logger.error("Tautulli Notifiers :: Failed to run script: %s" % e)
+            logger.error("RetroArcher Notifiers :: Failed to run script: %s" % e)
             return False
 
         if error:
             err = '\n  '.join(error.decode('utf-8').splitlines())
-            logger.error("Tautulli Notifiers :: Script error: \n  %s" % err)
+            logger.error("RetroArcher Notifiers :: Script error: \n  %s" % err)
 
         if output:
             out = '\n  '.join(output.decode('utf-8').splitlines())
-            logger.debug("Tautulli Notifiers :: Script returned: \n  %s" % out)
+            logger.debug("RetroArcher Notifiers :: Script returned: \n  %s" % out)
 
         if not self.script_killed:
-            logger.info("Tautulli Notifiers :: Script notification sent.")
+            logger.info("RetroArcher Notifiers :: Script notification sent.")
             return True
 
     def kill_script(self, process):
         process.kill()
         self.script_killed = True
-        logger.warn("Tautulli Notifiers :: Script exceeded timeout limit of %d seconds. "
+        logger.warn("RetroArcher Notifiers :: Script exceeded timeout limit of %d seconds. "
                     "Script killed." % self.config['timeout'])
 
     def agent_notify(self, subject='', body='', action='', **kwargs):
@@ -3117,26 +3102,26 @@ class SCRIPTS(Notifier):
                   action(string): 'play'
         """
         if not self.config['script_folder']:
-            logger.error("Tautulli Notifiers :: No script folder specified.")
+            logger.error("RetroArcher Notifiers :: No script folder specified.")
             return
 
         script = kwargs.get('script', self.config.get('script', ''))
         script_args = helpers.split_args(kwargs.get('script_args', subject))
         user_id = kwargs.get('parameters', {}).get('user_id')
 
-        logger.debug("Tautulli Notifiers :: Trying to run notify script: %s, arguments: %s, action: %s"
+        logger.debug("RetroArcher Notifiers :: Trying to run notify script: %s, arguments: %s, action: %s"
                      % (script, script_args, action))
 
         # Don't try to run the script if the action does not have one
         if action and not script:
-            logger.debug("Tautulli Notifiers :: No script selected for action '%s', exiting..." % action)
+            logger.debug("RetroArcher Notifiers :: No script selected for action '%s', exiting..." % action)
             return
         elif not script:
-            logger.debug("Tautulli Notifiers :: No script selected, exiting...")
+            logger.debug("RetroArcher Notifiers :: No script selected, exiting...")
             return
         # Check for a valid script file
         elif not os.path.isfile(script) or not script.endswith(tuple(self.script_exts)):
-            logger.error("Tautulli Notifiers :: Invalid script file '%s' specified, exiting..." % script)
+            logger.error("RetroArcher Notifiers :: Invalid script file '%s' specified, exiting..." % script)
             return
 
         name, ext = os.path.splitext(script)
@@ -3159,7 +3144,7 @@ class SCRIPTS(Notifier):
                 script[0] = script_args[0]
                 del script_args[0]
             else:
-                logger.error("Tautulli Notifiers :: Invalid prefix override '%s' for '%s' script, exiting..."
+                logger.error("RetroArcher Notifiers :: Invalid prefix override '%s' for '%s' script, exiting..."
                              % (script_args[0], ext))
                 return
 
@@ -3168,8 +3153,8 @@ class SCRIPTS(Notifier):
         if plexpy.PYTHON2:
             script = [s.encode(plexpy.SYS_ENCODING, 'ignore') for s in script]
 
-        logger.debug("Tautulli Notifiers :: Full script is: %s" % script)
-        logger.debug("Tautulli Notifiers :: Executing script in a new thread.")
+        logger.debug("RetroArcher Notifiers :: Full script is: %s" % script)
+        logger.debug("RetroArcher Notifiers :: Executing script in a new thread.")
         thread = threading.Thread(target=self.run_script, args=(script, user_id)).start()
 
         return True
@@ -3424,7 +3409,7 @@ class TELEGRAM(Notifier):
                 poster_content = result[0]
             else:
                 poster_content = ''
-                logger.error("Tautulli Notifiers :: Unable to retrieve image for {name}.".format(name=self.NAME))
+                logger.error("RetroArcher Notifiers :: Unable to retrieve image for {name}.".format(name=self.NAME))
 
             if poster_content:
                 poster_filename = 'poster_{}.png'.format(pretty_metadata.parameters['rating_key'])
@@ -3535,16 +3520,16 @@ class TWITTER(Notifier):
         access_token = self.config['access_token']
         access_token_secret = self.config['access_token_secret']
 
-        # logger.info("Tautulli Notifiers :: Sending tweet: " + message)
+        # logger.info("RetroArcher Notifiers :: Sending tweet: " + message)
 
         api = twitter.Api(consumer_key, consumer_secret, access_token, access_token_secret)
 
         try:
             api.PostUpdate(message, media=attachment)
-            logger.info("Tautulli Notifiers :: {name} notification sent.".format(name=self.NAME))
+            logger.info("RetroArcher Notifiers :: {name} notification sent.".format(name=self.NAME))
             return True
         except Exception as e:
-            logger.error("Tautulli Notifiers :: {name} notification failed: {e}".format(name=self.NAME, e=e))
+            logger.error("RetroArcher Notifiers :: {name} notification failed: {e}".format(name=self.NAME, e=e))
             return False
 
     def agent_notify(self, subject='', body='', action='', **kwargs):
@@ -3622,7 +3607,7 @@ class WEBHOOK(Notifier):
             try:
                 webhook_headers = json.loads(subject)
             except ValueError as e:
-                logger.error("Tautulli Notifiers :: Invalid {name} json header data: {e}".format(name=self.NAME, e=e))
+                logger.error("RetroArcher Notifiers :: Invalid {name} json header data: {e}".format(name=self.NAME, e=e))
                 return False
         else:
             webhook_headers = None
@@ -3631,7 +3616,7 @@ class WEBHOOK(Notifier):
             try:
                 webhook_body = json.loads(body)
             except ValueError as e:
-                logger.error("Tautulli Notifiers :: Invalid {name} json body data: {e}".format(name=self.NAME, e=e))
+                logger.error("RetroArcher Notifiers :: Invalid {name} json body data: {e}".format(name=self.NAME, e=e))
                 return False
         else:
             webhook_body = None
@@ -3719,7 +3704,7 @@ class XBMC(Notifier):
             image = os.path.join(plexpy.DATA_DIR, os.path.abspath("data/interfaces/default/images/logo-circle.png"))
 
         for host in hosts:
-            logger.info("Tautulli Notifiers :: Sending notification command to XMBC @ " + host)
+            logger.info("RetroArcher Notifiers :: Sending notification command to XMBC @ " + host)
             try:
                 version = self._sendjson(host, 'Application.GetProperties', {'properties': ['version']})['version']['major']
 
@@ -3735,10 +3720,10 @@ class XBMC(Notifier):
                 if not request:
                     raise Exception
                 else:
-                    logger.info("Tautulli Notifiers :: {name} notification sent.".format(name=self.NAME))
+                    logger.info("RetroArcher Notifiers :: {name} notification sent.".format(name=self.NAME))
 
             except Exception as e:
-                logger.error("Tautulli Notifiers :: {name} notification failed: {e}".format(name=self.NAME, e=e))
+                logger.error("RetroArcher Notifiers :: {name} notification failed: {e}".format(name=self.NAME, e=e))
                 return False
 
         return True

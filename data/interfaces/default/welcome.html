@@ -8,17 +8,17 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Tautulli - ${title} | ${server_name}</title>
+    <title>RetroArcher - ${title} | ${server_name}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
     <link href="${http_root}css/bootstrap3/bootstrap.min.css" rel="stylesheet">
     <link href="${http_root}css/bootstrap-wizard.css" rel="stylesheet">
-    <link href="${http_root}css/tautulli.css${cache_param}" rel="stylesheet">
+    <link href="${http_root}css/retroarcher.css${cache_param}" rel="stylesheet">
     <link href="${http_root}css/selectize.bootstrap3.css" rel="stylesheet">
     <link href="${http_root}css/opensans.min.css" rel="stylesheet">
-    <link href="${http_root}css/font-awesome.all.min.css" rel="stylesheet">
-    <link href="${http_root}css/font-awesome.v4-shims.min.css" rel="stylesheet">
+    <link href="${http_root}fonts/fontawesome-free-web/css/all.min.css" rel="stylesheet">
+    <link href="${http_root}fonts/fontawesome-free-web/css/v4-shims.min.css" rel="stylesheet">
 
     <!-- Favicons -->
     <link rel="icon" type="image/png" sizes="32x32" href="${http_root}images/favicon/favicon-32x32.png?v=2.6.0">
@@ -32,28 +32,28 @@
     <!-- Apple -->
     <link rel="apple-touch-icon" sizes="180x180" href="${http_root}images/favicon/apple-touch-icon.png?v=2.6.0">
     <link rel="mask-icon" href="${http_root}images/favicon/safari-pinned-tab.svg?v=2.6.0" color="#282a2d">
-    <meta name="apple-mobile-web-app-title" content="Tautulli">
+    <meta name="apple-mobile-web-app-title" content="RetroArcher">
     <!-- Microsoft -->
-    <meta name="application-name" content="Tautulli">
+    <meta name="application-name" content="RetroArcher">
     <meta name="msapplication-config" content="${http_root}images/favicon/browserconfig.xml?v=2.6.0">
 </head>
 
 <body>
 <div class="container-fluid">
     <div class="row">
-        <div class="wizard" id="setup-wizard" data-title="Tautulli Setup Wizard">
+        <div class="wizard" id="setup-wizard" data-title="RetroArcher Setup Wizard">
             <form>
                 <div class="wizard-card" data-cardname="card1">
                     <div style="float: right;">
-                        <img src="${http_root}images/logo-tautulli-45.png" height="45" alt="Tautulli">
+                        <img src="${http_root}images/logo-retroarcher-45.png" height="45" alt="RetroArcher">
                     </div>
                     <h3 style="line-height: 50px;">Welcome!</h3>
                     <div class="wizard-input-section">
                         <p class="welcome-message">
-                            Thanks for taking the time to try out Tautulli. Hope you find it useful.
+                            RetroArcher is a gaming plug-in for Plex Media Server!
                         </p>
                         <p class="welcome-message">
-                            Tautulli requires a permanent internet connection to ensure a reliable experience.
+                            RetroArcher requires a permanent internet connection to ensure a reliable experience.
                         </p>
                         <p class="welcome-message">
                             This wizard will help you get set up, to continue press Next.
@@ -65,7 +65,7 @@
                     <h3>Authentication</h3>
                     <div class="wizard-input-section">
                         <p class="help-block">
-                            Please setup an admin username and password for Tautulli.
+                            Please setup an admin username and password for RetroArcher.
                         </p>
                     </div>
                     <div class="wizard-input-section">
@@ -94,7 +94,7 @@
                     <h3>Plex Account</h3>
                     <div class="wizard-input-section">
                         <p class="help-block">
-                            Tautulli requires a Plex.tv account. Click the button below to sign in on Plex.tv. You may need to allow popups in your browser.
+                            RetroArcher requires a Plex.tv account. Click the button below to sign in on Plex.tv. You may need to allow popups in your browser.
                         </p>
                     </div>
                     <input type="hidden" class="form-control" name="pms_token" id="pms_token" value="" data-validate="validatePMStoken">
@@ -165,14 +165,14 @@
                     <h3>Activity Logging</h3>
                     <div class="wizard-input-section">
                         <p class="help-block">
-                            Tautulli will keep a history of all streaming activity on your Plex server.
+                            RetroArcher will keep a history of all activity of libaries on your Plex server that utilize RetroArcher.bundle.
                         </p>
                     </div>
                     <div class="wizard-input-section">
                         <label for="logging_ignore_interval">Ignore Interval</label>
                         <div class="row">
                             <div class="col-xs-4">
-                                <input type="text" class="form-control pms-monitoring" id="logging_ignore_interval" name="logging_ignore_interval" placeholder="120" value="${config['logging_ignore_interval']}" data-validate="validateIgnoreInterval" required>
+                                <input type="text" class="form-control pms-monitoring" id="logging_ignore_interval" name="logging_ignore_interval" placeholder="0" value="${config['logging_ignore_interval']}" data-validate="validateIgnoreInterval" required>
                             </div>
                             <span style="margin-left: 10px; line-height: 35px; display: none;" id="ignore-int-status"></span>
                         </div>
@@ -190,7 +190,7 @@
                     <h3>Notifications</h3>
                     <div class="wizard-input-section">
                         <p class="help-block">
-                            Tautulli can send a wide variety of notifications to alert you of activity on your Plex server.
+                            RetroArcher can send a wide variety of notifications to alert you of activity on your Plex server.
                         </p>
                         <p class="help-block">
                             To set up a notification agent, navigate to the <strong>Settings</strong> page
@@ -203,7 +203,7 @@
                     <h3>Database Import</h3>
                     <div class="wizard-input-section">
                         <p class="help-block">
-                            If you have an existing Tautulli, PlexWatch, or Plexivity database, you can import the data into Tautulli.
+                            If you have an existing RetroArcher database, you can import the data into RetroArcher.
                         </p>
                         <p class="help-block">
                             To import a database, navigate to the <strong>Settings</strong> page

@@ -1,20 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
 
-#  This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import unicode_literals
 
 from io import open
@@ -41,7 +26,7 @@ NEWSLETTER_SCHED = None
 
 def add_newsletter_each(newsletter_id=None, notify_action=None, **kwargs):
     if not notify_action:
-        logger.debug("Tautulli NewsletterHandler :: Notify called but no action received.")
+        logger.debug("RetroArcher NewsletterHandler :: Notify called but no action received.")
         return
 
     data = {'newsletter': True,
@@ -75,20 +60,20 @@ def schedule_newsletter_job(newsletter_job_id, name='', func=None, remove_job=Fa
     if NEWSLETTER_SCHED.get_job(newsletter_job_id):
         if remove_job:
             NEWSLETTER_SCHED.remove_job(newsletter_job_id)
-            logger.info("Tautulli NewsletterHandler :: Removed scheduled newsletter: %s" % name)
+            logger.info("RetroArcher NewsletterHandler :: Removed scheduled newsletter: %s" % name)
         else:
             NEWSLETTER_SCHED.reschedule_job(
                 newsletter_job_id, args=args, trigger=CronTrigger.from_crontab(cron))
-            logger.info("Tautulli NewsletterHandler :: Re-scheduled newsletter: %s" % name)
+            logger.info("RetroArcher NewsletterHandler :: Re-scheduled newsletter: %s" % name)
     elif not remove_job:
         NEWSLETTER_SCHED.add_job(
             func, args=args, id=newsletter_job_id, trigger=CronTrigger.from_crontab(cron),
             misfire_grace_time=None)
-        logger.info("Tautulli NewsletterHandler :: Scheduled newsletter: %s" % name)
+        logger.info("RetroArcher NewsletterHandler :: Scheduled newsletter: %s" % name)
 
 
 def notify(newsletter_id=None, notify_action=None, **kwargs):
-    logger.info("Tautulli NewsletterHandler :: Preparing newsletter for newsletter_id %s." % newsletter_id)
+    logger.info("RetroArcher NewsletterHandler :: Preparing newsletter for newsletter_id %s." % newsletter_id)
 
     newsletter_config = newsletters.get_newsletter_config(newsletter_id=newsletter_id)
 
@@ -167,7 +152,7 @@ def set_notify_state(newsletter, notify_action, subject, body, message, filename
         db.upsert(table_name='newsletter_log', key_dict=keys, value_dict=values)
         return db.last_insert_id()
     else:
-        logger.error("Tautulli NewsletterHandler :: Unable to set notify state.")
+        logger.error("RetroArcher NewsletterHandler :: Unable to set notify state.")
 
 
 def set_notify_success(newsletter_log_id):
@@ -220,6 +205,6 @@ def get_newsletter(newsletter_uuid=None, newsletter_id_name=None):
                     newsletter = n_file.read()
                 return newsletter
             except OSError as e:
-                logger.error("Tautulli NewsletterHandler :: Failed to retrieve newsletter '%s': %s" % (newsletter_uuid, e))
+                logger.error("RetroArcher NewsletterHandler :: Failed to retrieve newsletter '%s': %s" % (newsletter_uuid, e))
         else:
-            logger.warn("Tautulli NewsletterHandler :: Newsletter file '%s' is missing." % newsletter_file)
+            logger.warn("RetroArcher NewsletterHandler :: Newsletter file '%s' is missing." % newsletter_file)

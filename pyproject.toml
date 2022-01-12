@@ -1,0 +1,80 @@
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+
+[tool]
+[tool.poetry]
+authors = ["ReenigneArcher"]
+description = "RetroArcher.X"
+name = "RetroArcher.X"
+version = "0.1.0"
+[tool.poetry.dependencies]
+APScheduler = "3.6.3"
+GPUtil = "1.4.0"
+IPy = "0.83"
+Mako = "1.1.2"
+PlexAPI = "4.6.1"
+PyJWT = "1.4.0"
+appdirs = "1.4.3"
+argparse = "1.4.0"
+arrow = "0.10.0"
+"backports.csv" = "1.0.7"
+"backports.functools-lru-cache" = "1.6.1"
+beautifulsoup4 = "4.8.1"
+certifi = "2020.11.08"
+cherrypy = "17.4.2"
+cloudinary = "1.20.0"
+distro = "1.4.0"
+future = "0.18.2"
+gntp = "1.0.2"
+html5lib = "0.999"
+httpagentparser = "1.7.8"
+ipwhois = "1.2.0"
+logutils = "0.3.3"
+lxml = "4.6.3"
+musicbrainzngs = "0.7"
+paho-mqtt = "1.1"
+profilehooks = "1.12.0"
+psutil = "5.8.0"
+pulsectl = "21.10.5"
+py7zr = "0.16.1"
+pygame = "2.0.1"
+pyopenssl = "20.0.1"
+pypresence = "4.2.0"
+python = "^3.8"
+python-twitter = "3.4.1"
+pytz = "2019.3"
+requests = "2.25.1"
+screeninfo = "0.7"
+simplejson = "3.17.0"
+tzlocal = "2.1b1"
+urllib3 = "1.22"
+websocket-client = "0.57.0"
+websocket = "^0.2.1"
+configparser = "^5.1.0"
+virtualenv = "^20.10.0"
+[tool.poetry.dependencies.PyQt5]
+markers = "python_version < '3.9'"
+version = "5.15.6"
+[tool.poetry.dependencies.PyQt6]
+markers = "python_version > '3.8'"
+version = "6.2.0"
+[tool.poetry.dependencies.bleach]
+git = "https://github.com/mozilla/bleach.git"
+tag = "bf4e0935c666d83f516c8442a9f9a5aad8b2c493"
+[tool.poetry.dependencies.configobj]
+git = "https://github.com/DiffSK/configobj.git"
+tag = "17f06a5da1fc60e9fd8471292ceda0f8d11a71a9"
+[tool.poetry.dependencies.facebook-sdk]
+git = "https://github.com/mobolic/facebook-sdk.git"
+tag = "9872e78f8b834d9092c751cc45d4ffefa14b5e05"
+[tool.poetry.dependencies.pylspci]
+markers = "sys_platform == 'linux'"
+version = "0.4.0"
+[tool.poetry.dependencies.pywin32]
+markers = "sys_platform == 'win32'"
+version = "301"
+[tool.poetry.dependencies.xmltodict]
+git = "https://github.com/martinblech/xmltodict.git"
+tag = "579a00520315e30681e0f0f81de645ce5680ed47"
+[tool.poetry.dev-dependencies]

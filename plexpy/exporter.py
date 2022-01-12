@@ -1,20 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import unicode_literals
 from future.builtins import str
 from backports import csv
@@ -1614,7 +1599,7 @@ class Export(object):
             msg = "Individual file export is only allowed for library or user export."
 
         if msg:
-            logger.error("Tautulli Exporter :: %s", msg)
+            logger.error("RetroArcher Exporter :: %s", msg)
             return msg
 
         if self.user_id:
@@ -1629,7 +1614,7 @@ class Export(object):
 
         if self.rating_key:
             logger.debug(
-                "Tautulli Exporter :: Export called with rating_key %s, "
+                "RetroArcher Exporter :: Export called with rating_key %s, "
                 "metadata_level %d, media_info_level %d, thumb_level %s, art_level %s, "
                 "file_format %s",
                 self.rating_key, self.metadata_level, self.media_info_level,
@@ -1648,7 +1633,7 @@ class Export(object):
 
         elif self.user_id:
             logger.debug(
-                "Tautulli Exporter :: Export called with user_id %s, "
+                "RetroArcher Exporter :: Export called with user_id %s, "
                 "metadata_level %d, media_info_level %d, thumb_level %s, art_level %s, "
                 "export_type %s, file_format %s",
                 self.user_id, self.metadata_level, self.media_info_level,
@@ -1661,7 +1646,7 @@ class Export(object):
 
         elif self.section_id:
             logger.debug(
-                "Tautulli Exporter :: Export called with section_id %s, "
+                "RetroArcher Exporter :: Export called with section_id %s, "
                 "metadata_level %d, media_info_level %d, thumb_level %s, art_level %s, "
                 "export_type %s, file_format %s",
                 self.section_id, self.metadata_level, self.media_info_level,
@@ -1677,12 +1662,12 @@ class Export(object):
 
         else:
             msg = "Export called but no section_id, user_id, or rating_key provided."
-            logger.error("Tautulli Exporter :: %s", msg)
+            logger.error("RetroArcher Exporter :: %s", msg)
             return msg
 
         if self.media_type not in self.MEDIA_TYPES:
             msg = "Cannot export media type '{}'.".format(self.media_type)
-            logger.error("Tautulli Exporter :: %s", msg)
+            logger.error("RetroArcher Exporter :: %s", msg)
             return msg
 
         if not self.MEDIA_TYPES[self.media_type][0]:
@@ -1699,7 +1684,7 @@ class Export(object):
         self.export_id = self.add_export()
         if not self.export_id:
             msg = "Failed to export '{}'.".format(self.directory)
-            logger.error("Tautulli Exporter :: %s", msg)
+            logger.error("RetroArcher Exporter :: %s", msg)
             return msg
 
         threading.Thread(target=self._real_export).start()
@@ -1731,7 +1716,7 @@ class Export(object):
             db.upsert(table_name='exports', key_dict=keys, value_dict=values)
             return db.last_insert_id()
         except Exception as e:
-            logger.error("Tautulli Exporter :: Unable to save export to database: %s", e)
+            logger.error("RetroArcher Exporter :: Unable to save export to database: %s", e)
             return False
 
     def set_export_state(self):
@@ -1766,7 +1751,7 @@ class Export(object):
         db.upsert(table_name='exports', key_dict=keys, value_dict=values)
 
     def _real_export(self):
-        logger.info("Tautulli Exporter :: Starting export for '%s'...", self.title)
+        logger.info("RetroArcher Exporter :: Starting export for '%s'...", self.title)
 
         if self.rating_key:
             items = [self.obj]
@@ -1778,7 +1763,7 @@ class Export(object):
             items = method()
 
         self.total_items = len(items)
-        logger.info("Tautulli Exporter :: Exporting %d item(s).", self.total_items)
+        logger.info("RetroArcher Exporter :: Exporting %d item(s).", self.total_items)
 
         pool = ThreadPool(processes=plexpy.CONFIG.EXPORT_THREADS)
         items = [ExportObject(self, item) for item in items]
@@ -1803,10 +1788,10 @@ class Export(object):
             self.success = True
 
             dirpath = get_export_dirpath(self.directory)
-            logger.info("Tautulli Exporter :: Successfully exported to '%s'", dirpath)
+            logger.info("RetroArcher Exporter :: Successfully exported to '%s'", dirpath)
 
         except Exception as e:
-            logger.exception("Tautulli Exporter :: Failed to export '%s': %s", self.title, e)
+            logger.exception("RetroArcher Exporter :: Failed to export '%s': %s", self.title, e)
 
         finally:
             pool.close()
@@ -1902,7 +1887,7 @@ class Export(object):
 
     def _process_custom_fields(self):
         if self.custom_fields:
-            logger.debug("Tautulli Exporter :: Processing custom fields: %s", self.custom_fields)
+            logger.debug("RetroArcher Exporter :: Processing custom fields: %s", self.custom_fields)
 
         for field in self.custom_fields.split(','):
             field = field.strip()
@@ -1982,7 +1967,7 @@ class Export(object):
             try:
                 value = helpers.get_dict_value_by_path(media_attrs, attr)
             except (KeyError, TypeError):
-                logger.warn("Tautulli Exporter :: Unknown export attribute '%s', skipping...", attr)
+                logger.warn("RetroArcher Exporter :: Unknown export attribute '%s', skipping...", attr)
                 continue
 
             export_attrs_list.append(value)
@@ -2178,15 +2163,15 @@ def delete_export(export_id):
         result = get_export(export_id=export_id)
         if result and check_export_exists(result['title'], result['timestamp']):  # Only check if folder exists
             dirpath = get_export_dirpath(result['title'], result['timestamp'])
-            logger.info("Tautulli Exporter :: Deleting export '%s'.", dirpath)
+            logger.info("RetroArcher Exporter :: Deleting export '%s'.", dirpath)
             try:
                 shutil.rmtree(dirpath, ignore_errors=True)
             except OSError as e:
-                logger.error("Tautulli Exporter :: Failed to delete export '%s': %s", dirpath, e)
+                logger.error("RetroArcher Exporter :: Failed to delete export '%s': %s", dirpath, e)
                 deleted = False
 
         if deleted:
-            logger.info("Tautulli Exporter :: Deleting export_id %s from the database.", export_id)
+            logger.info("RetroArcher Exporter :: Deleting export_id %s from the database.", export_id)
             db = database.MonitorDatabase()
             result = db.action('DELETE FROM exports WHERE id = ?', args=[export_id])
 
@@ -2196,13 +2181,13 @@ def delete_export(export_id):
 
 
 def delete_all_exports():
-    logger.info("Tautulli Exporter :: Deleting all exports from the export directory.")
+    logger.info("RetroArcher Exporter :: Deleting all exports from the export directory.")
 
     export_dir = plexpy.CONFIG.EXPORT_DIR
     try:
         shutil.rmtree(export_dir, ignore_errors=True)
     except OSError as e:
-        logger.error("Tautulli Exporter :: Failed to delete export directory '%s': %s", export_dir, e)
+        logger.error("RetroArcher Exporter :: Failed to delete export directory '%s': %s", export_dir, e)
 
     if not os.path.exists(export_dir):
         os.makedirs(export_dir)
@@ -2264,7 +2249,7 @@ def get_export_datatable(section_id=None, user_id=None, rating_key=None, kwargs=
                                       join_evals=[],
                                       kwargs=kwargs)
     except Exception as e:
-        logger.warn("Tautulli Exporter :: Unable to execute database query for get_export_datatable: %s.", e)
+        logger.warn("RetroArcher Exporter :: Unable to execute database query for get_export_datatable: %s.", e)
         return default_return
 
     result = query['result']

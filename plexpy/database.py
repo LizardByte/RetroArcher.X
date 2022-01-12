@@ -1,18 +1,3 @@
-# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import unicode_literals
 from future.builtins import str
 from future.builtins import object
@@ -32,7 +17,7 @@ else:
     from plexpy import logger
 
 
-FILENAME = "tautulli.db"
+FILENAME = "retroarcher.db"
 db_lock = threading.Lock()
 
 IS_IMPORTING = False
@@ -47,48 +32,48 @@ def validate_database(database=None):
     try:
         connection = sqlite3.connect(database, timeout=20)
     except (sqlite3.OperationalError, sqlite3.DatabaseError, ValueError) as e:
-        logger.error("Tautulli Database :: Invalid database specified: %s", e)
+        logger.error("RetroArcher Database :: Invalid database specified: %s", e)
         return 'Invalid database specified'
     except Exception as e:
-        logger.error("Tautulli Database :: Uncaught exception: %s", e)
+        logger.error("RetroArcher Database :: Uncaught exception: %s", e)
         return 'Uncaught exception'
 
     try:
         connection.execute('SELECT started from session_history')
         connection.close()
     except (sqlite3.OperationalError, sqlite3.DatabaseError, ValueError) as e:
-        logger.error("Tautulli Database :: Invalid database specified: %s", e)
+        logger.error("RetroArcher Database :: Invalid database specified: %s", e)
         return 'Invalid database specified'
     except Exception as e:
-        logger.error("Tautulli Database :: Uncaught exception: %s", e)
+        logger.error("RetroArcher Database :: Uncaught exception: %s", e)
         return 'Uncaught exception'
 
     return 'success'
 
 
-def import_tautulli_db(database=None, method=None, backup=False):
+def import_retroarcher_db(database=None, method=None, backup=False):
     if IS_IMPORTING:
-        logger.warn("Tautulli Database :: Another Tautulli database is currently being imported. "
+        logger.warn("RetroArcher Database :: Another RetroArcher database is currently being imported. "
                     "Please wait until it is complete before importing another database.")
         return False
 
     db_validate = validate_database(database=database)
     if not db_validate == 'success':
-        logger.error("Tautulli Database :: Failed to import Tautulli database: %s", db_validate)
+        logger.error("RetroArcher Database :: Failed to import RetroArcher database: %s", db_validate)
         return False
 
     if method not in ('merge', 'overwrite'):
-        logger.error("Tautulli Database :: Failed to import Tautulli database: invalid import method '%s'", method)
+        logger.error("RetroArcher Database :: Failed to import RetroArcher database: invalid import method '%s'", method)
         return False
 
     if backup:
         # Make a backup of the current database first
-        logger.info("Tautulli Database :: Creating a database backup before importing.")
+        logger.info("RetroArcher Database :: Creating a database backup before importing.")
         if not make_backup():
-            logger.error("Tautulli Database :: Failed to import Tautulli database: failed to create database backup")
+            logger.error("RetroArcher Database :: Failed to import RetroArcher database: failed to create database backup")
             return False
 
-    logger.info("Tautulli Database :: Importing Tautulli database '%s' with import method '%s'...", database, method)
+    logger.info("RetroArcher Database :: Importing RetroArcher database '%s' with import method '%s'...", database, method)
     set_is_importing(True)
 
     db = MonitorDatabase()
@@ -101,7 +86,7 @@ def import_tautulli_db(database=None, method=None, backup=False):
     except sqlite3.OperationalError:
         import_db_version = 'v2.6.10'
 
-    logger.info("Tautulli Database :: Import Tautulli database version: %s", import_db_version)
+    logger.info("RetroArcher Database :: Import RetroArcher database version: %s", import_db_version)
     import_db_version = helpers.version_to_tuple(import_db_version)
 
     # Get the current number of used ids in the session_history table
@@ -111,7 +96,7 @@ def import_tautulli_db(database=None, method=None, backup=False):
     session_history_tables = ('session_history', 'session_history_metadata', 'session_history_media_info')
 
     if method == 'merge':
-        logger.info("Tautulli Database :: Creating temporary database tables to re-index grouped session history.")
+        logger.info("RetroArcher Database :: Creating temporary database tables to re-index grouped session history.")
         for table_name in session_history_tables:
             db.action('CREATE TABLE {table}_copy AS SELECT * FROM import_db.{table}'.format(table=table_name))
             db.action('UPDATE {table}_copy SET id = id + ?'.format(table=table_name),
@@ -154,7 +139,7 @@ def import_tautulli_db(database=None, method=None, backup=False):
             # Skip table does not exits
             continue
 
-        logger.info("Tautulli Database :: Importing database table '%s'.", table_name)
+        logger.info("RetroArcher Database :: Importing database table '%s'.", table_name)
 
         if method == 'overwrite':
             # Clear the table and reset the autoincrement ids
@@ -193,7 +178,7 @@ def import_tautulli_db(database=None, method=None, backup=False):
     if method == 'merge':
         for table_name, columns in sorted(table_columns.items()):
             duplicate_columns = ', '.join([c for c in columns if c not in ('id', 'reference_id')])
-            logger.info("Tautulli Database :: Removing duplicate rows from database table '%s'.", table_name)
+            logger.info("RetroArcher Database :: Removing duplicate rows from database table '%s'.", table_name)
             if table_name in session_history_tables[1:]:
                 db.action('DELETE FROM {table} WHERE id NOT IN '
                           '(SELECT id FROM session_history)'.format(table=table_name))
@@ -202,16 +187,16 @@ def import_tautulli_db(database=None, method=None, backup=False):
                           '(SELECT MIN(id) FROM {table} GROUP BY {columns})'.format(table=table_name,
                                                                                     columns=duplicate_columns))
 
-        logger.info("Tautulli Database :: Deleting temporary database tables.")
+        logger.info("RetroArcher Database :: Deleting temporary database tables.")
         for table_name in session_history_tables:
             db.action('DROP TABLE {table}_copy'.format(table=table_name))
 
     vacuum()
 
-    logger.info("Tautulli Database :: Tautulli database import complete.")
+    logger.info("RetroArcher Database :: RetroArcher database import complete.")
     set_is_importing(False)
 
-    logger.info("Tautulli Database :: Deleting cached database: %s", database)
+    logger.info("RetroArcher Database :: Deleting cached database: %s", database)
     os.remove(database)
 
 
@@ -225,28 +210,28 @@ def clear_table(table=None):
     if table:
         monitor_db = MonitorDatabase()
 
-        logger.debug("Tautulli Database :: Clearing database table '%s'." % table)
+        logger.debug("RetroArcher Database :: Clearing database table '%s'." % table)
         try:
             monitor_db.action('DELETE FROM %s' % table)
             vacuum()
             return True
         except Exception as e:
-            logger.error("Tautulli Database :: Failed to clear database table '%s': %s." % (table, e))
+            logger.error("RetroArcher Database :: Failed to clear database table '%s': %s." % (table, e))
             return False
 
 
 def delete_sessions():
-    logger.info("Tautulli Database :: Clearing temporary sessions from database.")
+    logger.info("RetroArcher Database :: Clearing temporary sessions from database.")
     return clear_table('sessions')
 
 
 def delete_recently_added():
-    logger.info("Tautulli Database :: Clearing recently added items from database.")
+    logger.info("RetroArcher Database :: Clearing recently added items from database.")
     return clear_table('recently_added')
 
 
 def delete_exports():
-    logger.info("Tautulli Database :: Clearing exported items from database.")
+    logger.info("RetroArcher Database :: Clearing exported items from database.")
     return clear_table('exports')
 
 
@@ -255,7 +240,7 @@ def delete_rows_from_table(table, row_ids):
         row_ids = list(map(helpers.cast_to_int, row_ids.split(',')))
 
     if row_ids:
-        logger.info("Tautulli Database :: Deleting row ids %s from %s database table", row_ids, table)
+        logger.info("RetroArcher Database :: Deleting row ids %s from %s database table", row_ids, table)
 
         # SQlite versions prior to 3.32.0 (2020-05-22) have maximum variable limit of 999
         # https://sqlite.org/limits.html
@@ -268,7 +253,7 @@ def delete_rows_from_table(table, row_ids):
                 monitor_db.action(query, row_ids_group)
             vacuum()
         except Exception as e:
-            logger.error("Tautulli Database :: Failed to delete rows from %s database table: %s" % (table, e))
+            logger.error("RetroArcher Database :: Failed to delete rows from %s database table: %s" % (table, e))
             return False
 
     return True
@@ -290,7 +275,7 @@ def delete_user_history(user_id=None):
                                    [user_id])
         row_ids = [row['id'] for row in result]
 
-        logger.info("Tautulli Database :: Deleting all history for user_id %s from database." % user_id)
+        logger.info("RetroArcher Database :: Deleting all history for user_id %s from database." % user_id)
         return delete_session_history_rows(row_ids=row_ids)
 
 
@@ -303,28 +288,28 @@ def delete_library_history(section_id=None):
                                    [section_id])
         row_ids = [row['id'] for row in result]
 
-        logger.info("Tautulli Database :: Deleting all history for library section_id %s from database." % section_id)
+        logger.info("RetroArcher Database :: Deleting all history for library section_id %s from database." % section_id)
         return delete_session_history_rows(row_ids=row_ids)
 
 
 def vacuum():
     monitor_db = MonitorDatabase()
 
-    logger.info("Tautulli Database :: Vacuuming database.")
+    logger.info("RetroArcher Database :: Vacuuming database.")
     try:
         monitor_db.action('VACUUM')
     except Exception as e:
-        logger.error("Tautulli Database :: Failed to vacuum database: %s" % e)
+        logger.error("RetroArcher Database :: Failed to vacuum database: %s" % e)
 
 
 def optimize():
     monitor_db = MonitorDatabase()
 
-    logger.info("Tautulli Database :: Optimizing database.")
+    logger.info("RetroArcher Database :: Optimizing database.")
     try:
         monitor_db.action('PRAGMA optimize')
     except Exception as e:
-        logger.error("Tautulli Database :: Failed to optimize database: %s" % e)
+        logger.error("RetroArcher Database :: Failed to optimize database: %s" % e)
 
 
 def optimize_db():
@@ -350,9 +335,9 @@ def make_backup(cleanup=False, scheduler=False):
         plexpy.NOTIFY_QUEUE.put({'notify_action': 'on_plexpydbcorrupt'})
 
     if scheduler:
-        backup_file = 'tautulli.backup-{}{}.sched.db'.format(helpers.now(), corrupt)
+        backup_file = 'retroarcher.backup-{}{}.sched.db'.format(helpers.now(), corrupt)
     else:
-        backup_file = 'tautulli.backup-{}{}.db'.format(helpers.now(), corrupt)
+        backup_file = 'retroarcher.backup-{}{}.db'.format(helpers.now(), corrupt)
     backup_folder = plexpy.CONFIG.BACKUP_DIR
     backup_file_fp = os.path.join(backup_folder, backup_file)
 
@@ -376,13 +361,13 @@ def make_backup(cleanup=False, scheduler=False):
                     try:
                         os.remove(file_)
                     except OSError as e:
-                        logger.error("Tautulli Database :: Failed to delete %s from the backup folder: %s" % (file_, e))
+                        logger.error("RetroArcher Database :: Failed to delete %s from the backup folder: %s" % (file_, e))
 
     if backup_file in os.listdir(backup_folder):
-        logger.debug("Tautulli Database :: Successfully backed up %s to %s" % (db_filename(), backup_file))
+        logger.debug("RetroArcher Database :: Successfully backed up %s to %s" % (db_filename(), backup_file))
         return True
     else:
-        logger.error("Tautulli Database :: Failed to backup %s to %s" % (db_filename(), backup_file))
+        logger.error("RetroArcher Database :: Failed to backup %s to %s" % (db_filename(), backup_file))
         return False
 
 
@@ -436,15 +421,15 @@ class MonitorDatabase(object):
                 except sqlite3.OperationalError as e:
                     e = str(e)
                     if "unable to open database file" in e or "database is locked" in e:
-                        logger.warn("Tautulli Database :: Database Error: %s", e)
+                        logger.warn("RetroArcher Database :: Database Error: %s", e)
                         attempts += 1
                         time.sleep(1)
                     else:
-                        logger.error("Tautulli Database :: Database error: %s", e)
+                        logger.error("RetroArcher Database :: Database error: %s", e)
                         raise
 
                 except sqlite3.DatabaseError as e:
-                    logger.error("Tautulli Database :: Fatal Error executing %s :: %s", query, e)
+                    logger.error("RetroArcher Database :: Fatal Error executing %s :: %s", query, e)
                     raise
 
             return sql_result
@@ -488,7 +473,7 @@ class MonitorDatabase(object):
             try:
                 self.action(insert_query, list(value_dict.values()) + list(key_dict.values()))
             except sqlite3.IntegrityError:
-                logger.info("Tautulli Database :: Queries failed: %s and %s", update_query, insert_query)
+                logger.info("RetroArcher Database :: Queries failed: %s and %s", update_query, insert_query)
 
         # We want to know if it was an update or insert
         return trans_type

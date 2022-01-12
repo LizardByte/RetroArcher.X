@@ -30,13 +30,12 @@ DOCUMENTATION :: END
 <%def name="headIncludes()">
 <link rel="stylesheet" href="${http_root}css/dataTables.bootstrap.css">
 <link rel="stylesheet" href="${http_root}css/dataTables.colVis.css">
-<link rel="stylesheet" href="${http_root}css/tautulli-dataTables.css">
+<link rel="stylesheet" href="${http_root}css/retroarcher-dataTables.css">
 </%def>
 
 <%def name="body()">
 % if data:
 <%
-    from plexpy.common import LIVE_TV_SECTION_ID
     from plexpy.helpers import page
 %>
 <div class="container-fluid">
@@ -90,7 +89,7 @@ DOCUMENTATION :: END
                                 <ul class="nav nav-list nav-pills" role="tablist">
                                     <li class="active"><a id="nav-tabs-profile" href="#tabs-profile" role="tab" data-toggle="tab">Profile</a></li>
                                     <li><a id="nav-tabs-history" href="#tabs-history" role="tab" data-toggle="tab">History</a></li>
-                                    % if data['section_id'] != LIVE_TV_SECTION_ID:
+                                    % if data['section_id'] != '':
                                     % if _session['user_group'] == 'admin':
                                     <li><a id="nav-tabs-mediainfo" href="#tabs-mediainfo" role="tab" data-toggle="tab">Media Info</a></li>
                                     % endif
@@ -168,7 +167,7 @@ DOCUMENTATION :: END
                                 </div>
                             </div>
                         </div>
-                        % if data['section_id'] != LIVE_TV_SECTION_ID:
+                        % if data['section_id'] != '':
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-md-12">
@@ -266,7 +265,7 @@ DOCUMENTATION :: END
                                 <div class="col-md-12">
                                     % if config['get_file_sizes'] and data['section_id'] in config['get_file_sizes_hold']['section_ids']:
                                     <div id="get_file_sizes_message" style="text-align: center; margin-top: 20px;">
-                                        <i class="fa fa-refresh fa-spin"></i>&nbsp; Tautulli is calculating the file sizes for the library's media info. This could take a few minutes depending on the size of your library.
+                                        <i class="fa fa-refresh fa-spin"></i>&nbsp; RetroArcher is calculating the file sizes for the library's media info. This could take a few minutes depending on the size of your library.
                                         <br />
                                         You may leave this page and check back later.
                                     </div>
@@ -536,7 +535,6 @@ DOCUMENTATION :: END
 <script src="${http_root}js/dataTables.bootstrap.min.js"></script>
 <script src="${http_root}js/dataTables.bootstrap.pagination.js"></script>
 % if data:
-<% from plexpy.common import LIVE_TV_SECTION_ID %>
 <%
     history_user_id = '' if _session['user_group'] == 'admin' else _session['user_id']
 %>
@@ -712,7 +710,7 @@ DOCUMENTATION :: END
     }
 
     recentlyWatched();
-    % if data['section_id'] != LIVE_TV_SECTION_ID:
+    % if data['section_id'] != '':
     recentlyAdded();
     % endif
 

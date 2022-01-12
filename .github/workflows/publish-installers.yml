@@ -69,16 +69,16 @@ jobs:
 
       - name: Build Package
         run: |
-          pyinstaller -y ./package/Tautulli-${{ matrix.os }}.spec
+          pyinstaller -y ./package/RetroArcher-${{ matrix.os }}.spec
 
       - name: Create Windows Installer
         uses: joncloud/makensis-action@v3.4
         if: matrix.os == 'windows'
         with:
-          script-file: ./package/Tautulli.nsi
+          script-file: ./package/RetroArcher.nsi
           arguments: >
             /DVERSION=${{ steps.get_version.outputs.VERSION_NSIS }}
-            /DINSTALLER_NAME=..\Tautulli-windows-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.exe
+            /DINSTALLER_NAME=..\RetroArcher-windows-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.exe
           additional-plugin-paths: package/nsis-plugins
 
       - name: Create MacOS Installer
@@ -87,15 +87,15 @@ jobs:
           sudo pkgbuild \
             --install-location /Applications \
             --version ${{ steps.get_version.outputs.VERSION }} \
-            --component ./dist/Tautulli.app \
+            --component ./dist/RetroArcher.app \
             --scripts ./package/macos-scripts \
-            Tautulli-macos-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.pkg
+            RetroArcher-macos-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.pkg
 
       - name: Upload Installer
         uses: actions/upload-artifact@v2
         with:
-          name: Tautulli-${{ matrix.os }}-installer
-          path: Tautulli-${{ matrix.os }}-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.${{ matrix.ext }}
+          name: RetroArcher-${{ matrix.os }}-installer
+          path: RetroArcher-${{ matrix.os }}-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.${{ matrix.ext }}
 
   release:
     name: Release Installers
@@ -131,7 +131,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.get_version.outputs.RELEASE_VERSION }}
-          release_name: Tautulli ${{ steps.get_version.outputs.RELEASE_VERSION }}
+          release_name: RetroArcher ${{ steps.get_version.outputs.RELEASE_VERSION }}
           body: |
             ## Changelog
             
@@ -146,8 +146,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: Tautulli-windows-installer/Tautulli-windows-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.exe
-          asset_name: Tautulli-windows-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.exe
+          asset_path: RetroArcher-windows-installer/RetroArcher-windows-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.exe
+          asset_name: RetroArcher-windows-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
       - name: Upload MacOS Installer
@@ -157,8 +157,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: Tautulli-macos-installer/Tautulli-macos-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.pkg
-          asset_name: Tautulli-macos-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.pkg
+          asset_path: RetroArcher-macos-installer/RetroArcher-macos-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.pkg
+          asset_name: RetroArcher-macos-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.pkg
           asset_content_type: application/vnd.apple.installer+xml
 
   discord:

@@ -1,20 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import unicode_literals
 from future.builtins import next
 from future.builtins import str
@@ -50,7 +35,7 @@ else:
 
 
 def get_server_friendly_name():
-    logger.info("Tautulli Pmsconnect :: Requesting name from server...")
+    logger.info("RetroArcher Pmsconnect :: Requesting name from server...")
     server_name = PmsConnect().get_server_pref(pref='FriendlyName')
 
     # If friendly name is blank
@@ -64,7 +49,7 @@ def get_server_friendly_name():
     if server_name and server_name != plexpy.CONFIG.PMS_NAME:
         plexpy.CONFIG.__setattr__('PMS_NAME', server_name)
         plexpy.CONFIG.write()
-        logger.info("Tautulli Pmsconnect :: Server name retrieved.")
+        logger.info("RetroArcher Pmsconnect :: Server name retrieved.")
 
     return server_name
 
@@ -512,7 +497,7 @@ class PmsConnect(object):
         try:
             xml_head = recent.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_recently_added: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_recently_added: %s." % e)
             return []
 
         for a in xml_head:
@@ -659,7 +644,7 @@ class PmsConnect(object):
         try:
             xml_head = metadata_xml.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_metadata_details: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_metadata_details: %s." % e)
             return {}
 
         for a in xml_head:
@@ -678,7 +663,7 @@ class PmsConnect(object):
             elif a.getElementsByTagName('Playlist'):
                 metadata_main_list = a.getElementsByTagName('Playlist')
             else:
-                logger.debug("Tautulli Pmsconnect :: Metadata failed")
+                logger.debug("RetroArcher Pmsconnect :: Metadata failed")
                 return {}
 
             if sync_id and len(metadata_main_list) > 1:
@@ -1354,16 +1339,7 @@ class PmsConnect(object):
 
         # Get additional metadata from metadata.provider.plex.tv
         if not plex_guid and metadata['live']:
-            metadata['section_id'] = common.LIVE_TV_SECTION_ID
-            metadata['library_name'] = common.LIVE_TV_SECTION_NAME
-
-            plextv_metadata = self.get_metadata_details(plex_guid=metadata['guid'])
-            if plextv_metadata:
-                keys_to_update = ['summary', 'rating', 'thumb', 'grandparent_thumb', 'duration',
-                                  'guid', 'grandparent_guid', 'genres']
-                for key in keys_to_update:
-                    metadata[key] = plextv_metadata[key]
-                metadata['originally_available_at'] = helpers.iso_to_YMD(plextv_metadata['originally_available_at'])
+            pass
 
         if metadata and media_info:
             medias = []
@@ -1487,7 +1463,7 @@ class PmsConnect(object):
                     with open(out_file_path, 'w') as outFile:
                         json.dump(metadata, outFile)
                 except (IOError, ValueError) as e:
-                    logger.error("Tautulli Pmsconnect :: Unable to create cache file for metadata (sessionKey %s): %s"
+                    logger.error("RetroArcher Pmsconnect :: Unable to create cache file for metadata (sessionKey %s): %s"
                                  % (cache_key, e))
 
             return metadata
@@ -1507,7 +1483,7 @@ class PmsConnect(object):
         try:
             xml_head = metadata.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_metadata_children: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_metadata_children: %s." % e)
             return []
 
         metadata_list = []
@@ -1557,7 +1533,7 @@ class PmsConnect(object):
         try:
             xml_head = libraries_data.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_library_metadata_details: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_library_metadata_details: %s." % e)
             return []
 
         metadata_list = []
@@ -1602,7 +1578,7 @@ class PmsConnect(object):
         try:
             xml_head = session_data.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_current_activity: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_current_activity: %s." % e)
             return []
 
         session_list = []
@@ -2257,7 +2233,7 @@ class PmsConnect(object):
         plex_tv = plextv.PlexTV()
         if not plex_tv.get_plexpass_status():
             msg = 'No Plex Pass subscription'
-            logger.warn("Tautulli Pmsconnect :: Failed to terminate session: %s." % msg)
+            logger.warn("RetroArcher Pmsconnect :: Failed to terminate session: %s." % msg)
             return msg
 
         message = message.encode('utf-8') or 'The server owner has ended the stream.'
@@ -2279,16 +2255,16 @@ class PmsConnect(object):
 
         if not session:
             msg = 'Invalid session_key (%s) or session_id (%s)' % (session_key, session_id)
-            logger.warn("Tautulli Pmsconnect :: Failed to terminate session: %s." % msg)
+            logger.warn("RetroArcher Pmsconnect :: Failed to terminate session: %s." % msg)
             return msg
 
         if session_id:
-            logger.info("Tautulli Pmsconnect :: Terminating session %s (session_id %s)." % (session_key, session_id))
+            logger.info("RetroArcher Pmsconnect :: Terminating session %s (session_id %s)." % (session_key, session_id))
             response = self.get_sessions_terminate(session_id=session_id, reason=message)
             return response.ok
         else:
             msg = 'Missing session_id'
-            logger.warn("Tautulli Pmsconnect :: Failed to terminate session: %s." % msg)
+            logger.warn("RetroArcher Pmsconnect :: Failed to terminate session: %s." % msg)
             return msg
 
     def get_item_children(self, rating_key='', media_type=None, get_grandchildren=False):
@@ -2313,7 +2289,7 @@ class PmsConnect(object):
         try:
             xml_head = children_data.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_item_children: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_item_children: %s." % e)
             return default_return
 
         children_list = []
@@ -2321,7 +2297,7 @@ class PmsConnect(object):
         for a in xml_head:
             if a.getAttribute('size'):
                 if a.getAttribute('size') == '0':
-                    logger.debug("Tautulli Pmsconnect :: No children data.")
+                    logger.debug("RetroArcher Pmsconnect :: No children data.")
                     return default_return
 
             result_data = []
@@ -2424,7 +2400,7 @@ class PmsConnect(object):
         try:
             xml_head = children_data.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_item_children_related: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_item_children_related: %s." % e)
             return []
 
         children_results_list = {'movie': [],
@@ -2490,7 +2466,7 @@ class PmsConnect(object):
         try:
             xml_head = recent.getElementsByTagName('Server')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_server_list: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_server_list: %s." % e)
             return []
 
         server_info = []
@@ -2517,7 +2493,7 @@ class PmsConnect(object):
         try:
             xml_head = identity.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_local_server_identity: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_local_server_identity: %s." % e)
             return {}
 
         server_identity = {}
@@ -2542,7 +2518,7 @@ class PmsConnect(object):
             try:
                 xml_head = prefs.getElementsByTagName('Setting')
             except Exception as e:
-                logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_local_server_name: %s." % e)
+                logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_local_server_name: %s." % e)
                 return ''
 
             pref_value = 'None'
@@ -2553,7 +2529,7 @@ class PmsConnect(object):
 
             return pref_value
         else:
-            logger.debug("Tautulli Pmsconnect :: Server preferences queried but no parameter received.")
+            logger.debug("RetroArcher Pmsconnect :: Server preferences queried but no parameter received.")
             return None
 
     def get_server_children(self):
@@ -2567,7 +2543,7 @@ class PmsConnect(object):
         try:
             xml_head = libraries_data.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_libraries_list: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_libraries_list: %s." % e)
             return []
 
         libraries_list = []
@@ -2575,7 +2551,7 @@ class PmsConnect(object):
         for a in xml_head:
             if a.getAttribute('size'):
                 if a.getAttribute('size') == '0':
-                    logger.debug("Tautulli Pmsconnect :: No libraries data.")
+                    logger.debug("RetroArcher Pmsconnect :: No libraries data.")
                     libraries_list = {'libraries_count': '0',
                                       'libraries_list': []
                                       }
@@ -2641,13 +2617,13 @@ class PmsConnect(object):
         elif str(rating_key).isdigit():
             library_data = self.get_metadata_children(str(rating_key), output_format='xml')
         else:
-            logger.warn("Tautulli Pmsconnect :: get_library_children called by invalid section_id or rating_key provided.")
+            logger.warn("RetroArcher Pmsconnect :: get_library_children called by invalid section_id or rating_key provided.")
             return []
 
         try:
             xml_head = library_data.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_library_children_details: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_library_children_details: %s." % e)
             return []
 
         children_list = []
@@ -2655,7 +2631,7 @@ class PmsConnect(object):
         for a in xml_head:
             if a.getAttribute('size'):
                 if a.getAttribute('size') == '0':
-                    logger.debug("Tautulli Pmsconnect :: No library data.")
+                    logger.debug("RetroArcher Pmsconnect :: No library data.")
                     children_list = {'library_count': '0',
                                      'children_list': []
                                      }
@@ -2798,7 +2774,7 @@ class PmsConnect(object):
         try:
             xml_head = labels_data.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_library_label_details: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_library_label_details: %s." % e)
             return None
 
         labels_list = []
@@ -2806,7 +2782,7 @@ class PmsConnect(object):
         for a in xml_head:
             if a.getAttribute('size'):
                 if a.getAttribute('size') == '0':
-                    logger.debug("Tautulli Pmsconnect :: No labels data.")
+                    logger.debug("RetroArcher Pmsconnect :: No labels data.")
                     return labels_list
 
             if a.getElementsByTagName('Directory'):
@@ -2879,7 +2855,7 @@ class PmsConnect(object):
                 return result[0], result[1]
 
         else:
-            logger.error("Tautulli Pmsconnect :: Image proxy queried but no input received.")
+            logger.error("RetroArcher Pmsconnect :: Image proxy queried but no input received.")
 
     def get_search_results(self, query='', limit=''):
         """
@@ -2892,7 +2868,7 @@ class PmsConnect(object):
         try:
             xml_head = search_results.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_search_result: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_search_result: %s." % e)
             return []
 
         search_results_list = {'movie': [],
@@ -2975,7 +2951,7 @@ class PmsConnect(object):
                 section_id = metadata['section_id']
                 library_name = metadata['library_name']
             except Exception as e:
-                logger.warn("Tautulli Pmsconnect :: Unable to get parent_rating_key for get_rating_keys_list: %s." % e)
+                logger.warn("RetroArcher Pmsconnect :: Unable to get parent_rating_key for get_rating_keys_list: %s." % e)
                 return {}
 
         elif media_type == 'episode' or media_type == 'track':
@@ -2985,7 +2961,7 @@ class PmsConnect(object):
                 section_id = metadata['section_id']
                 library_name = metadata['library_name']
             except Exception as e:
-                logger.warn("Tautulli Pmsconnect :: Unable to get grandparent_rating_key for get_rating_keys_list: %s." % e)
+                logger.warn("RetroArcher Pmsconnect :: Unable to get grandparent_rating_key for get_rating_keys_list: %s." % e)
                 return {}
 
         # get parent_rating_keys
@@ -2994,7 +2970,7 @@ class PmsConnect(object):
         try:
             xml_head = metadata.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_rating_keys_list: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_rating_keys_list: %s." % e)
             return {}
 
         for a in xml_head:
@@ -3022,7 +2998,7 @@ class PmsConnect(object):
                     try:
                         xml_head = metadata.getElementsByTagName('MediaContainer')
                     except Exception as e:
-                        logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_rating_keys_list: %s." % e)
+                        logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_rating_keys_list: %s." % e)
                         return {}
 
                     for a in xml_head:
@@ -3068,7 +3044,7 @@ class PmsConnect(object):
         try:
             xml_head = account_data.getElementsByTagName('MyPlex')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_server_response: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_server_response: %s." % e)
             return None
 
         server_response = {}
@@ -3106,13 +3082,13 @@ class PmsConnect(object):
         try:
             xml_head = updater_status.getElementsByTagName('MediaContainer')
         except Exception as e:
-            logger.warn("Tautulli Pmsconnect :: Unable to parse XML for get_update_staus: %s." % e)
+            logger.warn("RetroArcher Pmsconnect :: Unable to parse XML for get_update_staus: %s." % e)
 
             # Catch the malformed XML on certain PMX version.
             # XML parser helper returns empty list if there is an error parsing XML
             if updater_status == []:
                 logger.warn("Plex API updater XML is broken on the current PMS version. Please update your PMS manually.")
-                logger.info("Tautulli is unable to check for Plex updates. Disabling check for Plex updates.")
+                logger.info("RetroArcher is unable to check for Plex updates. Disabling check for Plex updates.")
 
                 # Disable check for Plex updates
                 plexpy.CONFIG.MONITOR_PMS_UPDATES = 0

@@ -1,21 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#  This file is part of Tautulli.
-#
-#  Tautulli is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Tautulli is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Tautulli.  If not, see <http://www.gnu.org/licenses/>.
-
-
 # https://github.com/cherrypy/tools/blob/master/AuthenticationAndAccessRestrictions
 # Form based authentication for CherryPy. Requires the
 # Session tool to be loaded.
@@ -52,7 +36,7 @@ except ImportError:
 Morsel._reserved[str('samesite')] = str('SameSite')
 
 JWT_ALGORITHM = 'HS256'
-JWT_COOKIE_NAME = 'tautulli_token_'
+JWT_COOKIE_NAME = 'retroarcher_token_'
 
 
 def plex_user_login(token=None, headers=None):
@@ -97,7 +81,7 @@ def plex_user_login(token=None, headers=None):
             # Register the new user / update the access tokens.
             monitor_db = MonitorDatabase()
             try:
-                logger.debug("Tautulli WebAuth :: Registering token for user '%s' in the database."
+                logger.debug("RetroArcher WebAuth :: Registering token for user '%s' in the database."
                              % user_details['username'])
                 result = monitor_db.action('UPDATE users SET server_token = ? WHERE user_id = ?',
                                            [server_token, user_details['user_id']])
@@ -108,20 +92,20 @@ def plex_user_login(token=None, headers=None):
                     # Successful login
                     return user_details, 'guest'
                 else:
-                    logger.warn("Tautulli WebAuth :: Unable to register user '%s' in database."
+                    logger.warn("RetroArcher WebAuth :: Unable to register user '%s' in database."
                                 % user_details['username'])
                     return None
             except Exception as e:
-                logger.warn("Tautulli WebAuth :: Unable to register user '%s' in database: %s."
+                logger.warn("RetroArcher WebAuth :: Unable to register user '%s' in database: %s."
                             % (user_details['username'], e))
                 return None
         else:
-            logger.warn("Tautulli WebAuth :: Unable to retrieve Plex.tv server token for user '%s'."
+            logger.warn("RetroArcher WebAuth :: Unable to retrieve Plex.tv server token for user '%s'."
                         % user_details['username'])
             return None
 
     elif token:
-        logger.warn("Tautulli WebAuth :: Unable to retrieve Plex.tv user token for Plex OAuth.")
+        logger.warn("RetroArcher WebAuth :: Unable to retrieve Plex.tv user token for Plex OAuth.")
         return None
 
 
@@ -306,7 +290,7 @@ class AuthController(object):
 
         if success:
             use_oauth = 'Plex OAuth' if oauth else 'form'
-            logger.debug("Tautulli WebAuth :: %s user '%s' logged into Tautulli using %s login."
+            logger.debug("RetroArcher WebAuth :: %s user '%s' logged into RetroArcher using %s login."
                          % (user_group.capitalize(), username, use_oauth))
 
     def on_logout(self, username, user_group, jwt_token=None):
@@ -315,7 +299,7 @@ class AuthController(object):
         if jwt_token:
             Users().clear_user_login_token(jwt_token=jwt_token)
 
-        logger.debug("Tautulli WebAuth :: %s user '%s' logged out of Tautulli." % (user_group.capitalize(), username))
+        logger.debug("RetroArcher WebAuth :: %s user '%s' logged out of RetroArcher." % (user_group.capitalize(), username))
 
     def get_loginform(self, redirect_uri=''):
         from plexpy.webserve import serve_template
@@ -367,7 +351,7 @@ class AuthController(object):
         rate_limit = check_rate_limit(ip_address)
 
         if rate_limit:
-            logger.debug("Tautulli WebAuth :: Too many incorrect login attempts from '%s'." % ip_address)
+            logger.debug("RetroArcher WebAuth :: Too many incorrect login attempts from '%s'." % ip_address)
             error_message = {'status': 'error', 'message': 'Too many login attempts.'}
             cherrypy.response.status = 429
             cherrypy.response.headers['Retry-After'] = rate_limit
@@ -415,19 +399,19 @@ class AuthController(object):
 
         elif admin_login == '1' and username:
             self.on_login(username=username)
-            logger.debug("Tautulli WebAuth :: Invalid admin login attempt from '%s'." % username)
+            logger.debug("RetroArcher WebAuth :: Invalid admin login attempt from '%s'." % username)
             cherrypy.response.status = 401
             return error_message
 
         elif username:
             self.on_login(username=username)
-            logger.debug("Tautulli WebAuth :: Invalid user login attempt from '%s'." % username)
+            logger.debug("RetroArcher WebAuth :: Invalid user login attempt from '%s'." % username)
             cherrypy.response.status = 401
             return error_message
 
         elif token:
             self.on_login(username='Plex OAuth', oauth=True)
-            logger.debug("Tautulli WebAuth :: Invalid Plex OAuth login attempt.")
+            logger.debug("RetroArcher WebAuth :: Invalid Plex OAuth login attempt.")
             cherrypy.response.status = 401
             return error_message
 

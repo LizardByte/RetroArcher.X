@@ -1,0 +1,216 @@
+<%doc>
+USAGE DOCUMENTATION :: PLEASE LEAVE THIS AT THE TOP OF THIS FILE
+
+For Mako templating syntax documentation please visit: http://docs.makotemplates.org/en/latest/
+
+Filename:           third_party_table.html
+Version:            0.1
+
+DOCUMENTATION :: END
+</%doc>
+
+<%!
+    import os
+    import sys
+    import plexpy
+    from plexpy import common, logger
+    from plexpy.helpers import anon_url
+%>
+
+<table class="config-scheduler-table small-muted">
+    <thead>
+        <tr>
+            <th>Application</th>
+            <th>Version</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>RetroArch Version:</td>
+            % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.RETROARCH_DIR, 'RetroArch')):
+            <td>${plexpy.emulators.RetroArch().get_current_version()}</td>
+            <td><input type="button" class="btn btn-dark retroarch-update-btn" value="Force Update"></td>
+            % else:
+            <td>Not Installed</td>
+            <td><input type="button" class="btn btn-danger retroarch-update-btn" value="Force Install"></td>
+            % endif
+        </tr>
+        <tr>
+            <td>RPCS3 Version:</td>
+            % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.RPCS3_DIR, 'rpcs3')):
+            <td>${plexpy.emulators.RPCS3().get_current_version()}</td>
+            <td><input type="button" class="btn btn-dark rpcs3-update-btn" value="Force Update"></td>
+            % else:
+            <td>Not Installed</td>
+            <td><input type="button" class="btn btn-danger rpcs3-update-btn" value="Force Install"></td>
+            % endif
+        </tr>
+        <tr>
+            % if common.PLATFORM in ('Windows'):
+            <td>Cemu Version:</td>
+            % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.CEMU_DIR, 'cemu')):
+            <td>${plexpy.emulators.Cemu().get_current_version()}</td>
+            <td><input type="button" class="btn btn-dark cemu-update-btn" value="Force Update"></td>
+            % else:
+            <td>Not Installed</td>
+            <td><input type="button" class="btn btn-danger cemu-update-btn" value="Force Install"></td>
+            % endif
+            % endif
+        </tr>
+        <tr>
+            <td>Sunshine Version:</td>
+            % if plexpy.helpers.glob_file_exists(os.path.join(plexpy.CONFIG.SUNSHINE_DIR, 'sunshine')):
+            <td>Unknown</td>
+            <td><input type="button" class="btn btn-dark sunshine-update-btn" value="Force Update"></td>
+            % else:
+            <td>Not Installed</td>
+            <td><input type="button" class="btn btn-danger sunshine-update-btn" value="Force Install"></td>
+            % endif
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td><input type="button" class="btn btn-danger all-update-btn" value="Update All"></td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="config-scheduler-table small-muted">
+    <thead>
+        <tr>
+            <th>Application</th>
+            <th>Discord</th>
+            <th>Reddit</th>
+            <th>Website</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Moonlight</td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://moonlight-stream.org/discord')}" target="_blank" rel="noreferrer">Moonlight Discord</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://www.reddit.com/r/MoonlightStreaming')}" target="_blank" rel="noreferrer">Moonlight Unofficial Subreddit</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://moonlight-stream.org')}" target="_blank" rel="noreferrer">Moonlight Website</a>
+            </td>
+        </tr>
+        <tr>
+            <td>RetroArch</td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://discord.com/invite/C4amCeV')}" target="_blank" rel="noreferrer">RetroArch Discord</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://www.reddit.com/r/RetroArch')}" target="_blank" rel="noreferrer">RetroArch Subreddit</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://www.retroarch.com')}" target="_blank" rel="noreferrer">RetroArch Website</a>
+            </td>
+        </tr>
+        <tr>
+            <td>RPCS3</td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://discord.me/rpcs3')}" target="_blank" rel="noreferrer">RPCS3 Discord</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://www.reddit.com/r/rpcs3')}" target="_blank" rel="noreferrer">RPCS3 Subreddit</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://rpcs3.net')}" target="_blank" rel="noreferrer">RPCS3 Website</a>
+            </td>
+        </tr>
+        <tr>
+            <td>Cemu</td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://discord.gg/5psYsup')}" target="_blank" rel="noreferrer">Cemu Discord</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('https://www.reddit.com/r/cemu')}" target="_blank" rel="noreferrer">Cemu Subreddit</a>
+            </td>
+            <td>
+                <a class="no-highlight" href="${anon_url('http://cemu.info')}" target="_blank" rel="noreferrer">Cemu Website</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        $('.guidelines-modal-link').on('click', function (e) {
+            e.preventDefault();
+            $('#guidelines-type').text($(this).data('id'))
+            $('#guidelines-modal').modal();
+            $('#guidelines-continue').attr('href', $(this).attr('href')).on('click', function () {
+                $('#guidelines-modal').modal('hide');
+            });
+        });
+        $('.support-modal-link').on('click', function (e) {
+            e.preventDefault();
+            $('#support-modal').modal();
+            $('#support-continue').attr('href', $(this).attr('href')).on('click', function () {
+                $('#support-modal').modal('hide');
+            });
+        });
+
+        $('body').tooltip({
+            selector: '[data-toggle="tooltip"]',
+            container: 'body'
+        });
+
+    });
+
+    function sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+   }
+
+    var updating = false;
+    function updateApp(app) {
+        if (updating === true) {
+            showMsg('<i class="fa fa-exclamation-circle"></i> Failed to install ' + app + '. Installation already running', false, true, 5000, true)
+            return false;
+        } else {
+            updating = true;
+            $.ajax({
+                url: 'update_app',
+                type: 'POST',
+                data: { app: app },
+                complete: function (xhr, status) {
+                    updating = false;
+                    result = $.parseJSON(xhr.responseText);
+                    msg = result.message;
+                    if (result.result === 'success') {
+                        showMsg('<i class="fa fa-check"></i> ' + msg, false, true, 5000)
+                    } else {
+                        showMsg('<i class="fa fa-times"></i> ' + msg, false, true, 5000, true)
+                    }
+                    sleep(5000).then(() => {
+                        location.reload();
+                    })
+                }
+            });
+        };
+    }
+
+    $(".all-update-btn").click(function () {
+        updateApp('all');
+    });
+
+    $(".cemu-update-btn").click(function () {
+        updateApp('cemu');
+    });
+
+    $(".retroarch-update-btn").click(function () {
+        updateApp('retroarch');
+    });
+
+    $(".rpcs3-update-btn").click(function () {
+        updateApp('rpcs3');
+    });
+
+    $(".sunshine-update-btn").click(function () {
+        updateApp('sunshine');
+    });
+
+</script>

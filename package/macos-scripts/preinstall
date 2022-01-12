@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-function check_tautulli_running () {
-    if pgrep -x "Tautulli" > /dev/null
+function check_retroarcher_running () {
+    if pgrep -x "RetroArcher" > /dev/null
     then
-        dialogText=`osascript -e 'set dialogText to button returned of (display dialog "Tautulli is still running. Please shutdown Tautulli before continuing." buttons {"Retry", "Abort"})'`;
+        dialogText=`osascript -e 'set dialogText to button returned of (display dialog "RetroArcher is still running. Please shutdown RetroArcher before continuing." buttons {"Retry", "Abort"})'`;
 
         if [[ $dialogText == 'Retry' ]]
         then
-            check_tautulli_running;
+            check_retroarcher_running;
         elif [[ $dialogText == 'Abort' ]]
         then
             exit 1;
@@ -17,4 +17,4 @@ function check_tautulli_running () {
     fi
 }
 
-check_tautulli_running;
+check_retroarcher_running;
