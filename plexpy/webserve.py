@@ -5299,8 +5299,12 @@ class WebInterface(object):
         elif logfile == 'cemu':
             filename = 'log.txt'
             filepath = os.path.join(plexpy.CONFIG.CEMU_DIR, filename)
-        else:
+        elif os.path.isfile(os.path.join(plexpy.CONFIG.LOG_DIR, f'{logfile}.log')):
             filename = f'{logfile}.log'
+            filepath = os.path.join(plexpy.CONFIG.LOG_DIR, filename)
+        else:
+            filename = logger.FILENAME
+            log = logger.logger
             filepath = os.path.join(plexpy.CONFIG.LOG_DIR, filename)
 
         try:
