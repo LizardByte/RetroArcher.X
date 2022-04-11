@@ -92,7 +92,7 @@ jobs:
             RetroArcher-macos-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.pkg
 
       - name: Upload Installer
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: RetroArcher-${{ matrix.os }}-installer
           path: RetroArcher-${{ matrix.os }}-${{ steps.get_version.outputs.RELEASE_VERSION }}-x64.${{ matrix.ext }}
